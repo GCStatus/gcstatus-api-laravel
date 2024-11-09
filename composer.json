@@ -61,7 +61,7 @@
             "@php artisan test -p"
         ],
         "test:ci": [
-            "@php artisan test -p --coverage-xml=./coverage.xml"
+            "@php artisan test -p --coverage-xml=./coverage/coverage.xml"
         ],
         "phpstan:ci": [
             "vendor/bin/phpstan analyse --memory-limit=1G"
