@@ -12,8 +12,6 @@ class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory;
-
-    /** @use Notifiable<\Illuminate\Notifications\Notifiable> */
     use Notifiable;
 
     /**
@@ -58,7 +56,7 @@ class User extends Authenticatable implements MustVerifyEmail
     /**
      * Get the level that owns the User
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Level, $this>
      */
     public function level(): BelongsTo
     {

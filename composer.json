@@ -17,6 +17,7 @@
     "require-dev": {
         "brianium/paratest": "*",
         "fakerphp/faker": "^1.23",
+        "larastan/larastan": "^2.9",
         "laravel/pail": "^1.1",
         "laravel/pint": "^1.13",
         "laravel/sail": "^1.26",
@@ -61,11 +62,15 @@
         ],
         "test:ci": [
             "@php artisan test -p --coverage-xml=./coverage.xml"
+        ],
+        "phpstan:ci": [
+            "vendor/bin/phpstan analyse --memory-limit=1G"
         ]
     },
     "scripts-descriptions": {
         "test": "Run all tests with PHPUnit and parallel.",
-        "test:ci": "Run all tests with PHPUnit, parallel and generate coverage.xml by PHPUnit configs."
+        "test:ci": "Run all tests with PHPUnit, parallel and generate coverage.xml by PHPUnit configs.",
+        "phpstan:ci": "Run the PHPStan analyses to CI environment with memory limit at 1G using <root>/.phpstan.neon."
     },
     "extra": {
         "laravel": {
