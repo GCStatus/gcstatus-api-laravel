@@ -25,7 +25,7 @@ class Level extends Model
     /**
      * Get all of the users for the Level
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<User, $this>
      */
     public function users(): HasMany
     {

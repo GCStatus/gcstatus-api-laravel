@@ -99,6 +99,9 @@ jobs:
           DB_DATABASE: ${{ env.DB_DATABASE }}
         run: composer test:ci
 
+      - name: Run PHPStan Static Analysis
+        run: composer phpstan:ci
+
       - name: Upload coverage to Codecov
         if: github.event.pull_request.draft == false
         uses: codecov/codecov-action@v4
@@ -145,6 +148,21 @@ jobs:
           skip_fetch: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # notify:
+  #   runs-on: ubuntu-latest
+  #   if: failure()
+  #   permissions:
+  #     contents: read
+  #     actions: read
+  #   steps:
+  #     - name: Send Slack Notification
+  #       uses: 8398a7/action-slack@v3
+  #       with:
+  #         status: ${{ job.status }}
+  #         fields: workflow,job,repo,ref,message,commit,author,took,eventName,pullRequest
+  #       env:
+  #         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
 
   all_required_checks_passed:
     name: All required checks passed

@@ -16,7 +16,7 @@ trait UnitModelHelpers
         $model = $this->model();
 
         /** @var \Illuminate\Database\Eloquent\Model $model */
-        $model = new $model;
+        $model = new $model();
 
         $this->assertEquals($fillable, $model->getFillable());
     }
@@ -33,7 +33,7 @@ trait UnitModelHelpers
         $model = $this->model();
 
         /** @var \Illuminate\Database\Eloquent\Model $model */
-        $model = new $model;
+        $model = new $model();
 
         $modelTraits = array_keys(class_uses($model));
 
@@ -52,7 +52,7 @@ trait UnitModelHelpers
         $model = $this->model();
 
         /** @var \Illuminate\Database\Eloquent\Model $model */
-        $model = new $model;
+        $model = new $model();
 
         $this->assertEquals($casts, $model->getCasts());
     }
@@ -69,7 +69,7 @@ trait UnitModelHelpers
         $model = $this->model();
 
         /** @var \Illuminate\Database\Eloquent\Model $model */
-        $model = new $model;
+        $model = new $model();
 
         foreach ($interfaces as $interface) {
             $this->assertInstanceOf($interface, $model);
