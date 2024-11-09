@@ -100,7 +100,7 @@ jobs:
         run: composer test:ci
 
       - name: Run PHPStan Static Analysis
-        run: vendor/bin/phpstan analyse --memory-limit=1G
+        run: composer phpstan:ci
 
       - name: Upload coverage to Codecov
         if: github.event.pull_request.draft == false
@@ -109,7 +109,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: true
           verbose: true
-          files: ./coverage/coverage.xml
+          files: ./coverage.xml
 
   pint:
     runs-on: ubuntu-latest

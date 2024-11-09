@@ -57,18 +57,14 @@
             "Composer\\Config::disableProcessTimeout",
             "npx concurrently -c \"#93c5fd,#c4b5fd,#fb7185,#fdba74\" \"php artisan serve\" \"php artisan queue:listen --tries=1\" \"php artisan pail --timeout=0\" \"npm run dev\" --names=server,queue,logs,vite"
         ],
-        "test": [
-            "@php artisan test -p"
-        ],
         "test:ci": [
-            "@php artisan test -p --coverage-xml=./coverage/coverage.xml"
+            "@php artisan test -p"
         ],
         "phpstan:ci": [
             "vendor/bin/phpstan analyse --memory-limit=1G"
         ]
     },
     "scripts-descriptions": {
-        "test": "Run all tests with PHPUnit and parallel.",
         "test:ci": "Run all tests with PHPUnit, parallel and generate coverage.xml by PHPUnit configs.",
         "phpstan:ci": "Run the PHPStan analyses to CI environment with memory limit at 1G using <root>/.phpstan.neon."
     },
