@@ -5,8 +5,8 @@ namespace App\Models;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Relations\{HasOne, BelongsTo};
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -61,5 +61,15 @@ class User extends Authenticatable implements MustVerifyEmail
     public function level(): BelongsTo
     {
         return $this->belongsTo(Level::class);
+    }
+
+    /**
+     * Get the wallet associated with the User
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne<Wallet, $this>
+     */
+    public function wallet(): HasOne
+    {
+        return $this->hasOne(Wallet::class);
     }
 }

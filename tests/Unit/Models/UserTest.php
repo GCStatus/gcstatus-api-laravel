@@ -7,10 +7,12 @@ use Illuminate\Notifications\Notifiable;
 use Tests\Contracts\Models\BaseModelTesting;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\{BelongsTo, HasOne, MorphMany};
 use Tests\Contracts\Models\{
     ShouldTestCasts,
     ShouldTestTraits,
     ShouldTestFillables,
+    ShouldTestRelations,
     ShouldTestInterfaces,
 };
 
@@ -18,6 +20,7 @@ class UserTest extends BaseModelTesting implements
     ShouldTestCasts,
     ShouldTestTraits,
     ShouldTestFillables,
+    ShouldTestRelations,
     ShouldTestInterfaces
 {
     /**
@@ -94,5 +97,23 @@ class UserTest extends BaseModelTesting implements
         ];
 
         $this->assertUsesInterfaces($interfaces);
+    }
+
+    /**
+     * The relations tests.
+     *
+     * @return void
+     */
+    public function test_relations_attributes(): void
+    {
+        $relations = [
+            'wallet' => HasOne::class,
+            'level' => BelongsTo::class,
+            'notifications' => MorphMany::class,
+            'readNotifications' => MorphMany::class,
+            'unreadNotifications' => MorphMany::class,
+        ];
+
+        $this->assertHasRelations($relations);
     }
 }

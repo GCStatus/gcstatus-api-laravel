@@ -75,4 +75,21 @@ trait UnitModelHelpers
             $this->assertInstanceOf($interface, $model);
         }
     }
+
+    /**
+     * Test if the relations attributes are correct.
+     *
+     * @param array<int, string-class> $relations
+     * @return void
+     */
+    public function assertHasRelations(array $relations): void
+    {
+        /** @var string $model */
+        $model = $this->model();
+
+        /** @var \Illuminate\Database\Eloquent\Model $model */
+        $model = new $model();
+
+        $this->assertEqualsCanonicalizing($relations, $model->getModelRelationships());
+    }
 }

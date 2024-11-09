@@ -2,9 +2,9 @@
 
 namespace Tests\Unit\Models;
 
-use App\Models\Level;
+use App\Models\Profile;
 use Tests\Contracts\Models\BaseModelTesting;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Tests\Contracts\Models\{
     ShouldTestCasts,
@@ -13,7 +13,7 @@ use Tests\Contracts\Models\{
     ShouldTestRelations,
 };
 
-class LevelTest extends BaseModelTesting implements
+class ProfileTest extends BaseModelTesting implements
     ShouldTestCasts,
     ShouldTestTraits,
     ShouldTestFillables,
@@ -26,7 +26,7 @@ class LevelTest extends BaseModelTesting implements
      */
     public function model(): string
     {
-        return Level::class;
+        return Profile::class;
     }
 
     /**
@@ -37,9 +37,16 @@ class LevelTest extends BaseModelTesting implements
     public function test_fillable_attributes(): void
     {
         $fillable = [
-            'level',
-            'coins',
-            'experience',
+            'share',
+            'photo',
+            'phone',
+            'twitch',
+            'github',
+            'twitter',
+            'youtube',
+            'user_id',
+            'facebook',
+            'instagram',
         ];
 
         $this->assertHasFillables($fillable);
@@ -81,7 +88,7 @@ class LevelTest extends BaseModelTesting implements
     public function test_relations_attributes(): void
     {
         $relations = [
-            'users' => HasMany::class,
+            'user' => BelongsTo::class,
         ];
 
         $this->assertHasRelations($relations);
