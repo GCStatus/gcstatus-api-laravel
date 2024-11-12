@@ -5,9 +5,9 @@ namespace Tests\Feature\Http\Auth;
 use App\Models\User;
 use Tests\Traits\HasDummyUser;
 use Illuminate\Support\Facades\Cookie;
-use Tests\Feature\Http\baseIntegrationTesting;
+use Tests\Feature\Http\BaseIntegrationTesting;
 
-class LoginTest extends baseIntegrationTesting
+class LoginTest extends BaseIntegrationTesting
 {
     use HasDummyUser;
 

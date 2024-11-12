@@ -5,9 +5,9 @@ namespace App\Providers;
 use Throwable;
 use ReflectionClass;
 use ReflectionMethod;
+use App\Exceptions\Handler;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Foundation\Exceptions\Handler;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Database\Eloquent\Relations\Relation;
 
