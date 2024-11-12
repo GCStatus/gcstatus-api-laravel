@@ -6,7 +6,7 @@ use Tests\TestCase;
 use Database\Seeders\LevelSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-abstract class baseIntegrationTesting extends TestCase
+abstract class BaseIntegrationTesting extends TestCase
 {
     use RefreshDatabase;
 
