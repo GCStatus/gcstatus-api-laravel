@@ -5,10 +5,8 @@ namespace App\Providers;
 use Throwable;
 use ReflectionClass;
 use ReflectionMethod;
-use App\Exceptions\Handler;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Database\Eloquent\Relations\Relation;
 
 class AppServiceProvider extends ServiceProvider
@@ -18,9 +16,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        // if ($this->app->runningInConsole()) {
-        //     $this->app->singleton(ExceptionHandler::class, Handler::class);
-        // }
+        //
     }
 
     /**

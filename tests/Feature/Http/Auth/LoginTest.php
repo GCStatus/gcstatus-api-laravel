@@ -47,6 +47,20 @@ class LoginTest extends BaseIntegrationTesting
     }
 
     /**
+     * Test if can throw unauthorized if login is invalid.
+     *
+     * @return void
+     */
+    public function test_if_can_throw_unauthorized_if_login_is_invalid(): void
+    {
+        $this->postJson(route('auth.login'), [
+            'identifier' => $this->user->nickname,
+            'password' => 'invalid',
+        ])->assertUnauthorized()
+            ->assertSee('We could not find an user with this credentials. Please, double check it and try again!');
+    }
+
+    /**
      * Can authenticate with nickname.
      *
      * @return void
