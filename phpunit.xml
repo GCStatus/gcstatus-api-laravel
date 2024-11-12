@@ -17,6 +17,10 @@
         <include>
             <directory>app</directory>
         </include>
+        <exclude>
+            <directory>app/Providers</directory>
+            <directory>app/Exceptions</directory>
+        </exclude>
     </source>
     <coverage>
         <report>

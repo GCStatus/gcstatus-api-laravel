@@ -14,7 +14,7 @@ return [
     */
 
     'defaults' => [
-        'guard' => env('AUTH_GUARD', 'web'),
+        'guard' => env('AUTH_GUARD', 'api'),
         'passwords' => env('AUTH_PASSWORD_BROKER', 'users'),
     ],
 
@@ -36,8 +36,8 @@ return [
     */
 
     'guards' => [
-        'web' => [
-            'driver' => 'session',
+        'api' => [
+            'driver' => 'jwt',
             'provider' => 'users',
         ],
     ],
@@ -111,5 +111,18 @@ return [
     */
 
     'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Constants for Authentication
+    |--------------------------------------------------------------------------
+    |
+    | Here you may define the constants you will need to concretize the user
+    | successful authentication flow.
+    |
+    */
+
+    'token_key' => env('SESSION_AUTH_TOKEN_KEY', '_gc_auth_key'),
+    'is_auth_key' => env('SESSION_IS_AUTH_KEY', '_gc_auth'),
 
 ];

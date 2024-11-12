@@ -3,8 +3,10 @@
 namespace Tests\Unit\Models;
 
 use App\Models\User;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Notifications\Notifiable;
 use Tests\Contracts\Models\BaseModelTesting;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\{BelongsTo, HasOne, MorphMany};
@@ -26,7 +28,7 @@ class UserTest extends BaseModelTesting implements
     /**
      * The testable model string class.
      *
-     * @return string-class
+     * @return class-string
      */
     public function model(): string
     {
@@ -64,6 +66,7 @@ class UserTest extends BaseModelTesting implements
         $casts = [
             'id' => 'int',
             'password' => 'hashed',
+            'deleted_at' => 'datetime',
             'email_verified_at' => 'datetime',
         ];
 
@@ -80,6 +83,7 @@ class UserTest extends BaseModelTesting implements
         $traits = [
             HasFactory::class,
             Notifiable::class,
+            SoftDeletes::class,
         ];
 
         $this->assertUsesTraits($traits);
@@ -94,6 +98,7 @@ class UserTest extends BaseModelTesting implements
     {
         $interfaces = [
             MustVerifyEmail::class,
+            JWTSubject::class,
         ];
 
         $this->assertUsesInterfaces($interfaces);

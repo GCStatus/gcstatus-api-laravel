@@ -4,6 +4,7 @@ namespace Tests\Unit\Models;
 
 use App\Models\Profile;
 use Tests\Contracts\Models\BaseModelTesting;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Tests\Contracts\Models\{
@@ -22,7 +23,7 @@ class ProfileTest extends BaseModelTesting implements
     /**
      * The testable model string class.
      *
-     * @return string-class
+     * @return class-string
      */
     public function model(): string
     {
@@ -61,6 +62,7 @@ class ProfileTest extends BaseModelTesting implements
     {
         $casts = [
             'id' => 'int',
+            'deleted_at' => 'datetime',
         ];
 
         $this->assertHasCasts($casts);
@@ -75,6 +77,7 @@ class ProfileTest extends BaseModelTesting implements
     {
         $traits = [
             HasFactory::class,
+            SoftDeletes::class,
         ];
 
         $this->assertUsesTraits($traits);
