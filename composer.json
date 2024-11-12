@@ -2,7 +2,7 @@
     "name": "laravel/laravel",
     "type": "project",
     "version": "0.0.1",
-    "description": "The API for GCStatus built in Laravel.",
+    "description": "The API for GCStatus built in Laravel",
     "keywords": [
         "laravel",
         "framework"
