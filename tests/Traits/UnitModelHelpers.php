@@ -8,7 +8,7 @@ trait UnitModelHelpers
      * Test if the fillable attributes are correctly.
      *
      * @param array<int, string> $fillable
-     * @return bool
+     * @return void
      */
     public function assertHasFillables(array $fillable): void
     {
@@ -18,13 +18,13 @@ trait UnitModelHelpers
         /** @var \Illuminate\Database\Eloquent\Model $model */
         $model = new $model();
 
-        $this->assertEquals($fillable, $model->getFillable());
+        $this->assertEqualsCanonicalizing($fillable, $model->getFillable());
     }
 
     /**
      * Test if the model uses the correctly traits.
      *
-     * @param array<int, string-class> $traits
+     * @param array<int, class-string> $traits
      * @return void
      */
     public function assertUsesTraits(array $traits): void
@@ -37,7 +37,7 @@ trait UnitModelHelpers
 
         $modelTraits = array_keys(class_uses($model));
 
-        $this->assertEquals($traits, $modelTraits);
+        $this->assertEqualsCanonicalizing($traits, $modelTraits);
     }
 
     /**
@@ -54,13 +54,13 @@ trait UnitModelHelpers
         /** @var \Illuminate\Database\Eloquent\Model $model */
         $model = new $model();
 
-        $this->assertEquals($casts, $model->getCasts());
+        $this->assertEqualsCanonicalizing($casts, $model->getCasts());
     }
 
     /**
      * Test if the interfaces attributes are correct.
      *
-     * @param array<int, string-class> $interfaces
+     * @param array<int, class-string> $interfaces
      * @return void
      */
     public function assertUsesInterfaces(array $interfaces): void
@@ -79,7 +79,7 @@ trait UnitModelHelpers
     /**
      * Test if the relations attributes are correct.
      *
-     * @param array<int, string-class> $relations
+     * @param array<string, class-string> $relations
      * @return void
      */
     public function assertHasRelations(array $relations): void

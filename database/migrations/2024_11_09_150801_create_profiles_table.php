@@ -22,6 +22,7 @@ return new class () extends Migration {
             $table->string('instagram')->nullable();
             $table->boolean('share')->default(false);
             $table->foreignId('user_id')->constrained();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

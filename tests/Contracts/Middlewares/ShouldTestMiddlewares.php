@@ -7,7 +7,7 @@ interface ShouldTestMiddlewares
     /**
      * The contract to get middleware class-string.
      *
-     * @return string-class
+     * @return class-string
      */
     public function middleware(): string;
 }

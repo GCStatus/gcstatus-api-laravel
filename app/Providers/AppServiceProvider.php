@@ -29,6 +29,8 @@ class AppServiceProvider extends ServiceProvider
             $builder = $this;
 
             $model = $builder->getModel();
+
+            /** @var array<string, class-string> $relationships */
             $relationships = [];
             $reflection = new ReflectionClass($model);
 

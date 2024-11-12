@@ -4,6 +4,10 @@ includes:
 parameters:
     paths:
         - app/
+        - tests/
 
     # Lowest: 1 - Highest: 9
     level: 9
+
+    ignoreErrors:
+        - '#Call to an undefined method Mockery\\ExpectationInterface.*#'

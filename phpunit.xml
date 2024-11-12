@@ -4,6 +4,7 @@
     bootstrap="vendor/autoload.php"
     colors="true"
     cacheResult="true"
+    cacheDirectory=".phpunit.cache"
 >
     <testsuites>
         <testsuite name="Unit">
@@ -17,6 +18,10 @@
         <include>
             <directory>app</directory>
         </include>
+        <exclude>
+            <directory>app/Providers</directory>
+            <directory>app/Exceptions</directory>
+        </exclude>
     </source>
     <coverage>
         <report>

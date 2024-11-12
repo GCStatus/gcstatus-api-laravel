@@ -24,7 +24,10 @@ class ForceJsonAcceptTest extends BaseMiddlewareTesting
      */
     public function test_if_can_put_the_accept_application_json_in_headers(): void
     {
-        $this->middleware->handle($this->request, $this->next);
+        /** @var \App\Http\Middleware\ForceJsonAccept $middleware */
+        $middleware = $this->middleware;
+
+        $middleware->handle($this->request, $this->next);
 
         $this->assertEquals('application/json', $this->request->header('Accept'));
     }

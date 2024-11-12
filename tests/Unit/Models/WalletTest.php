@@ -4,6 +4,7 @@ namespace Tests\Unit\Models;
 
 use App\Models\Wallet;
 use Tests\Contracts\Models\BaseModelTesting;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Tests\Contracts\Models\{
@@ -22,7 +23,7 @@ class WalletTest extends BaseModelTesting implements
     /**
      * The testable model string class.
      *
-     * @return string-class
+     * @return class-string
      */
     public function model(): string
     {
@@ -53,6 +54,7 @@ class WalletTest extends BaseModelTesting implements
     {
         $casts = [
             'id' => 'int',
+            'deleted_at' => 'datetime',
         ];
 
         $this->assertHasCasts($casts);
@@ -67,6 +69,7 @@ class WalletTest extends BaseModelTesting implements
     {
         $traits = [
             HasFactory::class,
+            SoftDeletes::class,
         ];
 
         $this->assertUsesTraits($traits);

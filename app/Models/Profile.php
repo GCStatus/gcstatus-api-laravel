@@ -2,14 +2,15 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\{Model, SoftDeletes};
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Profile extends Model
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory;
+    use SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
