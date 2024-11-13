@@ -1,0 +1,74 @@
+version: "3.3"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: api-gcstatus-app
+    environment:
+      CHOKIDAR_USEPOLLING: 'true'
+    ports:
+      - "8000:80"
+    volumes:
+      - ".:/var/www"
+    networks:
+      - sail
+    depends_on:
+      - redis
+      - mysql
+      - phpmyadmin
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  redis:
+    image: "redis:alpine"
+    container_name: api-gcstatus-redis
+    ports:
+      - "${FORWARD_REDIS_PORT:-6379}:6379"
+    volumes:
+      - "sailredis:/data"
+    networks:
+      - sail
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      retries: 3
+      timeout: 5s
+
+  mysql:
+    container_name: api-gcstatus-db
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "${DB_PORT}:${DB_PORT}"
+    volumes:
+      - "saildatabase:/var/lib/mysql"
+    networks:
+      - sail
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    links:
+      - mysql
+    ports:
+      - 8001:80
+    environment:
+      PMA_HOST: mysql
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+    networks:
+      - sail
+
+networks:
+  sail:
+    driver: bridge
+
+volumes:
+  sailredis:
+    driver: local
+  saildatabase:
+    driver: local
