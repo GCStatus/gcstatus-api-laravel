@@ -224,4 +224,29 @@ class AuthServiceTest extends TestCase
 
         $authService->setAuthenticationCookies($token);
     }
+
+    /**
+     * Test if can get the authenticated user id.
+     *
+     * @return void
+     */
+    public function test_if_can_get_the_authenticated_user_id(): void
+    {
+        $this->mockRepository
+            ->shouldReceive('getAuthId')
+            ->once()
+            ->andReturn(1);
+
+        /** @var \App\Contracts\Repositories\AuthRepositoryInterface $mockRepository */
+        $mockRepository = $this->mockRepository;
+        $authService = new AuthService(
+            $mockRepository,
+            app(CryptServiceInterface::class),
+            app(CookieServiceInterface::class),
+        );
+
+        $result = $authService->getAuthId();
+
+        $this->assertSame(1, $result);
+    }
 }

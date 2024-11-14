@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\{
     Auth\LoginController,
+    Auth\SocialiteController,
 };
 
 /*
@@ -17,3 +18,7 @@ use App\Http\Controllers\{
 */
 
 Route::post('login', LoginController::class)->name('auth.login');
+Route::controller(SocialiteController::class)->prefix('oauth/{provider}')->group(function () {
+    Route::get('redirect', 'redirect')->name('auth.socialite.redirect');
+    Route::get('callback', 'callback')->name('auth.socialite.callback');
+});

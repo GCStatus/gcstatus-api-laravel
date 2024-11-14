@@ -2,28 +2,23 @@
 
 namespace Tests\Unit\Models;
 
-use App\Models\User;
-use Tymon\JWTAuth\Contracts\JWTSubject;
-use Illuminate\Notifications\Notifiable;
+use App\Models\SocialAccount;
 use Tests\Contracts\Models\BaseModelTesting;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\{BelongsTo, HasOne, MorphMany};
+use Illuminate\Database\Eloquent\Relations\{HasMany, BelongsTo};
 use Tests\Contracts\Models\{
     ShouldTestCasts,
     ShouldTestTraits,
     ShouldTestFillables,
     ShouldTestRelations,
-    ShouldTestInterfaces,
 };
 
-class UserTest extends BaseModelTesting implements
+class SocialAccountTest extends BaseModelTesting implements
     ShouldTestCasts,
     ShouldTestTraits,
     ShouldTestFillables,
-    ShouldTestRelations,
-    ShouldTestInterfaces
+    ShouldTestRelations
 {
     /**
      * The testable model string class.
@@ -32,7 +27,7 @@ class UserTest extends BaseModelTesting implements
      */
     public function model(): string
     {
-        return User::class;
+        return SocialAccount::class;
     }
 
     /**
@@ -43,14 +38,9 @@ class UserTest extends BaseModelTesting implements
     public function test_fillable_attributes(): void
     {
         $fillable = [
-            'name',
-            'email',
-            'blocked',
-            'password',
-            'level_id',
-            'nickname',
-            'birthdate',
-            'experience',
+            'user_id',
+            'provider',
+            'provider_id',
         ];
 
         $this->assertHasFillables($fillable);
@@ -65,9 +55,7 @@ class UserTest extends BaseModelTesting implements
     {
         $casts = [
             'id' => 'int',
-            'password' => 'hashed',
             'deleted_at' => 'datetime',
-            'email_verified_at' => 'datetime',
         ];
 
         $this->assertHasCasts($casts);
@@ -82,26 +70,10 @@ class UserTest extends BaseModelTesting implements
     {
         $traits = [
             HasFactory::class,
-            Notifiable::class,
             SoftDeletes::class,
         ];
 
         $this->assertUsesTraits($traits);
-    }
-
-    /**
-     * The interfaces tests.
-     *
-     * @return void
-     */
-    public function test_interfaces_attributes(): void
-    {
-        $interfaces = [
-            MustVerifyEmail::class,
-            JWTSubject::class,
-        ];
-
-        $this->assertUsesInterfaces($interfaces);
     }
 
     /**
@@ -112,12 +84,8 @@ class UserTest extends BaseModelTesting implements
     public function test_relations_attributes(): void
     {
         $relations = [
-            'wallet' => HasOne::class,
-            'profile' => HasOne::class,
-            'level' => BelongsTo::class,
-            'notifications' => MorphMany::class,
-            'readNotifications' => MorphMany::class,
-            'unreadNotifications' => MorphMany::class,
+            'user' => BelongsTo::class,
+            'scopes' => HasMany::class,
         ];
 
         $this->assertHasRelations($relations);

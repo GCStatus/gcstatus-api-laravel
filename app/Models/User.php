@@ -2,14 +2,17 @@
 
 namespace App\Models;
 
+use App\Observers\UserObserver;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\{Model, SoftDeletes};
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Relations\{HasOne, BelongsTo};
 
+#[ObservedBy([UserObserver::class])]
 class User extends Authenticatable implements
     MustVerifyEmail,
     JWTSubject
@@ -96,5 +99,15 @@ class User extends Authenticatable implements
     public function wallet(): HasOne
     {
         return $this->hasOne(Wallet::class);
+    }
+
+    /**
+     * Get the profile associated with the User
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne<Profile, $this>
+     */
+    public function profile(): HasOne
+    {
+        return $this->hasOne(Profile::class);
     }
 }

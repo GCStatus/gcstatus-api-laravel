@@ -129,4 +129,14 @@ class AuthService implements AuthServiceInterface
             false,
         );
     }
+
+    /**
+     * Get the authenticated user id.
+     *
+     * @return mixed
+     */
+    public function getAuthId(): mixed
+    {
+        return $this->authRepository->getAuthId();
+    }
 }

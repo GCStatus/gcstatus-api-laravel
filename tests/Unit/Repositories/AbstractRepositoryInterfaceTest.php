@@ -83,7 +83,7 @@ class AbstractRepositoryInterfaceTest extends TestCase
             'birthdate' => $birthdate,
         ]);
 
-        $this->assertTrue(Hash::check($password, $result->password));
+        $this->assertTrue(Hash::check($password, (string)$result->password));
     }
 
     /**
