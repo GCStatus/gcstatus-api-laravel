@@ -19,4 +19,11 @@ interface AuthRepositoryInterface
      * @return string
      */
     public function authByNickname(array $credentials): string;
+
+    /**
+     * Get the authenticated user id.
+     *
+     * @return mixed
+     */
+    public function getAuthId(): mixed;
 }

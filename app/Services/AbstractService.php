@@ -8,21 +8,11 @@ use App\Contracts\Repositories\AbstractRepositoryInterface;
 abstract class AbstractService
 {
     /**
-     * The abstract repository interface.
+     * Get the repository instance.
      *
-     * @var \App\Contracts\Repositories\AbstractRepositoryInterface
+     * @return \App\Contracts\Repositories\AbstractRepositoryInterface
      */
-    protected AbstractRepositoryInterface $repository;
-
-    /**
-     * Create a new repository instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        $this->repository = $this->resolve();
-    }
+    abstract public function repository(): AbstractRepositoryInterface;
 
     /**
      * Get all repository records.
@@ -31,7 +21,7 @@ abstract class AbstractService
      */
     public function all(): Collection
     {
-        return $this->repository->all();
+        return $this->repository()->all();
     }
 
     /**
@@ -42,7 +32,7 @@ abstract class AbstractService
      */
     public function create(array $data): Model
     {
-        return $this->repository->create($data);
+        return $this->repository()->create($data);
     }
 
     /**
@@ -53,7 +43,7 @@ abstract class AbstractService
      */
     public function find(mixed $id): ?Model
     {
-        return $this->repository->find($id);
+        return $this->repository()->find($id);
     }
 
     /**
@@ -64,7 +54,7 @@ abstract class AbstractService
      */
     public function findIn(array $ids): Collection
     {
-        return $this->repository->findIn($ids);
+        return $this->repository()->findIn($ids);
     }
 
     /**
@@ -75,7 +65,7 @@ abstract class AbstractService
      */
     public function findOrFail(mixed $id): Model
     {
-        return $this->repository->findOrFail($id);
+        return $this->repository()->findOrFail($id);
     }
 
     /**
@@ -87,7 +77,7 @@ abstract class AbstractService
      */
     public function update(array $data, mixed $id): Model
     {
-        return $this->repository->update($data, $id);
+        return $this->repository()->update($data, $id);
     }
 
     /**
@@ -98,20 +88,6 @@ abstract class AbstractService
      */
     public function delete(mixed $id): void
     {
-        $this->repository->delete($id);
-    }
-
-    /**
-     * Resolve the repository instance.
-     *
-     * @return \App\Contracts\Repositories\AbstractRepositoryInterface
-     */
-    public function resolve(): AbstractRepositoryInterface
-    {
-        // $repository would be initialized as class-string type.
-        /** @var string $repository */
-        $repository = $this->repository;
-
-        return resolve($repository);
+        $this->repository()->delete($id);
     }
 }

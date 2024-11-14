@@ -19,4 +19,11 @@ interface AuthServiceInterface
      * @return void
      */
     public function setAuthenticationCookies(string $token): void;
+
+    /**
+     * Get the authenticated user id.
+     *
+     * @return mixed
+     */
+    public function getAuthId(): mixed;
 }
