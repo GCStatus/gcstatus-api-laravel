@@ -34,4 +34,14 @@ class AuthRepository implements AuthRepositoryInterface
             'password' => $credentials['password'],
         ]);
     }
+
+    /**
+     * Get the authenticated user id.
+     *
+     * @return mixed
+     */
+    public function getAuthId(): mixed
+    {
+        return Auth::id();
+    }
 }

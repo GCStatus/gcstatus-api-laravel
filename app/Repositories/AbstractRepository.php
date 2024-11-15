@@ -8,21 +8,11 @@ use App\Contracts\Repositories\AbstractRepositoryInterface;
 abstract class AbstractRepository implements AbstractRepositoryInterface
 {
     /**
-     * The abstract model.
+     * Get the model instance.
      *
-     * @var \Illuminate\Database\Eloquent\Model
+     * @return \Illuminate\Database\Eloquent\Model
      */
-    protected Model $model;
-
-    /**
-     * Create a new repository instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        $this->model = $this->resolve();
-    }
+    abstract public function model(): Model;
 
     /**
      * Get all model records.
@@ -31,7 +21,7 @@ abstract class AbstractRepository implements AbstractRepositoryInterface
      */
     public function all(): Collection
     {
-        return $this->model->orderByDesc('created_at')->get();
+        return $this->model()->orderByDesc('created_at')->get();
     }
 
     /**
@@ -42,7 +32,7 @@ abstract class AbstractRepository implements AbstractRepositoryInterface
      */
     public function create(array $data): Model
     {
-        return $this->model->create($data);
+        return $this->model()->create($data);
     }
 
     /**
@@ -53,7 +43,7 @@ abstract class AbstractRepository implements AbstractRepositoryInterface
      */
     public function find(mixed $id): ?Model
     {
-        return $this->model->where('id', $id)->first();
+        return $this->model()->where('id', $id)->first();
     }
 
     /**
@@ -64,7 +54,7 @@ abstract class AbstractRepository implements AbstractRepositoryInterface
      */
     public function findIn(array $ids): Collection
     {
-        return $this->model->whereIn('id', $ids)->get();
+        return $this->model()->whereIn('id', $ids)->get();
     }
 
     /**
@@ -76,7 +66,7 @@ abstract class AbstractRepository implements AbstractRepositoryInterface
     public function findOrFail(mixed $id): Model
     {
         /** @var \Illuminate\Database\Eloquent\Model $model */
-        $model = $this->model->findOrFail($id);
+        $model = $this->model()->findOrFail($id);
 
         return $model;
     }
@@ -105,16 +95,6 @@ abstract class AbstractRepository implements AbstractRepositoryInterface
      */
     public function delete(mixed $id): void
     {
-        $this->model->delete();
-    }
-
-    /**
-     * Resolve the model instance.
-     *
-     * @return \Illuminate\Database\Eloquent\Model
-     */
-    public function resolve(): Model
-    {
-        return resolve($this->model);
+        $this->model()->delete();
     }
 }

@@ -113,6 +113,7 @@ class UserTest extends BaseModelTesting implements
     {
         $relations = [
             'wallet' => HasOne::class,
+            'profile' => HasOne::class,
             'level' => BelongsTo::class,
             'notifications' => MorphMany::class,
             'readNotifications' => MorphMany::class,

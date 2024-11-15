@@ -74,4 +74,20 @@ class AuthRepositoryTest extends TestCase
 
         $this->assertSame($fakeToken, $result);
     }
+
+    /**
+     * Test if can get the auth user id.
+     *
+     * @return void
+     */
+    public function test_if_can_get_the_auth_user_id(): void
+    {
+        Auth::shouldReceive('id')
+            ->once()
+            ->andReturn(1);
+
+        $result = $this->repository->getAuthId();
+
+        $this->assertSame(1, $result);
+    }
 }
