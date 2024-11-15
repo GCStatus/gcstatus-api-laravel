@@ -5,7 +5,7 @@ namespace App\Repositories;
 use App\Models\SocialScope;
 use App\Contracts\Repositories\SocialScopeRepositoryInterface;
 
-class SocialScopeRepository  implements SocialScopeRepositoryInterface
+class SocialScopeRepository implements SocialScopeRepositoryInterface
 {
     /**
      * Get the first social account or create if not exists.
