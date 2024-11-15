@@ -199,13 +199,15 @@ class SocialiteService implements SocialiteServiceInterface
         ]);
 
         if ($socialAccount->wasRecentlyCreated) {
-            foreach ($socialUser->approvedScopes as $scope) {
-                $this->socialScopeService->firstOrCreate([
-                    'scope' => $scope,
-                    'social_account_id' => $socialAccount->id,
-                ], [
-                    'scope' => $scope,
-                ]);
+            if ($socialUser->approvedScopes) {
+                foreach ($socialUser->approvedScopes as $scope) {
+                    $this->socialScopeService->firstOrCreate([
+                        'scope' => $scope,
+                        'social_account_id' => $socialAccount->id,
+                    ], [
+                        'scope' => $scope,
+                    ]);
+                }
             }
         }
     }
@@ -237,7 +239,7 @@ class SocialiteService implements SocialiteServiceInterface
         $base = config('gcstatus.front_base_url');
 
         /** @var string $path */
-        $path = $user->wasRecentlyCreated ? $base .= '/register/complete' : $base;
+        $path = $user->wasRecentlyCreated ? $base .= 'register/complete' : $base;
 
         return $path;
     }
