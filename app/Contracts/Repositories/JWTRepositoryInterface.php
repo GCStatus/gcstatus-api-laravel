@@ -13,4 +13,12 @@ interface JWTRepositoryInterface
      * @return string
      */
     public function tokenize(User $user): string;
+
+    /**
+     * Decode the jwt token.
+     *
+     * @param string $token
+     * @return array<string, mixed>
+     */
+    public function decode(string $token): array;
 }

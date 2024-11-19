@@ -2,8 +2,11 @@
 
 namespace Tests\Unit\Repositories;
 
+use Mockery;
 use Tests\TestCase;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Contracts\Auth\Authenticatable;
 use App\Contracts\Repositories\AuthRepositoryInterface;
 
 class AuthRepositoryTest extends TestCase
@@ -89,5 +92,69 @@ class AuthRepositoryTest extends TestCase
         $result = $this->repository->getAuthId();
 
         $this->assertSame(1, $result);
+    }
+
+    /**
+     * Test if can set the user on request.
+     *
+     * @return void
+     */
+    public function test_if_can_set_the_user_on_request(): void
+    {
+        $user = Mockery::mock(Authenticatable::class);
+
+        Auth::shouldReceive('setUser')
+            ->once()
+            ->with($user);
+
+        $this->repository->setUser($user);
+
+        $this->assertEquals(1, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations executed.');
+    }
+
+    /**
+     * Test if can authenticate user by id.
+     *
+     * @return void
+     */
+    public function test_if_can_authenticate_user_by_id(): void
+    {
+        Auth::shouldReceive('onceUsingId')
+            ->once()
+            ->with(1);
+
+        $this->repository->authenticateById(1);
+
+        $this->assertEquals(1, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations executed.');
+    }
+
+    /**
+     * Test if can get auth user data.
+     *
+     * @return void
+     */
+    public function test_if_can_get_auth_user_data(): void
+    {
+        $user = Mockery::mock(User::class);
+
+        Auth::shouldReceive('user')
+            ->once()
+            ->andReturn($user);
+
+        $this->repository->getAuthUser();
+
+        $this->assertEquals(1, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations executed.');
+    }
+
+    /**
+     * Cleanup Mockery after each test.
+     *
+     * @return void
+     */
+    public function tearDown(): void
+    {
+        Mockery::close();
+
+        parent::tearDown();
     }
 }

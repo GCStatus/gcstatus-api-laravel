@@ -214,6 +214,26 @@ class SocialiteServiceTest extends TestCase
     }
 
     /**
+     * Test if can pull state from cache.
+     *
+     * @return void
+     */
+    public function test_if_can_pull_state_from_cache(): void
+    {
+        $key = 'oauth_state_' . Str::random(40);
+
+        $this->mockCacheService
+            ->shouldReceive('pull')
+            ->once()
+            ->with($key)
+            ->andReturnTrue();
+
+        $this->socialiteService->pullState($key);
+
+        $this->assertEquals(1, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations executed.');
+    }
+
+    /**
      * Test if can format social user.
      *
      * @return void

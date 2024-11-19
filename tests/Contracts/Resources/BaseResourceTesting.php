@@ -56,12 +56,17 @@ abstract class BaseResourceTesting extends TestCase implements ShouldTestResourc
         $resourceArray = $this->renderResource();
 
         foreach ($this->expectedStructure as $key => $type) {
-            $this->assertArrayHasKey($key, $resourceArray);
+            $this->assertArrayHasKey($key, $resourceArray, "Key '{$key}' is missing in the resource array");
 
             /** @var string $type */
-            $type = $type;
             $this->assertIsType($type, $resourceArray[$key]);
         }
+
+        $unexpectedKeys = array_diff(array_keys($resourceArray), array_keys($this->expectedStructure));
+        $this->assertEmpty(
+            $unexpectedKeys,
+            'The resource contains unexpected keys: ' . implode(', ', $unexpectedKeys)
+        );
     }
 
     /**
@@ -80,6 +85,7 @@ abstract class BaseResourceTesting extends TestCase implements ShouldTestResourc
             'array' => $this->assertIsArray($value),
             'float' => $this->assertIsFloat($value),
             'null' => $this->assertNull($value),
+            'object' => $this->assertIsObject($value),
             default => $this->fail("Unknown type: $type")
         };
     }

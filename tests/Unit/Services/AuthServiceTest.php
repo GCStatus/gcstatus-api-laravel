@@ -6,6 +6,7 @@ use Mockery;
 use Tests\TestCase;
 use Mockery\MockInterface;
 use App\Services\AuthService;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Foundation\Application;
 use App\Exceptions\Auth\InvalidIdentifierException;
 use App\Contracts\Repositories\AuthRepositoryInterface;
@@ -14,6 +15,7 @@ use App\Contracts\Services\{
     CookieServiceInterface,
     Validation\IdentifierValidatorInterface,
 };
+use App\Models\User;
 
 class AuthServiceTest extends TestCase
 {
@@ -223,6 +225,8 @@ class AuthServiceTest extends TestCase
         );
 
         $authService->setAuthenticationCookies($token);
+
+        $this->assertEquals(3, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations executed.');
     }
 
     /**
@@ -248,5 +252,134 @@ class AuthServiceTest extends TestCase
         $result = $authService->getAuthId();
 
         $this->assertSame(1, $result);
+    }
+
+    /**
+     * Test if can clear authentication cookies.
+     *
+     * @return void
+     */
+    public function test_if_can_clear_authentication_cookies(): void
+    {
+        $tokenKey = config('auth.token_key');
+        $isAuthKey = config('auth.is_auth_key');
+
+        $mockCookieService = Mockery::mock(CookieServiceInterface::class);
+        $mockCookieService
+            ->shouldReceive('forget')
+            ->once()
+            ->with($tokenKey);
+
+        $mockCookieService
+            ->shouldReceive('forget')
+            ->once()
+            ->with($isAuthKey);
+
+        /** @var \App\Contracts\Repositories\AuthRepositoryInterface $mockRepository */
+        $mockRepository = $this->mockRepository;
+
+        /** @var \App\Contracts\Services\CookieServiceInterface $mockCookieService */
+        $mockCookieService = $mockCookieService;
+
+        $authService = new AuthService(
+            $mockRepository,
+            app(CryptServiceInterface::class),
+            $mockCookieService,
+        );
+
+        $authService->clearAuthenticationCookies();
+
+        $this->assertEquals(2, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations executed.');
+    }
+
+    /**
+     * Test if can set the user on request.
+     *
+     * @return void
+     */
+    public function test_if_can_set_the_user_on_request(): void
+    {
+        $user = Mockery::mock(Authenticatable::class);
+
+        $this->mockRepository
+            ->shouldReceive('setUser')
+            ->once()
+            ->with($user);
+
+        /** @var \App\Contracts\Repositories\AuthRepositoryInterface $mockRepository */
+        $mockRepository = $this->mockRepository;
+        $authService = new AuthService(
+            $mockRepository,
+            app(CryptServiceInterface::class),
+            app(CookieServiceInterface::class),
+        );
+
+        $authService->setUser($user);
+
+        $this->assertEquals(1, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations executed.');
+    }
+
+    /**
+     * Test if can authenticate user by id.
+     *
+     * @return void
+     */
+    public function test_if_can_authenticate_user_by_id(): void
+    {
+        $this->mockRepository
+            ->shouldReceive('authenticateById')
+            ->once()
+            ->with(1);
+
+        /** @var \App\Contracts\Repositories\AuthRepositoryInterface $mockRepository */
+        $mockRepository = $this->mockRepository;
+        $authService = new AuthService(
+            $mockRepository,
+            app(CryptServiceInterface::class),
+            app(CookieServiceInterface::class),
+        );
+
+        $authService->authenticateById(1);
+
+        $this->assertEquals(1, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations executed.');
+    }
+
+    /**
+     * Test if can get auth user data.
+     *
+     * @return void
+     */
+    public function test_if_can_get_auth_user_data(): void
+    {
+        $user = Mockery::mock(User::class);
+
+        $this->mockRepository
+            ->shouldReceive('getAuthUser')
+            ->once()
+            ->andReturn($user);
+
+        /** @var \App\Contracts\Repositories\AuthRepositoryInterface $mockRepository */
+        $mockRepository = $this->mockRepository;
+        $authService = new AuthService(
+            $mockRepository,
+            app(CryptServiceInterface::class),
+            app(CookieServiceInterface::class),
+        );
+
+        $authService->getAuthUser();
+
+        $this->assertEquals(1, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations executed.');
+    }
+
+    /**
+     * Cleanup Mockery after each test.
+     *
+     * @return void
+     */
+    public function tearDown(): void
+    {
+        Mockery::close();
+
+        parent::tearDown();
     }
 }

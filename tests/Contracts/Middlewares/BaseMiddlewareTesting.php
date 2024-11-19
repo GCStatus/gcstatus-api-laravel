@@ -37,9 +37,7 @@ abstract class BaseMiddlewareTesting extends TestCase implements ShouldTestMiddl
     {
         parent::setUp();
 
-        $middleware = $this->middleware();
-
-        $this->middleware = new $middleware();
+        $this->middleware = $this->resolveMiddleware();
 
         $this->request = Request::create('/', 'GET');
 
