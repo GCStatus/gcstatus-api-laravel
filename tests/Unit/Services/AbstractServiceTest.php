@@ -13,7 +13,7 @@ use App\Contracts\Services\AbstractServiceInterface;
 use Illuminate\Database\Eloquent\{Collection, ModelNotFoundException};
 use Tests\Implementations\{
     ConcreteAbstractService,
-    TestAbstractRepositoryInterface,
+    ConcreteAbstractRepository,
 };
 
 class AbstractServiceTest extends TestCase
@@ -40,7 +40,7 @@ class AbstractServiceTest extends TestCase
         $this->seed([LevelSeeder::class]);
 
         $this->service = new ConcreteAbstractService(
-            new TestAbstractRepositoryInterface(
+            new ConcreteAbstractRepository(
                 new User(),
             ),
         );
