@@ -12,11 +12,11 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Contracts\Services\AbstractServiceInterface;
 use Illuminate\Database\Eloquent\{Collection, ModelNotFoundException};
 use Tests\Implementations\{
-    TestAbstractServiceInterface,
+    ConcreteAbstractService,
     TestAbstractRepositoryInterface,
 };
 
-class AbstractServiceInterfaceTest extends TestCase
+class AbstractServiceTest extends TestCase
 {
     use HasDummyUser;
     use RefreshDatabase;
@@ -39,7 +39,7 @@ class AbstractServiceInterfaceTest extends TestCase
 
         $this->seed([LevelSeeder::class]);
 
-        $this->service = new TestAbstractServiceInterface(
+        $this->service = new ConcreteAbstractService(
             new TestAbstractRepositoryInterface(
                 new User(),
             ),

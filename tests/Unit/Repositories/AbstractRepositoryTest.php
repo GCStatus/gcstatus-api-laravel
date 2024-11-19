@@ -9,11 +9,11 @@ use Tests\Traits\HasDummyUser;
 use Database\Seeders\LevelSeeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\Implementations\TestAbstractRepositoryInterface;
+use Tests\Implementations\ConcreteAbstractRepository;
 use App\Contracts\Repositories\AbstractRepositoryInterface;
 use Illuminate\Database\Eloquent\{Collection, ModelNotFoundException};
 
-class AbstractRepositoryInterfaceTest extends TestCase
+class AbstractRepositoryTest extends TestCase
 {
     use HasDummyUser;
     use RefreshDatabase;
@@ -36,7 +36,7 @@ class AbstractRepositoryInterfaceTest extends TestCase
 
         $this->seed([LevelSeeder::class]);
 
-        $this->repository = new TestAbstractRepositoryInterface(new User());
+        $this->repository = new ConcreteAbstractRepository(new User());
     }
 
     /**
