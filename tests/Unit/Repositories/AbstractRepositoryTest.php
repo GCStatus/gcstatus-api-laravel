@@ -9,11 +9,11 @@ use Tests\Traits\HasDummyUser;
 use Database\Seeders\LevelSeeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\Implementations\TestAbstractRepositoryInterface;
+use Tests\Implementations\ConcreteAbstractRepository;
 use App\Contracts\Repositories\AbstractRepositoryInterface;
 use Illuminate\Database\Eloquent\{Collection, ModelNotFoundException};
 
-class AbstractRepositoryInterfaceTest extends TestCase
+class AbstractRepositoryTest extends TestCase
 {
     use HasDummyUser;
     use RefreshDatabase;
@@ -36,7 +36,7 @@ class AbstractRepositoryInterfaceTest extends TestCase
 
         $this->seed([LevelSeeder::class]);
 
-        $this->repository = new TestAbstractRepositoryInterface(new User());
+        $this->repository = new ConcreteAbstractRepository(new User());
     }
 
     /**
@@ -84,6 +84,26 @@ class AbstractRepositoryInterfaceTest extends TestCase
         ]);
 
         $this->assertTrue(Hash::check($password, (string)$result->password));
+    }
+
+    /**
+     * Test if can find many models by ids.
+     *
+     * @return void
+     */
+    public function test_if_can_find_many_models_by_ids(): void
+    {
+        $users = $this->createDummyUsers(3);
+
+        $this->createDummyUsers(3); // Assert this don't appears on tests.
+
+        $ids = $users->pluck('id')->toArray();
+
+        $result = $this->repository->findIn($ids);
+
+        $this->assertInstanceOf(Collection::class, $result);
+
+        $this->assertCount(3, $result);
     }
 
     /**

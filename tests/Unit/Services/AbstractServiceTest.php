@@ -12,11 +12,11 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Contracts\Services\AbstractServiceInterface;
 use Illuminate\Database\Eloquent\{Collection, ModelNotFoundException};
 use Tests\Implementations\{
-    TestAbstractServiceInterface,
-    TestAbstractRepositoryInterface,
+    ConcreteAbstractService,
+    ConcreteAbstractRepository,
 };
 
-class AbstractServiceInterfaceTest extends TestCase
+class AbstractServiceTest extends TestCase
 {
     use HasDummyUser;
     use RefreshDatabase;
@@ -39,8 +39,8 @@ class AbstractServiceInterfaceTest extends TestCase
 
         $this->seed([LevelSeeder::class]);
 
-        $this->service = new TestAbstractServiceInterface(
-            new TestAbstractRepositoryInterface(
+        $this->service = new ConcreteAbstractService(
+            new ConcreteAbstractRepository(
                 new User(),
             ),
         );
@@ -107,6 +107,26 @@ class AbstractServiceInterfaceTest extends TestCase
         $this->assertInstanceOf(User::class, $result);
 
         $this->assertEquals($user->id, $result->id);
+    }
+
+    /**
+     * Test if can find many models by ids.
+     *
+     * @return void
+     */
+    public function test_if_can_find_many_models_by_ids(): void
+    {
+        $users = $this->createDummyUsers(3);
+
+        $this->createDummyUsers(3); // Assert this don't appears on tests.
+
+        $ids = $users->pluck('id')->toArray();
+
+        $result = $this->service->findIn($ids);
+
+        $this->assertInstanceOf(Collection::class, $result);
+
+        $this->assertCount(3, $result);
     }
 
     /**
