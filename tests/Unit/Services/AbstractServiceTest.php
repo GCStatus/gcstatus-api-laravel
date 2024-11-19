@@ -110,6 +110,26 @@ class AbstractServiceTest extends TestCase
     }
 
     /**
+     * Test if can find many models by ids.
+     *
+     * @return void
+     */
+    public function test_if_can_find_many_models_by_ids(): void
+    {
+        $users = $this->createDummyUsers(3);
+
+        $this->createDummyUsers(3); // Assert this don't appears on tests.
+
+        $ids = $users->pluck('id')->toArray();
+
+        $result = $this->service->findIn($ids);
+
+        $this->assertInstanceOf(Collection::class, $result);
+
+        $this->assertCount(3, $result);
+    }
+
+    /**
      * Test if can throw exception for invalid id on find or fail method implementation.
      *
      * @return void
