@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use App\Contracts\Repositories\AuthRepositoryInterface;
 
@@ -36,6 +37,19 @@ class AuthRepository implements AuthRepositoryInterface
     }
 
     /**
+     * Get the authenticated user data.
+     *
+     * @return \App\Models\User
+     */
+    public function getAuthUser(): User
+    {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+
+        return $user;
+    }
+
+    /**
      * Get the authenticated user id.
      *
      * @return mixed
@@ -43,5 +57,28 @@ class AuthRepository implements AuthRepositoryInterface
     public function getAuthId(): mixed
     {
         return Auth::id();
+    }
+
+    /**
+     * Set the authenticated user on request.
+     *
+     * @param mixed $user
+     * @return void
+     */
+    public function setUser(mixed $user): void
+    {
+        /** @var \Illuminate\Contracts\Auth\Authenticatable $user */
+        Auth::setUser($user);
+    }
+
+    /**
+     * Authenticate user by his id.
+     *
+     * @param mixed $id
+     * @return void
+     */
+    public function authenticateById(mixed $id): void
+    {
+        Auth::onceUsingId($id);
     }
 }

@@ -10,6 +10,7 @@ use App\Contracts\Services\{
     CookieServiceInterface,
     Validation\IdentifierValidatorInterface,
 };
+use App\Models\User;
 
 class AuthService implements AuthServiceInterface
 {
@@ -131,6 +132,23 @@ class AuthService implements AuthServiceInterface
     }
 
     /**
+     * Clear the auth cookies.
+     *
+     * @return void
+     */
+    public function clearAuthenticationCookies(): void
+    {
+        /** @var string $tokenKey*/
+        $tokenKey = config('auth.token_key');
+
+        /** @var string $isAuthKey */
+        $isAuthKey = config('auth.is_auth_key');
+
+        $this->cookieService->forget($tokenKey);
+        $this->cookieService->forget($isAuthKey);
+    }
+
+    /**
      * Get the authenticated user id.
      *
      * @return mixed
@@ -138,5 +156,37 @@ class AuthService implements AuthServiceInterface
     public function getAuthId(): mixed
     {
         return $this->authRepository->getAuthId();
+    }
+
+    /**
+     * Set the authenticated user on request.
+     *
+     * @param mixed $user
+     * @return void
+     */
+    public function setUser(mixed $user): void
+    {
+        $this->authRepository->setUser($user);
+    }
+
+    /**
+     * Authenticate user by his id.
+     *
+     * @param mixed $id
+     * @return void
+     */
+    public function authenticateById(mixed $id): void
+    {
+        $this->authRepository->authenticateById($id);
+    }
+
+    /**
+     * Get the authenticated user.
+     *
+     * @return \App\Models\User
+     */
+    public function getAuthUser(): User
+    {
+        return $this->authRepository->getAuthUser();
     }
 }

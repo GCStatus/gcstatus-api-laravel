@@ -18,6 +18,16 @@ class ForceJsonAcceptTest extends BaseMiddlewareTesting
     }
 
     /**
+     * Resolve the middleware instance with dependencies.
+     *
+     * @return \App\Http\Middleware\ForceJsonAccept
+     */
+    public function resolveMiddleware(): ForceJsonAccept
+    {
+        return new ForceJsonAccept();
+    }
+
+    /**
      * Test if can put the accept application json in headers.
      *
      * @return void

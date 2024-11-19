@@ -4,6 +4,7 @@ namespace Tests\Traits;
 
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
+use App\Contracts\Services\{JWTServiceInterface, AuthServiceInterface};
 
 trait HasDummyUser
 {
@@ -38,7 +39,14 @@ trait HasDummyUser
      */
     public function actingAsDummyUser(array $data = []): User
     {
+        $authService = app(AuthServiceInterface::class);
+        $jwtService = app(JWTServiceInterface::class);
+
         $user = $this->createDummyUser($data);
+
+        $token = $jwtService->tokenize($user);
+
+        $authService->setAuthenticationCookies($token);
 
         $this->actingAs($user);
 

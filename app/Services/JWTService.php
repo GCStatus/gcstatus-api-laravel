@@ -35,4 +35,15 @@ class JWTService implements JWTServiceInterface
     {
         return $this->jwtRepository->tokenize($user);
     }
+
+    /**
+     * Decode the jwt token.
+     *
+     * @param string $token
+     * @return array<string, mixed>
+     */
+    public function decode(string $token): array
+    {
+        return $this->jwtRepository->decode($token);
+    }
 }

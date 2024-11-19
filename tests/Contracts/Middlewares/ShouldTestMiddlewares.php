@@ -10,4 +10,11 @@ interface ShouldTestMiddlewares
      * @return class-string
      */
     public function middleware(): string;
+
+    /**
+     * Resolve the middleware instance.
+     *
+     * @return object
+     */
+    public function resolveMiddleware(): object;
 }

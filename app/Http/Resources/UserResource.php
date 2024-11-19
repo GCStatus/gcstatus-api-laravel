@@ -26,6 +26,10 @@ class UserResource extends JsonResource
             'level' => $user->level?->level,
             'birthdate' => $user->birthdate,
             'experience' => $user->experience,
+            'created_at' => $user->created_at,
+            'updated_at' => $user->updated_at,
+            'wallet' => WalletResource::make($this->whenLoaded('wallet')),
+            'profile' => ProfileResource::make($this->whenLoaded('profile')),
         ];
 
         return $arrayable;

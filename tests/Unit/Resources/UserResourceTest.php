@@ -3,8 +3,8 @@
 namespace Tests\Unit\Resources;
 
 use Mockery;
-use App\Models\{User, Level};
 use App\Http\Resources\UserResource;
+use App\Models\{User, Level, Profile, Wallet};
 use Tests\Contracts\Resources\BaseResourceTesting;
 
 class UserResourceTest extends BaseResourceTesting
@@ -22,6 +22,10 @@ class UserResourceTest extends BaseResourceTesting
         'level' => 'int',
         'birthdate' => 'string',
         'experience' => 'int',
+        'created_at' => 'string',
+        'updated_at' => 'string',
+        'wallet' => 'object',
+        'profile' => 'object',
     ];
 
     /**
@@ -41,8 +45,20 @@ class UserResourceTest extends BaseResourceTesting
      */
     public function modelInstance(): User
     {
+        $levelMock = Mockery::mock(Level::class);
+        $levelMock->shouldReceive('getAttribute')->with('level')->andReturn(5);
+
+        $profileMock = Mockery::mock(Profile::class);
+        $profileMock->shouldReceive('getAttribute')->with('id')->andReturn(1);
+        $profileMock->shouldReceive('getAttribute')->with('share')->andReturn(false);
+        $profileMock->shouldReceive('getAttribute')->with('photo')->andReturn('https://example.com/photo.jpg');
+
+        $walletMock = Mockery::mock(Wallet::class);
+        $walletMock->shouldReceive('getAttribute')->with('id')->andReturn(1);
+        $walletMock->shouldReceive('getAttribute')->with('amount')->andReturn(100);
+
         $userMock = Mockery::mock(User::class)->makePartial();
-        $userMock->shouldAllowMockingMethod('setAttribute');
+        $userMock->shouldAllowMockingMethod('getAttribute');
 
         $userMock->shouldReceive('getAttribute')->with('id')->andReturn(1);
         $userMock->shouldReceive('getAttribute')->with('name')->andReturn('Test User');
@@ -50,10 +66,12 @@ class UserResourceTest extends BaseResourceTesting
         $userMock->shouldReceive('getAttribute')->with('nickname')->andReturn('testuser');
         $userMock->shouldReceive('getAttribute')->with('birthdate')->andReturn('2000-01-01');
         $userMock->shouldReceive('getAttribute')->with('experience')->andReturn(1000);
+        $userMock->shouldReceive('getAttribute')->with('created_at')->andReturn(now()->toISOString());
+        $userMock->shouldReceive('getAttribute')->with('updated_at')->andReturn(now()->toISOString());
 
-        $levelMock = Mockery::mock(Level::class);
-        $levelMock->shouldReceive('getAttribute')->with('level')->andReturn(5);
         $userMock->shouldReceive('getAttribute')->with('level')->andReturn($levelMock);
+        $userMock->shouldReceive('getAttribute')->with('profile')->andReturn($profileMock);
+        $userMock->shouldReceive('getAttribute')->with('wallet')->andReturn($walletMock);
 
         /** @var \App\Models\User $castedUser */
         $castedUser = $userMock;
