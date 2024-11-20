@@ -32,7 +32,7 @@ class UserFactory extends Factory
             'email_verified_at' => now(),
             'password' => 'admin1234',
             'remember_token' => Str::random(10),
-            'birthdate' => Carbon::today()->subYears(14)->toDateString(),
+            'birthdate' => Carbon::today()->subYears(14)->subDay()->toDateString(),
         ];
     }
 

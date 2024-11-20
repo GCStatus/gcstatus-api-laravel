@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\User;
 use App\Exceptions\Auth\InvalidIdentifierException;
 use App\Contracts\Repositories\AuthRepositoryInterface;
 use App\Contracts\Services\{
@@ -10,7 +11,6 @@ use App\Contracts\Services\{
     CookieServiceInterface,
     Validation\IdentifierValidatorInterface,
 };
-use App\Models\User;
 
 class AuthService implements AuthServiceInterface
 {
