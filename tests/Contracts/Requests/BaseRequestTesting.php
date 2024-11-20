@@ -16,6 +16,13 @@ abstract class BaseRequestTesting extends TestCase implements ShouldTestRequests
     protected array $rules = [];
 
     /**
+     * The validation messages for the request.
+     *
+     * @var array<string, mixed>
+     */
+    protected array $messages = [];
+
+    /**
      * The validator instance.
      *
      * @var \Illuminate\Validation\Factory
@@ -47,6 +54,9 @@ abstract class BaseRequestTesting extends TestCase implements ShouldTestRequests
 
         if (method_exists($requestObject, 'rules')) {
             $this->rules = $requestObject->rules();
+            $this->messages = method_exists($requestObject, 'messages')
+                ? $requestObject->messages()
+                : [];
         } else {
             throw new LogicException("The request class must implement a rules method.");
         }
@@ -60,7 +70,7 @@ abstract class BaseRequestTesting extends TestCase implements ShouldTestRequests
      */
     protected function validate(array $data): bool
     {
-        $validation = $this->validator->make($data, $this->rules);
+        $validation = $this->validator->make($data, $this->rules, $this->messages);
 
         return $validation->passes();
     }
@@ -73,7 +83,7 @@ abstract class BaseRequestTesting extends TestCase implements ShouldTestRequests
      */
     protected function getValidationErrors(array $data): array
     {
-        $validation = $this->validator->make($data, $this->rules);
+        $validation = $this->validator->make($data, $this->rules, $this->messages);
 
         $validation->passes();
 

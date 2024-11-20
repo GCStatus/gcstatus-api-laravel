@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\{
     UserController,
+    Auth\CompleteRegistrationController,
 };
 
 /*
@@ -16,6 +17,10 @@ use App\Http\Controllers\{
 |
 */
 
-Route::controller(UserController::class)->group(function () {
-    Route::get('me', 'me')->name('auth.me');
+Route::put('register/complete', CompleteRegistrationController::class)->name('auth.register.complete');
+
+Route::middleware(['registration.should.complete'])->group(function () {
+    Route::controller(UserController::class)->group(function () {
+        Route::get('me', 'me')->name('auth.me');
+    });
 });
