@@ -38,6 +38,15 @@ interface AbstractRepositoryInterface
     public function findIn(array $ids): Collection;
 
     /**
+     * Find a mode by a given field.
+     *
+     * @param string $field
+     * @param mixed $value
+     * @return ?\Illuminate\Database\Eloquent\Model
+     */
+    public function findBy(string $field, mixed $value): ?Model;
+
+    /**
      * Should have method find or fail.
      *
      * @param mixed $id

@@ -47,6 +47,18 @@ abstract class AbstractRepository implements AbstractRepositoryInterface
     }
 
     /**
+     * Find a mode by a given field.
+     *
+     * @param string $field
+     * @param mixed $value
+     * @return ?\Illuminate\Database\Eloquent\Model
+     */
+    public function findBy(string $field, mixed $value): ?Model
+    {
+        return $this->model()->where($field, $value)->first();
+    }
+
+    /**
      * Find a model collection where in array.
      *
      * @param array<int, mixed> $ids
