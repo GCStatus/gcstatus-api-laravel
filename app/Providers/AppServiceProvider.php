@@ -8,10 +8,12 @@ use ReflectionMethod;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Contracts\Hashing\Hasher;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\{App, Auth};
+use Illuminate\Support\Facades\{App, Auth, DB};
 use Illuminate\Contracts\Foundation\Application;
 use App\Contracts\Services\CacheServiceInterface;
+use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Auth\Passwords\{DatabaseTokenRepository, TokenRepositoryInterface};
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -20,7 +22,17 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->bind(TokenRepositoryInterface::class, function (Application $app) {
+            /** @var string $appKey */
+            $appKey = config('app.key');
+
+            return new DatabaseTokenRepository(
+                DB::connection(),
+                $app->make(Hasher::class),
+                'password_reset_tokens',
+                $appKey,
+            );
+        });
     }
 
     /**
@@ -33,6 +45,14 @@ class AppServiceProvider extends ServiceProvider
                 $app->make(Hasher::class),
                 $app->make(CacheServiceInterface::class),
             );
+        });
+
+        ResetPassword::createUrlUsing(function (mixed $notifiable, string $token) {
+            /** @var string $baseUrl */
+            $baseUrl = config('gcstatus.front_base_url');
+
+            /** @var \App\Models\User $notifiable */
+            return "{$baseUrl}password/reset/{$token}/?email={$notifiable->getEmailForPasswordReset()}";
         });
 
         app('db')->listen(function ($query) {

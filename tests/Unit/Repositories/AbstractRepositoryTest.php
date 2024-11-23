@@ -123,6 +123,22 @@ class AbstractRepositoryTest extends TestCase
     }
 
     /**
+     * Test if can find by given field and returns correct model.
+     *
+     * @return void
+     */
+    public function test_find_by_returns_correct_model(): void
+    {
+        $user = $this->createDummyUser();
+
+        $result = $this->repository->findBy('email', $user->email);
+
+        $this->assertInstanceOf(User::class, $result);
+
+        $this->assertEquals($user->id, $result->id);
+    }
+
+    /**
      * Test if can throw exception for invalid id on find or fail method implementation.
      *
      * @return void
