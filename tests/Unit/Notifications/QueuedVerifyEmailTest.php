@@ -66,6 +66,34 @@ class QueuedVerifyEmailTest extends TestCase
         );
     }
 
+
+    /**
+     * Test custom create URL callback.
+     *
+     * @return void
+     */
+    public function test_custom_create_url_callback_is_used(): void
+    {
+        $user = $this->getMockBuilder(User::class)
+            ->onlyMethods(['getKey', 'getEmailForVerification'])
+            ->getMock();
+
+        $user->method('getKey')->willReturn(1);
+        $user->method('getEmailForVerification')->willReturn('valid@gmail.com');
+
+        QueuedVerifyEmail::createUrlUsing(function ($notifiable) {
+            $this->assertInstanceOf(User::class, $notifiable);
+
+            return 'https://custom-url.com/verification/' . $notifiable->getKey();
+        });
+
+        $notification = new QueuedVerifyEmail();
+
+        $url = $notification->toMail($user)->actionUrl;
+
+        $this->assertEquals('https://custom-url.com/verification/1', $url);
+    }
+
     /**
      * Tear down test environments.
      *
