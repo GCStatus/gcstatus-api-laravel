@@ -137,7 +137,7 @@ class ForgotTest extends BaseIntegrationTesting
     {
         $this->postJson(route('password.notify'), ['email' => $this->user->email])->assertOk()->assertJson([
             'data' => [
-                'message' => 'The password reset link was successfully sent to your email!',
+                'message' => 'The password reset link will be sent to your email!',
             ],
         ]);
     }

@@ -44,7 +44,7 @@ class ForgotController extends Controller
         $this->resetPasswordService->sendResetNotification($data);
 
         return response()->json(
-            $response->setMessage('The password reset link was successfully sent to your email!')->toMessage(),
+            $response->setMessage('The password reset link will be sent to your email!')->toMessage(),
         );
     }
 }

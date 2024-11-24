@@ -22,7 +22,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ])->alias([
             'api.auth' => JwtCookieAuth::class,
             'registration.should.complete' => ShouldCompleteRegistration::class,
-        ]);
+        ])->trustProxies(at: '*');
     })->withExceptions(function (Exceptions $exceptions) {
         //
     })->create();
