@@ -9,9 +9,9 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Contracts\Hashing\Hasher;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\{App, Auth, DB};
+use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Contracts\Foundation\Application;
 use App\Contracts\Services\CacheServiceInterface;
-use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Auth\Passwords\{DatabaseTokenRepository, TokenRepositoryInterface};
 
