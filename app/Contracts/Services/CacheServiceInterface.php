@@ -18,6 +18,15 @@ interface CacheServiceInterface
     public function put(string $key, mixed $value, DateTimeInterface|DateInterval|int|null $ttl): bool;
 
     /**
+     * Put a value on cache forever (until manual removal).
+     *
+     * @param string $key
+     * @param mixed $value
+     * @return bool
+     */
+    public function forever(string $key, mixed $value): bool;
+
+    /**
      * Check if has any cache with given key.
      *
      * @param string $key

@@ -56,7 +56,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         app('db')->listen(function ($query) {
-            if (App::isLocal() && !preg_match('/\bpulse\b/', $query->sql)) {
+            if (App::isLocal() && !preg_match('/\b(pulse|cache_locks)\b/', $query->sql)) {
                 app('log')->info('Database log', [
                     'sql' => $query->sql,
                     'bindings' => $query->bindings,
