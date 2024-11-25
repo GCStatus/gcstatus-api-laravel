@@ -23,6 +23,18 @@ class CacheRepository implements CacheRepositoryInterface
     }
 
     /**
+     * Put a value on cache forever (until manual removal).
+     *
+     * @param string $key
+     * @param mixed $value
+     * @return bool
+     */
+    public function forever(string $key, mixed $value): bool
+    {
+        return Cache::forever($key, $value);
+    }
+
+    /**
      * Check if has any cache with given key.
      *
      * @param string $key

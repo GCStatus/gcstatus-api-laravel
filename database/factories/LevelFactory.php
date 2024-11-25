@@ -17,7 +17,9 @@ class LevelFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'level' => fake()->numberBetween(1, 100),
+            'coins' => fake()->randomDigit(),
+            'experience' => fake()->randomDigit(),
         ];
     }
 }

@@ -70,6 +70,27 @@ class CacheServiceTest extends TestCase
     }
 
     /**
+     * Test if can put a cache on store forever with valid payload.
+     *
+     * @return void
+     */
+    public function test_if_can_put_a_cache_on_store_forever_with_valid_payload(): void
+    {
+        $key = self::CACHE_KEY;
+        $cacheable = fake()->word();
+
+        $this->mockRepository
+            ->shouldReceive('forever')
+            ->once()
+            ->with($key, $cacheable)
+            ->andReturnTrue();
+
+        $result = $this->cacheService->forever($key, $cacheable);
+
+        $this->assertTrue($result);
+    }
+
+    /**
      * Test if can remove (forget) a cache.
      *
      * @return void
