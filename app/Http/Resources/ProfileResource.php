@@ -20,7 +20,7 @@ class ProfileResource extends JsonResource
         /** @var array<string, mixed> $arrayable */
         $arrayable = [
             'id' => $profile->id,
-            'photo' => $profile->photo,
+            'photo' => storage()->getPath($profile->photo),
             'share' => $profile->share,
             'phone' => $profile->phone,
             'twitch' => $profile->twitch,

@@ -6,6 +6,7 @@ use App\Http\Controllers\{
     LevelController,
     Auth\LogoutController,
     Profile\SocialController,
+    Profile\PictureController,
     EmailVerify\NotifyController,
     EmailVerify\VerifyController,
     Auth\CompleteRegistrationController,
@@ -29,6 +30,7 @@ Route::get('/email/verify/{id}/{hash}', VerifyController::class)->middleware('si
 
 Route::middleware(['registration.should.complete'])->group(function () {
     Route::put('profiles/socials/update', SocialController::class)->name('profiles.socials.update');
+    Route::put('profiles/picture/update', PictureController::class)->name('profiles.picture.update');
     Route::apiResource('levels', LevelController::class)->only('index');
     Route::controller(UserController::class)->group(function () {
         Route::get('me', 'me')->name('auth.me');
