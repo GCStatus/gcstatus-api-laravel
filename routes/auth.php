@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\{
     UserController,
     LevelController,
+    Auth\LogoutController,
     EmailVerify\NotifyController,
     EmailVerify\VerifyController,
     Auth\CompleteRegistrationController,
@@ -25,6 +26,7 @@ Route::put('register/complete', CompleteRegistrationController::class)->name('au
 Route::get('/email/verify/{id}/{hash}', VerifyController::class)->middleware('signed')->name('verification.verify');
 
 Route::middleware(['registration.should.complete'])->group(function () {
+    Route::post('logout', LogoutController::class)->name('auth.logout');
     Route::apiResource('levels', LevelController::class)->only('index');
     Route::controller(UserController::class)->group(function () {
         Route::get('me', 'me')->name('auth.me');
