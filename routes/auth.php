@@ -5,6 +5,7 @@ use App\Http\Controllers\{
     UserController,
     LevelController,
     Auth\LogoutController,
+    Profile\SocialController,
     EmailVerify\NotifyController,
     EmailVerify\VerifyController,
     Auth\CompleteRegistrationController,
@@ -21,12 +22,13 @@ use App\Http\Controllers\{
 |
 */
 
+Route::post('logout', LogoutController::class)->name('auth.logout');
 Route::get('email/verify/notify', NotifyController::class)->name('verification.send');
 Route::put('register/complete', CompleteRegistrationController::class)->name('auth.register.complete');
 Route::get('/email/verify/{id}/{hash}', VerifyController::class)->middleware('signed')->name('verification.verify');
 
 Route::middleware(['registration.should.complete'])->group(function () {
-    Route::post('logout', LogoutController::class)->name('auth.logout');
+    Route::put('profiles/socials/update', SocialController::class)->name('profiles.socials.update');
     Route::apiResource('levels', LevelController::class)->only('index');
     Route::controller(UserController::class)->group(function () {
         Route::get('me', 'me')->name('auth.me');

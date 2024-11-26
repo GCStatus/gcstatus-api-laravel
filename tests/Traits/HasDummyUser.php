@@ -48,8 +48,6 @@ trait HasDummyUser
 
         $authService->setAuthenticationCookies($token);
 
-        $this->actingAs($user);
-
         return $user;
     }
 }
