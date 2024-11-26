@@ -14,4 +14,13 @@ interface UserServiceInterface extends AbstractServiceInterface
      * @return \App\Models\User
      */
     public function firstOrCreate(array $searchable, array $creatable): User;
+    /**
+     * Update the user password.
+     *
+     * @param \App\Models\User $user
+     * @param string $old_password
+     * @param string $password
+     * @return void
+     */
+    public function updatePassword(User $user, string $old_password, string $password): void;
 }
