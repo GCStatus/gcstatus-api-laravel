@@ -3,6 +3,7 @@
 namespace Tests\Feature\Http\Profile;
 
 use App\Models\User;
+use Illuminate\Support\Facades\Cache;
 use Tests\Feature\Http\BaseIntegrationTesting;
 
 class SocialUpdateTest extends BaseIntegrationTesting
@@ -151,6 +152,26 @@ class SocialUpdateTest extends BaseIntegrationTesting
             'facebook' => $data['facebook'],
             'instagram' => $data['instagram'],
         ]);
+    }
+
+    /**
+     * Test if can remove the user from cache on profile update.
+     *
+     * @return void
+     */
+    public function test_if_can_remove_the_user_from_cache_on_profile_update(): void
+    {
+        $identifier = $this->user->id;
+
+        $key = "auth.user.$identifier";
+
+        $this->getJson(route('auth.me'))->assertOk();
+
+        $this->assertTrue(Cache::has($key));
+
+        $this->putJson(route('profiles.socials.update'), $this->getValidPayload())->assertOk();
+
+        $this->assertFalse(Cache::has($key));
     }
 
     /**
