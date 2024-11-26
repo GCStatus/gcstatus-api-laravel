@@ -3,7 +3,6 @@
 namespace App\Providers;
 
 use App\Models\User;
-use Illuminate\Support\Facades\App;
 use Illuminate\Auth\EloquentUserProvider;
 use Illuminate\Contracts\Auth\Authenticatable;
 use App\Contracts\Services\CacheServiceInterface;
@@ -53,15 +52,13 @@ class CachedAuthUserProvider extends EloquentUserProvider
             if ($user) {
                 $user->load('profile', 'level', 'wallet');
 
-                if (!App::runningUnitTests()) {
-                    $jwtTtl = config('jwt.ttl');
+                $jwtTtl = config('jwt.ttl');
 
-                    $this->cacheService->put(
-                        $key,
-                        $user,
-                        $jwtTtl * 60,
-                    );
-                }
+                $this->cacheService->put(
+                    $key,
+                    $user,
+                    $jwtTtl * 60,
+                );
             }
         }
 

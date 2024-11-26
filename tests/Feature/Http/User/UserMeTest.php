@@ -78,8 +78,22 @@ class UserMeTest extends BaseIntegrationTesting
                 'experience',
                 'created_at',
                 'updated_at',
-                'wallet',
-                'profile',
+                'wallet' => [
+                    'id',
+                    'amount',
+                ],
+                'profile' => [
+                    'id',
+                    'photo',
+                    'share',
+                    'phone',
+                    'twitch',
+                    'github',
+                    'twitter',
+                    'youtube',
+                    'facebook',
+                    'instagram',
+                ],
             ]
         ]);
     }
