@@ -8,7 +8,6 @@ use App\Contracts\Responses\ApiResponseInterface;
 use App\Http\Requests\Profile\ResetPasswordRequest;
 use App\Contracts\Services\{
     AuthServiceInterface,
-    CacheServiceInterface,
     UserServiceInterface,
 };
 
@@ -29,28 +28,18 @@ class ResetPasswordController extends Controller
     private AuthServiceInterface $authService;
 
     /**
-     * The cache service.
-     *
-     * @var \App\Contracts\Services\CacheServiceInterface
-     */
-    private CacheServiceInterface $cacheService;
-
-    /**
      * Create a new class instance.
      *
      * @param \App\Contracts\Services\UserServiceInterface $userService
      * @param \App\Contracts\Services\AuthServiceInterface $authService
-     * @param \App\Contracts\Services\CacheServiceInterface $cacheService
      * @return void
      */
     public function __construct(
         UserServiceInterface $userService,
         AuthServiceInterface $authService,
-        CacheServiceInterface $cacheService,
     ) {
         $this->userService = $userService;
         $this->authService = $authService;
-        $this->cacheService = $cacheService;
     }
 
     /**
@@ -68,10 +57,6 @@ class ResetPasswordController extends Controller
         $user = $this->authService->getAuthUser();
 
         $this->userService->updatePassword($user, $data['old_password'], $data['password']);
-
-        $key = "auth.user.{$user->id}";
-
-        $this->cacheService->forget($key);
 
         return response()->json(
             $response->setMessage('Your password was successfully updated!')->toMessage(),

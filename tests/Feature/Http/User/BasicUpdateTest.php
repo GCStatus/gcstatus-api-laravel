@@ -108,7 +108,7 @@ class BasicUpdateTest extends BaseIntegrationTesting
 
         $this->assertTrue(Cache::has($key));
 
-        $this->putJson(route('users.basics.update'), $data = $this->getValidPayload())->assertOk();
+        $this->putJson(route('users.basics.update'), $this->getValidPayload())->assertOk();
 
         $this->assertFalse(Cache::has($key));
     }

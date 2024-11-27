@@ -2,14 +2,18 @@
 
 namespace Tests\Unit\Services;
 
-use App\Contracts\Services\HashServiceInterface;
 use Mockery;
 use Tests\TestCase;
 use App\Models\User;
 use App\Repositories\UserRepository;
-use App\Contracts\Services\UserServiceInterface;
-use App\Exceptions\Password\CurrentPasswordDoesNotMatchException;
 use Illuminate\Support\Facades\Hash;
+use App\Exceptions\Password\CurrentPasswordDoesNotMatchException;
+use App\Contracts\Services\{
+    AuthServiceInterface,
+    UserServiceInterface,
+    HashServiceInterface,
+    CacheServiceInterface,
+};
 
 class UserServiceTest extends TestCase
 {
@@ -96,8 +100,8 @@ class UserServiceTest extends TestCase
         ];
 
         $userMock = Mockery::mock(User::class)->makePartial();
+        $userMock->shouldReceive('getAttribute')->with('id')->andReturn(1);
         $userMock->shouldReceive('getAttribute')->with('password')->andReturn($oldHashPassword);
-
         $userMock->shouldReceive('update')
             ->once()
             ->with(['password' => $data['password']]);
@@ -105,24 +109,40 @@ class UserServiceTest extends TestCase
         $mockHashService = Mockery::mock(HashServiceInterface::class);
         $mockHashService->shouldReceive('check')
             ->once()
-            ->with($oldHashPassword, '12345678')
+            ->with($oldHashPassword, $data['old_password'])
             ->andReturnTrue();
 
-        $this->app->instance(HashServiceInterface::class, $mockHashService);
-
         /** @var \App\Models\User $userMock */
-        $userService = app(UserServiceInterface::class);
-        $userService->updatePassword($userMock, $data['old_password'], $data['password']);
+        $mockCacheService = Mockery::mock(CacheServiceInterface::class);
+        $mockCacheService->shouldReceive('forget')
+            ->once()
+            ->with("auth.user.{$userMock->id}")
+            ->andReturnTrue();
 
-        $this->assertEquals(2, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations match.');
+        $mockAuthService = Mockery::mock(AuthServiceInterface::class);
+        $mockAuthService->shouldReceive('forgetAuthUserCache')
+            ->once()
+            ->with($userMock)
+            ->andReturnUsing(function (User $user) use ($mockCacheService) {
+                /** @var \App\Contracts\Services\CacheServiceInterface $mockCacheService */
+                $mockCacheService->forget("auth.user.{$user->id}");
+            });
+
+        $this->app->instance(HashServiceInterface::class, $mockHashService);
+        $this->app->instance(CacheServiceInterface::class, $mockCacheService);
+        $this->app->instance(AuthServiceInterface::class, $mockAuthService);
+
+        $this->userService->updatePassword($userMock, $data['old_password'], $data['password']);
+
+        $this->assertEquals(4, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations match.');
     }
 
     /**
-     * Test if can throw exception if password don't match.
+     * Test if can throw exception if password don't match on update password.
      *
      * @return void
      */
-    public function test_if_can_throw_exception_if_password_dont_match(): void
+    public function test_if_can_throw_exception_if_password_dont_match_on_update_password(): void
     {
         $oldHashPassword = Hash::make('12345678');
 
@@ -146,11 +166,135 @@ class UserServiceTest extends TestCase
         $this->app->instance(HashServiceInterface::class, $mockHashService);
 
         $this->expectException(CurrentPasswordDoesNotMatchException::class);
-        $this->expectExceptionMessage('Your current password does not match.');
+        $this->expectExceptionMessage('Your password does not match.');
 
         /** @var \App\Models\User $userMock */
-        $userService = app(UserServiceInterface::class);
-        $userService->updatePassword($userMock, $data['old_password'], $data['password']);
+        $this->userService->updatePassword($userMock, $data['old_password'], $data['password']);
+    }
+
+    /**
+     * Test if can forget the user cache.
+     *
+     * @return void
+     */
+    public function test_if_can_forget_the_user_cache(): void
+    {
+        $userMock = Mockery::mock(User::class)->makePartial();
+        $userMock->shouldAllowMockingMethod('setAttribute');
+        $userMock->shouldReceive('getAttribute')->with('id')->andReturn(1);
+
+        /** @var \App\Models\User $userMock */
+        $mockCacheService = Mockery::mock(CacheServiceInterface::class);
+        $mockCacheService->shouldReceive('forget')
+            ->once()
+            ->with("auth.user.{$userMock->id}")
+            ->andReturnTrue();
+
+        $mockAuthService = Mockery::mock(AuthServiceInterface::class);
+        $mockAuthService->shouldReceive('forgetAuthUserCache')
+            ->once()
+            ->with($userMock)
+            ->andReturnUsing(function (User $user) use ($mockCacheService) {
+                /** @var \App\Contracts\Services\CacheServiceInterface $mockCacheService */
+                $mockCacheService->forget("auth.user.{$user->id}");
+            });
+
+        $this->app->instance(CacheServiceInterface::class, $mockCacheService);
+        $this->app->instance(AuthServiceInterface::class, $mockAuthService);
+
+        $this->userService->forgetAuthUserCache($userMock);
+
+        $this->assertEquals(2, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations executed.');
+    }
+
+    /**
+     * Test if can update the user sensitive data.
+     *
+     * @return void
+     */
+    public function test_if_can_update_the_user_sensitive_data(): void
+    {
+        $password = Hash::make('12345678');
+
+        $data = [
+            'password' => '12345678',
+            'email' => 'valid@gmail.com',
+            'nickname' => fake()->userName(),
+        ];
+
+        $userMock = Mockery::mock(User::class)->makePartial();
+        $userMock->shouldReceive('getAttribute')->with('id')->andReturn(1);
+        $userMock->shouldReceive('getAttribute')->with('password')->andReturn($password);
+        $userMock->shouldReceive('update')
+            ->once()
+            ->with([
+                'email' => $data['email'],
+                'nickname' => $data['nickname'],
+            ]);
+
+        /** @var \App\Models\User $userMock */
+        $mockCacheService = Mockery::mock(CacheServiceInterface::class);
+        $mockCacheService->shouldReceive('forget')
+            ->once()
+            ->with("auth.user.{$userMock->id}")
+            ->andReturnTrue();
+
+        $mockHashService = Mockery::mock(HashServiceInterface::class);
+        $mockHashService->shouldReceive('check')
+            ->once()
+            ->with($password, $data['password'])
+            ->andReturnTrue();
+
+        $mockAuthService = Mockery::mock(AuthServiceInterface::class);
+        $mockAuthService->shouldReceive('forgetAuthUserCache')
+            ->once()
+            ->with($userMock)
+            ->andReturnUsing(function (User $user) use ($mockCacheService) {
+                /** @var \App\Contracts\Services\CacheServiceInterface $mockCacheService */
+                $mockCacheService->forget("auth.user.{$user->id}");
+            });
+
+        $this->app->instance(CacheServiceInterface::class, $mockCacheService);
+        $this->app->instance(AuthServiceInterface::class, $mockAuthService);
+        $this->app->instance(HashServiceInterface::class, $mockHashService);
+
+        $this->userService->updateSensitives($userMock, $data);
+
+        $this->assertEquals(4, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations match.');
+    }
+
+    /**
+     * Test if can throw exception if password don't match on update sensitives.
+     *
+     * @return void
+     */
+    public function test_if_can_throw_exception_if_password_dont_match_on_update_sensitives(): void
+    {
+        $password = Hash::make('12345678');
+
+        $data = [
+            'password' => '123',
+            'email' => 'valid@gmail.com',
+            'nickname' => fake()->userName(),
+        ];
+
+        $userMock = Mockery::mock(User::class)->makePartial();
+        $userMock->shouldReceive('getAttribute')->with('password')->andReturn($password);
+        $userMock->shouldNotReceive('update');
+
+        $mockHashService = Mockery::mock(HashServiceInterface::class);
+        $mockHashService->shouldReceive('check')
+            ->once()
+            ->with($password, '123')
+            ->andReturnFalse();
+
+        $this->app->instance(HashServiceInterface::class, $mockHashService);
+
+        $this->expectException(CurrentPasswordDoesNotMatchException::class);
+        $this->expectExceptionMessage('Your password does not match.');
+
+        /** @var \App\Models\User $userMock */
+        $this->userService->updateSensitives($userMock, $data);
     }
 
     /**

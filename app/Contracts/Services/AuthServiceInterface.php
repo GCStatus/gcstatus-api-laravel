@@ -58,4 +58,12 @@ interface AuthServiceInterface
      * @return \App\Models\User
      */
     public function getAuthUser(): User;
+
+    /**
+     * Forget auth user cache.
+     *
+     * @param \App\Models\User $user
+     * @return void
+     */
+    public function forgetAuthUserCache(User $user): void;
 }

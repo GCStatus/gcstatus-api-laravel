@@ -7,7 +7,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Profile\SocialUpdateRequest;
 use App\Contracts\Services\{
     AuthServiceInterface,
-    CacheServiceInterface,
     ProfileServiceInterface,
 };
 
@@ -21,13 +20,6 @@ class SocialController extends Controller
     private $authService;
 
     /**
-     * The cache service.
-     *
-     * @var \App\Contracts\Services\CacheServiceInterface
-     */
-    private $cacheService;
-
-    /**
      * The profile service.
      *
      * @var \App\Contracts\Services\ProfileServiceInterface
@@ -38,17 +30,14 @@ class SocialController extends Controller
      * Create a new class instance.
      *
      * @param \App\Contracts\Services\AuthServiceInterface $authService
-     * @param \App\Contracts\Services\CacheServiceInterface $cacheService
      * @param \App\Contracts\Services\ProfileServiceInterface $profileService
      * @return void
      */
     public function __construct(
         AuthServiceInterface $authService,
-        CacheServiceInterface $cacheService,
         ProfileServiceInterface $profileService,
     ) {
         $this->authService = $authService;
-        $this->cacheService = $cacheService;
         $this->profileService = $profileService;
     }
 
@@ -67,10 +56,6 @@ class SocialController extends Controller
         $user = $this->authService->getAuthUser();
 
         $this->profileService->updateForUser($user, $data);
-
-        $key = "auth.user.{$user->id}";
-
-        $this->cacheService->forget($key);
 
         return UserResource::make($user);
     }

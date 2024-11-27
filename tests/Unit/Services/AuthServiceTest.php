@@ -4,6 +4,7 @@ namespace Tests\Unit\Services;
 
 use Mockery;
 use Tests\TestCase;
+use App\Models\User;
 use Mockery\MockInterface;
 use App\Services\AuthService;
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -11,11 +12,11 @@ use Illuminate\Contracts\Foundation\Application;
 use App\Exceptions\Auth\InvalidIdentifierException;
 use App\Contracts\Repositories\AuthRepositoryInterface;
 use App\Contracts\Services\{
+    CacheServiceInterface,
     CryptServiceInterface,
     CookieServiceInterface,
     Validation\IdentifierValidatorInterface,
 };
-use App\Models\User;
 
 class AuthServiceTest extends TestCase
 {
@@ -80,6 +81,7 @@ class AuthServiceTest extends TestCase
             $mockRepository,
             app(CryptServiceInterface::class),
             app(CookieServiceInterface::class),
+            app(CacheServiceInterface::class),
         );
 
         $this->assertEquals($token, $authService->auth($credentials));
@@ -130,6 +132,7 @@ class AuthServiceTest extends TestCase
             $mockRepository,
             app(CryptServiceInterface::class),
             app(CookieServiceInterface::class),
+            app(CacheServiceInterface::class),
         );
 
         $this->assertEquals($token, $authService->auth($credentials));
@@ -169,6 +172,7 @@ class AuthServiceTest extends TestCase
             $mockRepository,
             app(CryptServiceInterface::class),
             app(CookieServiceInterface::class),
+            app(CacheServiceInterface::class),
         );
 
         $authService->auth($credentials);
@@ -222,6 +226,7 @@ class AuthServiceTest extends TestCase
             $mockRepository,
             $mockCryptService,
             $mockCookieService,
+            app(CacheServiceInterface::class),
         );
 
         $authService->setAuthenticationCookies($token);
@@ -247,6 +252,7 @@ class AuthServiceTest extends TestCase
             $mockRepository,
             app(CryptServiceInterface::class),
             app(CookieServiceInterface::class),
+            app(CacheServiceInterface::class),
         );
 
         $result = $authService->getAuthId();
@@ -285,6 +291,7 @@ class AuthServiceTest extends TestCase
             $mockRepository,
             app(CryptServiceInterface::class),
             $mockCookieService,
+            app(CacheServiceInterface::class),
         );
 
         $authService->clearAuthenticationCookies();
@@ -312,6 +319,7 @@ class AuthServiceTest extends TestCase
             $mockRepository,
             app(CryptServiceInterface::class),
             app(CookieServiceInterface::class),
+            app(CacheServiceInterface::class),
         );
 
         $authService->setUser($user);
@@ -337,6 +345,7 @@ class AuthServiceTest extends TestCase
             $mockRepository,
             app(CryptServiceInterface::class),
             app(CookieServiceInterface::class),
+            app(CacheServiceInterface::class),
         );
 
         $authService->authenticateById(1);
@@ -364,9 +373,43 @@ class AuthServiceTest extends TestCase
             $mockRepository,
             app(CryptServiceInterface::class),
             app(CookieServiceInterface::class),
+            app(CacheServiceInterface::class),
         );
 
         $authService->getAuthUser();
+
+        $this->assertEquals(1, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations executed.');
+    }
+
+    /**
+     * Test if can forget the user cache.
+     *
+     * @return void
+     */
+    public function test_if_can_forget_the_user_cache(): void
+    {
+        $userMock = Mockery::mock(User::class)->makePartial();
+        $userMock->shouldAllowMockingMethod('setAttribute');
+        $userMock->shouldReceive('getAttribute')->with('id')->andReturn(1);
+
+        /** @var \App\Models\User $userMock */
+        $mockCacheService = Mockery::mock(CacheServiceInterface::class);
+        $mockCacheService->shouldReceive('forget')
+            ->once()
+            ->with("auth.user.{$userMock->id}")
+            ->andReturnTrue();
+
+        /** @var \App\Contracts\Services\CacheServiceInterface $mockCacheService */
+        /** @var \App\Contracts\Repositories\AuthRepositoryInterface $mockRepository */
+        $mockRepository = $this->mockRepository;
+        $authService = new AuthService(
+            $mockRepository,
+            app(CryptServiceInterface::class),
+            app(CookieServiceInterface::class),
+            $mockCacheService,
+        );
+
+        $authService->forgetAuthUserCache($userMock);
 
         $this->assertEquals(1, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations executed.');
     }

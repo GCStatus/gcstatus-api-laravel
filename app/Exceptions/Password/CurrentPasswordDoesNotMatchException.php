@@ -11,5 +11,5 @@ class CurrentPasswordDoesNotMatchException extends BadRequestException
      *
      * @var string
      */
-    protected $message = 'Your current password does not match.';
+    protected $message = 'Your password does not match.';
 }

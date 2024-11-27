@@ -23,4 +23,21 @@ interface UserServiceInterface extends AbstractServiceInterface
      * @return void
      */
     public function updatePassword(User $user, string $old_password, string $password): void;
+
+    /**
+     * Update the user sensitive data.
+     *
+     * @param \App\Models\User $user
+     * @param array<string, string> $data
+     * @return void
+     */
+    public function updateSensitives(User $user, array $data): void;
+
+    /**
+     * Forget user cache.
+     *
+     * @param \App\Models\User $user
+     * @return void
+     */
+    public function forgetAuthUserCache(User $user): void;
 }

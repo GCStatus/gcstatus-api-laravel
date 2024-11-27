@@ -6,6 +6,7 @@ use App\Models\{Profile, User};
 use Illuminate\Http\UploadedFile;
 use App\Contracts\Repositories\ProfileRepositoryInterface;
 use App\Contracts\Services\{
+    AuthServiceInterface,
     ProfileServiceInterface,
     StorageServiceInterface,
 };
@@ -27,18 +28,28 @@ class ProfileService implements ProfileServiceInterface
     private StorageServiceInterface $storageService;
 
     /**
+     * The auth service.
+     *
+     * @var \App\Contracts\Services\AuthServiceInterface
+     */
+    private AuthServiceInterface $authService;
+
+    /**
      * Create a new class instance.
      *
      * @param \App\Contracts\Repositories\ProfileRepositoryInterface $profileRepository
      * @param \App\Contracts\Services\StorageServiceInterface $storageService
+     * @param \App\Contracts\Services\AuthServiceInterface $authService
      * @return void
      */
     public function __construct(
         ProfileRepositoryInterface $profileRepository,
         StorageServiceInterface $storageService,
+        AuthServiceInterface $authService,
     ) {
         $this->profileRepository = $profileRepository;
         $this->storageService = $storageService;
+        $this->authService = $authService;
     }
 
     /**
@@ -50,7 +61,11 @@ class ProfileService implements ProfileServiceInterface
      */
     public function updateForUser(User $user, array $data): Profile
     {
-        return $this->profileRepository->updateForUser($user, $data);
+        $profile = $this->profileRepository->updateForUser($user, $data);
+
+        $this->authService->forgetAuthUserCache($user);
+
+        return $profile;
     }
 
     /**
