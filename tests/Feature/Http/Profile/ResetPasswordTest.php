@@ -101,7 +101,7 @@ class ResetPasswordTest extends BaseIntegrationTesting
             'old_password' => 'invalid_pass',
             'password' => 'Admin1234!@#$!',
             'password_confirmation' => 'Admin1234!@#$!',
-        ])->assertBadRequest()->assertSee('Your current password does not match.');
+        ])->assertBadRequest()->assertSee('Your password does not match.');
     }
 
     /**

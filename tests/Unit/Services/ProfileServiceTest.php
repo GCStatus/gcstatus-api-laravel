@@ -9,6 +9,7 @@ use App\Services\ProfileService;
 use Illuminate\Http\UploadedFile;
 use App\Contracts\Repositories\ProfileRepositoryInterface;
 use App\Contracts\Services\{
+    AuthServiceInterface,
     ProfileServiceInterface,
     StorageServiceInterface,
 };
@@ -37,6 +38,13 @@ class ProfileServiceTest extends TestCase
     private $mockStorageService;
 
     /**
+     * The mock auth service.
+     *
+     * @var \Mockery\MockInterface
+     */
+    private $mockAuthService;
+
+    /**
      * Setup new test environments.
      *
      * @return void
@@ -45,16 +53,20 @@ class ProfileServiceTest extends TestCase
     {
         parent::setUp();
 
+        $this->mockAuthService = Mockery::mock(AuthServiceInterface::class);
         $this->mockRepository = Mockery::mock(ProfileRepositoryInterface::class);
         $this->mockStorageService = Mockery::mock(StorageServiceInterface::class);
 
         /** @var \App\Contracts\Services\StorageServiceInterface $mockStorageService */
         $mockStorageService = $this->mockStorageService;
 
+        /** @var \App\Contracts\Services\AuthServiceInterface $mockAuthService */
+        $mockAuthService = $this->mockAuthService;
+
         /** @var \App\Contracts\Repositories\ProfileRepositoryInterface $profileRepository */
         $profileRepository = $this->mockRepository;
 
-        $this->profileService = new ProfileService($profileRepository, $mockStorageService);
+        $this->profileService = new ProfileService($profileRepository, $mockStorageService, $mockAuthService);
     }
 
     /**
@@ -82,6 +94,11 @@ class ProfileServiceTest extends TestCase
             ->once()
             ->with($userMock, $data)
             ->andReturn($profileMock);
+
+        $this->mockAuthService
+            ->shouldReceive('forgetAuthUserCache')
+            ->once()
+            ->with($userMock);
 
         /** @var \App\Models\User $userMock */
         $result = $this->profileService->updateForUser($userMock, $data);
@@ -122,10 +139,15 @@ class ProfileServiceTest extends TestCase
             ->with($userMock, ['photo' => $path])
             ->andReturn($profileMock);
 
+        $this->mockAuthService
+            ->shouldReceive('forgetAuthUserCache')
+            ->once()
+            ->with($userMock);
+
         /** @var \App\Models\User $userMock */
         $this->profileService->updatePicture($userMock, $file);
 
-        $this->assertEquals(3, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations executed.');
+        $this->assertEquals(4, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations executed.');
     }
 
     /**
@@ -164,10 +186,15 @@ class ProfileServiceTest extends TestCase
             ->with($userMock, ['photo' => $path])
             ->andReturn($profileMock);
 
+        $this->mockAuthService
+            ->shouldReceive('forgetAuthUserCache')
+            ->once()
+            ->with($userMock);
+
         /** @var \App\Models\User $userMock */
         $this->profileService->updatePicture($userMock, $file);
 
-        $this->assertEquals(3, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations executed.');
+        $this->assertEquals(4, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations executed.');
     }
 
     /**

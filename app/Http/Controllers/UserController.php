@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\UserResource;
-use App\Http\Requests\User\BasicUpdateRequest;
+use App\Http\Requests\User\{
+    BasicUpdateRequest,
+    SensitiveUpdateRequest,
+};
 use App\Contracts\Services\{
     AuthServiceInterface,
     UserServiceInterface,
-    CacheServiceInterface,
 };
 
 class UserController extends Controller
@@ -27,28 +29,18 @@ class UserController extends Controller
     private $userService;
 
     /**
-     * The cache service.
-     *
-     * @var \App\Contracts\Services\CacheServiceInterface
-     */
-    private $cacheService;
-
-    /**
      * Create a new class instance.
      *
      * @param \App\Contracts\Services\AuthServiceInterface $authService
      * @param \App\Contracts\Services\UserServiceInterface $userService
-     * @param \App\Contracts\Services\CacheServiceInterface $cacheService
      * @return void
      */
     public function __construct(
         AuthServiceInterface $authService,
         UserServiceInterface $userService,
-        CacheServiceInterface $cacheService,
     ) {
         $this->authService = $authService;
         $this->userService = $userService;
-        $this->cacheService = $cacheService;
     }
 
     /**
@@ -79,9 +71,26 @@ class UserController extends Controller
 
         $this->userService->update($data, $user->id);
 
-        $key = "auth.user.{$user->id}";
+        return UserResource::make(
+            $user->fresh(),
+        );
+    }
 
-        $this->cacheService->forget($key);
+    /**
+     * Update user sensitive informations.
+     *
+     * @param \App\Http\Requests\User\SensitiveUpdateRequest $request
+     * @return \App\Http\Resources\UserResource
+     */
+    public function updateSensitives(SensitiveUpdateRequest $request): UserResource
+    {
+        /** @var array<string, string> $data */
+        $data = $request->validated();
+
+        /** @var \App\Models\User $user */
+        $user = $this->authService->getAuthUser();
+
+        $this->userService->updateSensitives($user, $data);
 
         return UserResource::make(
             $user->fresh(),

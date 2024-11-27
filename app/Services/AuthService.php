@@ -7,6 +7,7 @@ use App\Exceptions\Auth\InvalidIdentifierException;
 use App\Contracts\Repositories\AuthRepositoryInterface;
 use App\Contracts\Services\{
     AuthServiceInterface,
+    CacheServiceInterface,
     CryptServiceInterface,
     CookieServiceInterface,
     Validation\IdentifierValidatorInterface,
@@ -19,7 +20,7 @@ class AuthService implements AuthServiceInterface
      *
      * @var \App\Contracts\Repositories\AuthRepositoryInterface
      */
-    private $authRepository;
+    private AuthRepositoryInterface $authRepository;
 
     /**
      * The email identifier validator.
@@ -50,17 +51,29 @@ class AuthService implements AuthServiceInterface
     private CookieServiceInterface $cookieService;
 
     /**
+     * The cache service.
+     *
+     * @var \App\Contracts\Services\CacheServiceInterface
+     */
+    private CacheServiceInterface $cacheService;
+
+    /**
      * Create a new class instance.
      *
      * @param \App\Contracts\Repositories\AuthRepositoryInterface $authRepository
+     * @param \App\Contracts\Services\CryptServiceInterface $cryptService
+     * @param \App\Contracts\Services\CookieServiceInterface $cookieService
+     * @param \App\Contracts\Services\CacheServiceInterface $cacheService
      * @return void
      */
     public function __construct(
         AuthRepositoryInterface $authRepository,
         CryptServiceInterface $cryptService,
         CookieServiceInterface $cookieService,
+        CacheServiceInterface $cacheService,
     ) {
         $this->cryptService = $cryptService;
+        $this->cacheService = $cacheService;
         $this->cookieService = $cookieService;
         $this->authRepository = $authRepository;
         $this->emailValidator = app(IdentifierValidatorInterface::class, ['type' => 'email']);
@@ -188,5 +201,18 @@ class AuthService implements AuthServiceInterface
     public function getAuthUser(): User
     {
         return $this->authRepository->getAuthUser();
+    }
+
+    /**
+     * Forget user cache.
+     *
+     * @param \App\Models\User $user
+     * @return void
+     */
+    public function forgetAuthUserCache(User $user): void
+    {
+        $key = "auth.user.{$user->id}";
+
+        $this->cacheService->forget($key);
     }
 }

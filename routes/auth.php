@@ -37,5 +37,6 @@ Route::middleware(['registration.should.complete'])->group(function () {
     Route::controller(UserController::class)->group(function () {
         Route::get('me', 'me')->name('auth.me');
         Route::put('users/basics/update', 'updateBasics')->name('users.basics.update');
+        Route::put('users/sensitives/update', 'updateSensitives')->name('users.sensitives.update');
     });
 });
