@@ -10,13 +10,14 @@ use App\Services\ResetPasswordService;
 use App\Notifications\PasswordReseted;
 use Illuminate\Support\Facades\Notification;
 use App\Contracts\Repositories\ResetPasswordRepositoryInterface;
-use App\Contracts\Services\{
-    UserServiceInterface,
-    ResetPasswordServiceInterface,
-};
 use App\Exceptions\ResetPassword\{
     InvalidTokenException,
     UserRecentlyCreatedTokenException,
+};
+use App\Contracts\Services\{
+    CacheServiceInterface,
+    UserServiceInterface,
+    ResetPasswordServiceInterface,
 };
 
 class ResetPasswordServiceTest extends TestCase
@@ -43,6 +44,13 @@ class ResetPasswordServiceTest extends TestCase
     private MockInterface $userService;
 
     /**
+     * The mock cache service.
+     *
+     * @var \Mockery\MockInterface
+     */
+    private MockInterface $cacheService;
+
+    /**
      * Setup new test environments.
      *
      * @return void
@@ -52,6 +60,7 @@ class ResetPasswordServiceTest extends TestCase
         parent::setUp();
 
         $this->userService = Mockery::mock(UserServiceInterface::class);
+        $this->cacheService = Mockery::mock(CacheServiceInterface::class);
         $this->resetPasswordRepository = Mockery::mock(ResetPasswordRepositoryInterface::class);
 
         /** @var \App\Contracts\Services\UserServiceInterface $userService */
@@ -60,10 +69,14 @@ class ResetPasswordServiceTest extends TestCase
         /** @var \App\Contracts\Repositories\ResetPasswordRepositoryInterface $resetPasswordRepository */
         $resetPasswordRepository = $this->resetPasswordRepository;
 
+        /** @var \App\Contracts\Services\CacheServiceInterface $cacheService */
+        $cacheService = $this->cacheService;
+
         $this->app->instance(
             ResetPasswordServiceInterface::class,
             new ResetPasswordService(
                 $userService,
+                $cacheService,
                 $resetPasswordRepository,
             ),
         );
@@ -155,6 +168,7 @@ class ResetPasswordServiceTest extends TestCase
         $email = 'valid@gmail.com';
         $token = 'valid_reset_token';
         $user = Mockery::mock(User::class)->makePartial();
+        $user->shouldReceive('getAttribute')->with('id')->andReturn(1);
         $user->shouldReceive('getAttribute')->with('email')->andReturn($email);
 
         /** @var array<string, string> $data */
@@ -182,6 +196,11 @@ class ResetPasswordServiceTest extends TestCase
             ->once()
             ->with($user);
 
+        $this->cacheService
+            ->shouldReceive('forget')
+            ->once()
+            ->with('auth.user.1');
+
         $user->shouldReceive('update')
             ->once()
             ->with(['password' => $data['password']]);
@@ -193,7 +212,7 @@ class ResetPasswordServiceTest extends TestCase
         $this->resetPasswordService = app(ResetPasswordServiceInterface::class);
         $this->resetPasswordService->resetPassword($data);
 
-        $this->assertEquals(5, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations executed.');
+        $this->assertEquals(6, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations executed.');
     }
 
     /**

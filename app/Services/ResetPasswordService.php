@@ -7,6 +7,7 @@ use App\Notifications\PasswordReseted;
 use App\Contracts\Repositories\ResetPasswordRepositoryInterface;
 use App\Contracts\Services\{
     UserServiceInterface,
+    CacheServiceInterface,
     ResetPasswordServiceInterface,
 };
 use App\Exceptions\ResetPassword\{
@@ -17,13 +18,6 @@ use App\Exceptions\ResetPassword\{
 class ResetPasswordService implements ResetPasswordServiceInterface
 {
     /**
-     * The reset password repository.
-     *
-     * @var \App\Contracts\Repositories\ResetPasswordRepositoryInterface
-     */
-    private $resetPasswordRepository;
-
-    /**
      * The user service.
      *
      * @var \App\Contracts\Services\UserServiceInterface
@@ -31,17 +25,34 @@ class ResetPasswordService implements ResetPasswordServiceInterface
     private UserServiceInterface $userService;
 
     /**
+     * The cache service.
+     *
+     * @var \App\Contracts\Services\CacheServiceInterface
+     */
+    private CacheServiceInterface $cacheService;
+
+    /**
+     * The reset password repository.
+     *
+     * @var \App\Contracts\Repositories\ResetPasswordRepositoryInterface
+     */
+    private ResetPasswordRepositoryInterface $resetPasswordRepository;
+
+    /**
      * Create a new class instance.
      *
      * @param \App\Contracts\Services\UserServiceInterface $userService
+     * @param \App\Contracts\Services\CacheServiceInterface $cacheService
      * @param \App\Contracts\Repositories\ResetPasswordRepositoryInterface $resetPasswordRepository
      * @return void
      */
     public function __construct(
         UserServiceInterface $userService,
+        CacheServiceInterface $cacheService,
         ResetPasswordRepositoryInterface $resetPasswordRepository,
     ) {
         $this->userService = $userService;
+        $this->cacheService = $cacheService;
         $this->resetPasswordRepository = $resetPasswordRepository;
     }
 
@@ -81,6 +92,10 @@ class ResetPasswordService implements ResetPasswordServiceInterface
         $user->update([
             'password' => $data['password'],
         ]);
+
+        $key = "auth.user.{$user->id}";
+
+        $this->cacheService->forget($key);
 
         $this->resetPasswordRepository->delete($user);
 

@@ -272,6 +272,21 @@ class ResetPasswordTest extends BaseIntegrationTesting
     }
 
     /**
+     * Test if can login with new password.
+     *
+     * @return void
+     */
+    public function test_if_can_log_in_with_new_password(): void
+    {
+        $this->putJson(route('profiles.password.update'), $data = $this->getValidPayload())->assertOk();
+
+        $this->postJson(route('auth.login'), [
+            'identifier' => $this->user->nickname,
+            'password' => $data['password'],
+        ])->assertOk();
+    }
+
+    /**
      * Test if can respond with correct json structure.
      *
      * @return void

@@ -6,7 +6,7 @@ use App\Models\User;
 use Illuminate\Support\Str;
 use App\Notifications\PasswordReseted;
 use Tests\Feature\Http\BaseIntegrationTesting;
-use Illuminate\Support\Facades\{DB, Hash, Notification};
+use Illuminate\Support\Facades\{Cache, DB, Hash, Notification};
 use App\Contracts\Repositories\ResetPasswordRepositoryInterface;
 
 class ResetTest extends BaseIntegrationTesting
@@ -38,6 +38,23 @@ class ResetTest extends BaseIntegrationTesting
         $this->user = $this->createDummyUser([
             'email' => 'valid@gmail.com',
         ]);
+    }
+
+    /**
+     * Get valid payload.
+     *
+     * @return array<string, mixed>
+     */
+    private function getValidPayload(): array
+    {
+        $token = $this->resetPasswordRepository->createResetToken($this->user);
+
+        return [
+            'token' => $token,
+            'email' => $this->user->email,
+            'password' => ']3N"g&D8pF7?',
+            'password_confirmation' => ']3N"g&D8pF7?',
+        ];
     }
 
     /**
@@ -149,14 +166,7 @@ class ResetTest extends BaseIntegrationTesting
      */
     public function test_if_can_reset_password_with_valid_payload(): void
     {
-        $token = $this->resetPasswordRepository->createResetToken($this->user);
-
-        $this->postJson(route('password.reset'), [
-            'token' => $token,
-            'email' => $this->user->email,
-            'password' => ']3N"g&D8pF7?',
-            'password_confirmation' => ']3N"g&D8pF7?',
-        ])->assertOk();
+        $this->postJson(route('password.reset'), $this->getValidPayload())->assertOk();
     }
 
     /**
@@ -168,14 +178,7 @@ class ResetTest extends BaseIntegrationTesting
     {
         $old = $this->user->password;
 
-        $token = $this->resetPasswordRepository->createResetToken($this->user);
-
-        $this->postJson(route('password.reset'), [
-            'token' => $token,
-            'email' => $this->user->email,
-            'password' => ']3N"g&D8pF7?',
-            'password_confirmation' => ']3N"g&D8pF7?',
-        ])->assertOk();
+        $this->postJson(route('password.reset'), $this->getValidPayload())->assertOk();
 
         /** @var \App\Models\User $freshUser */
         $freshUser = $this->user->fresh();
@@ -194,14 +197,10 @@ class ResetTest extends BaseIntegrationTesting
     {
         $old = $this->user->password;
 
-        $token = $this->resetPasswordRepository->createResetToken($this->user);
+        $this->postJson(route('password.reset'), $data = $this->getValidPayload())->assertOk();
 
-        $this->postJson(route('password.reset'), [
-            'token' => $token,
-            'email' => $this->user->email,
-            'password' => $password = ']3N"g&D8pF7?',
-            'password_confirmation' => ']3N"g&D8pF7?',
-        ])->assertOk();
+        /** @var string $password */
+        $password = $data['password'];
 
         $this->assertDatabaseMissing('users', [
             'password' => $old,
@@ -223,18 +222,13 @@ class ResetTest extends BaseIntegrationTesting
      */
     public function test_if_can_remove_token_from_database_on_password_reset_completion(): void
     {
-        $token = $this->resetPasswordRepository->createResetToken($this->user);
+        $data = $this->getValidPayload();
 
         $this->assertDatabaseCount('password_reset_tokens', 1)->assertDatabaseHas('password_reset_tokens', [
             'email' => $this->user->email,
         ]);
 
-        $this->postJson(route('password.reset'), [
-            'token' => $token,
-            'email' => $this->user->email,
-            'password' => ']3N"g&D8pF7?',
-            'password_confirmation' => ']3N"g&D8pF7?',
-        ])->assertOk();
+        $this->postJson(route('password.reset'), $data)->assertOk();
 
         $this->assertDatabaseEmpty('password_reset_tokens')->assertDatabaseMissing('password_reset_tokens', [
             'email' => $this->user->email,
@@ -250,14 +244,7 @@ class ResetTest extends BaseIntegrationTesting
     {
         Notification::fake();
 
-        $token = $this->resetPasswordRepository->createResetToken($this->user);
-
-        $this->postJson(route('password.reset'), [
-            'token' => $token,
-            'email' => $this->user->email,
-            'password' => ']3N"g&D8pF7?',
-            'password_confirmation' => ']3N"g&D8pF7?',
-        ])->assertOk();
+        $this->postJson(route('password.reset'), $this->getValidPayload())->assertOk();
 
         Notification::assertSentTo(
             $this->user,
@@ -267,20 +254,33 @@ class ResetTest extends BaseIntegrationTesting
     }
 
     /**
+     * Test if can remove cache key for user on reset.
+     *
+     * @return void
+     */
+    public function test_if_can_remove_cache_key_for_user_on_reset(): void
+    {
+        $identifier = $this->user->id;
+
+        $key = "auth.user.$identifier";
+
+        Cache::put($key, $this->user, 60);
+
+        $this->assertTrue(Cache::has($key));
+
+        $this->postJson(route('password.reset'), $this->getValidPayload())->assertOk();
+
+        $this->assertFalse(Cache::has($key));
+    }
+
+    /**
      * Test if can respond with correct json structure.
      *
      * @return void
      */
     public function test_if_can_respond_with_correct_json_structure(): void
     {
-        $token = $this->resetPasswordRepository->createResetToken($this->user);
-
-        $this->postJson(route('password.reset'), [
-            'token' => $token,
-            'email' => $this->user->email,
-            'password' => ']3N"g&D8pF7?',
-            'password_confirmation' => ']3N"g&D8pF7?',
-        ])->assertOk()->assertJsonStructure([
+        $this->postJson(route('password.reset'), $this->getValidPayload())->assertOk()->assertJsonStructure([
             'data' => [
                 'message',
             ],
@@ -294,17 +294,25 @@ class ResetTest extends BaseIntegrationTesting
      */
     public function test_if_can_respond_with_correct_json_data(): void
     {
-        $token = $this->resetPasswordRepository->createResetToken($this->user);
-
-        $this->postJson(route('password.reset'), [
-            'token' => $token,
-            'email' => $this->user->email,
-            'password' => ']3N"g&D8pF7?',
-            'password_confirmation' => ']3N"g&D8pF7?',
-        ])->assertOk()->assertJson([
+        $this->postJson(route('password.reset'), $this->getValidPayload())->assertOk()->assertJson([
             'data' => [
                 'message' => 'Your password was successfully changed!',
             ],
         ]);
+    }
+
+    /**
+     * Test if can login with new password.
+     *
+     * @return void
+     */
+    public function test_if_can_log_in_with_new_password(): void
+    {
+        $this->postJson(route('password.reset'), $data = $this->getValidPayload())->assertOk();
+
+        $this->postJson(route('auth.login'), [
+            'identifier' => $this->user->nickname,
+            'password' => $data['password'],
+        ])->assertOk();
     }
 }
