@@ -6,7 +6,6 @@ use App\Models\User;
 use App\Contracts\Repositories\UserRepositoryInterface;
 use App\Exceptions\Password\CurrentPasswordDoesNotMatchException;
 use App\Contracts\Services\{
-    AuthServiceInterface,
     UserServiceInterface,
     HashServiceInterface,
 };
@@ -21,23 +20,6 @@ class UserService extends AbstractService implements UserServiceInterface
     public function repository(): UserRepositoryInterface
     {
         return app(UserRepositoryInterface::class);
-    }
-
-    /**
-     * Update the user data.
-     *
-     * @param array<string, mixed> $data
-     * @param mixed $id
-     * @return \App\Models\User
-     */
-    public function update(array $data, mixed $id): User
-    {
-        /** @var \App\Models\User $user */
-        $user = $this->repository()->update($data, $id);
-
-        $this->forgetAuthUserCache($user);
-
-        return $user;
     }
 
     /**
@@ -67,8 +49,6 @@ class UserService extends AbstractService implements UserServiceInterface
         $user->update([
             'password' => $password,
         ]);
-
-        $this->forgetAuthUserCache($user);
     }
 
     /**
@@ -86,21 +66,6 @@ class UserService extends AbstractService implements UserServiceInterface
             'email' => $data['email'],
             'nickname' => $data['nickname'],
         ]);
-
-        $this->forgetAuthUserCache($user);
-    }
-
-    /**
-     * Forget user cache.
-     *
-     * @param \App\Models\User $user
-     * @return void
-     */
-    public function forgetAuthUserCache(User $user): void
-    {
-        $authService = app(AuthServiceInterface::class);
-
-        $authService->forgetAuthUserCache($user);
     }
 
     /**

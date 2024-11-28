@@ -33,7 +33,7 @@ class LogService implements LogServiceInterface
      * @param ?string $trace
      * @return void
      */
-    public function error(string $title, string $message, ?string $trace): void
+    public function error(string $title, string $message, ?string $trace = null): void
     {
         $this->logRepository->error($title, $message, $trace);
     }

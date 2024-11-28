@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit\Requests\Auth;
+namespace Tests\Unit\Requests\Profile;
 
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\Contracts\Requests\BaseRequestTesting;
