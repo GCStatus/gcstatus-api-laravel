@@ -139,6 +139,22 @@ class AbstractRepositoryTest extends TestCase
     }
 
     /**
+     * Test if can find all by given field and returns correct collection.
+     *
+     * @return void
+     */
+    public function test_find_all_by_returns_correct_collection(): void
+    {
+        $user = $this->createDummyUser();
+
+        $result = $this->repository->findAllBy('email', $user->email);
+
+        $this->assertInstanceOf(Collection::class, $result);
+
+        $this->assertTrue(in_array($user->email, $result->pluck('email')->toArray()));
+    }
+
+    /**
      * Test if can throw exception for invalid id on find or fail method implementation.
      *
      * @return void
