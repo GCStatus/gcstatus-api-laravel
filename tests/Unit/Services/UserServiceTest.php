@@ -9,10 +9,8 @@ use App\Repositories\UserRepository;
 use Illuminate\Support\Facades\Hash;
 use App\Exceptions\Password\CurrentPasswordDoesNotMatchException;
 use App\Contracts\Services\{
-    AuthServiceInterface,
     UserServiceInterface,
     HashServiceInterface,
-    CacheServiceInterface,
 };
 
 class UserServiceTest extends TestCase
@@ -112,29 +110,12 @@ class UserServiceTest extends TestCase
             ->with($oldHashPassword, $data['old_password'])
             ->andReturnTrue();
 
-        /** @var \App\Models\User $userMock */
-        $mockCacheService = Mockery::mock(CacheServiceInterface::class);
-        $mockCacheService->shouldReceive('forget')
-            ->once()
-            ->with("auth.user.{$userMock->id}")
-            ->andReturnTrue();
-
-        $mockAuthService = Mockery::mock(AuthServiceInterface::class);
-        $mockAuthService->shouldReceive('forgetAuthUserCache')
-            ->once()
-            ->with($userMock)
-            ->andReturnUsing(function (User $user) use ($mockCacheService) {
-                /** @var \App\Contracts\Services\CacheServiceInterface $mockCacheService */
-                $mockCacheService->forget("auth.user.{$user->id}");
-            });
-
         $this->app->instance(HashServiceInterface::class, $mockHashService);
-        $this->app->instance(CacheServiceInterface::class, $mockCacheService);
-        $this->app->instance(AuthServiceInterface::class, $mockAuthService);
 
+        /** @var \App\Models\User $userMock */
         $this->userService->updatePassword($userMock, $data['old_password'], $data['password']);
 
-        $this->assertEquals(4, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations match.');
+        $this->assertEquals(2, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations match.');
     }
 
     /**
@@ -173,41 +154,6 @@ class UserServiceTest extends TestCase
     }
 
     /**
-     * Test if can forget the user cache.
-     *
-     * @return void
-     */
-    public function test_if_can_forget_the_user_cache(): void
-    {
-        $userMock = Mockery::mock(User::class)->makePartial();
-        $userMock->shouldAllowMockingMethod('setAttribute');
-        $userMock->shouldReceive('getAttribute')->with('id')->andReturn(1);
-
-        /** @var \App\Models\User $userMock */
-        $mockCacheService = Mockery::mock(CacheServiceInterface::class);
-        $mockCacheService->shouldReceive('forget')
-            ->once()
-            ->with("auth.user.{$userMock->id}")
-            ->andReturnTrue();
-
-        $mockAuthService = Mockery::mock(AuthServiceInterface::class);
-        $mockAuthService->shouldReceive('forgetAuthUserCache')
-            ->once()
-            ->with($userMock)
-            ->andReturnUsing(function (User $user) use ($mockCacheService) {
-                /** @var \App\Contracts\Services\CacheServiceInterface $mockCacheService */
-                $mockCacheService->forget("auth.user.{$user->id}");
-            });
-
-        $this->app->instance(CacheServiceInterface::class, $mockCacheService);
-        $this->app->instance(AuthServiceInterface::class, $mockAuthService);
-
-        $this->userService->forgetAuthUserCache($userMock);
-
-        $this->assertEquals(2, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations executed.');
-    }
-
-    /**
      * Test if can update the user sensitive data.
      *
      * @return void
@@ -232,35 +178,18 @@ class UserServiceTest extends TestCase
                 'nickname' => $data['nickname'],
             ]);
 
-        /** @var \App\Models\User $userMock */
-        $mockCacheService = Mockery::mock(CacheServiceInterface::class);
-        $mockCacheService->shouldReceive('forget')
-            ->once()
-            ->with("auth.user.{$userMock->id}")
-            ->andReturnTrue();
-
         $mockHashService = Mockery::mock(HashServiceInterface::class);
         $mockHashService->shouldReceive('check')
             ->once()
             ->with($password, $data['password'])
             ->andReturnTrue();
 
-        $mockAuthService = Mockery::mock(AuthServiceInterface::class);
-        $mockAuthService->shouldReceive('forgetAuthUserCache')
-            ->once()
-            ->with($userMock)
-            ->andReturnUsing(function (User $user) use ($mockCacheService) {
-                /** @var \App\Contracts\Services\CacheServiceInterface $mockCacheService */
-                $mockCacheService->forget("auth.user.{$user->id}");
-            });
-
-        $this->app->instance(CacheServiceInterface::class, $mockCacheService);
-        $this->app->instance(AuthServiceInterface::class, $mockAuthService);
         $this->app->instance(HashServiceInterface::class, $mockHashService);
 
+        /** @var \App\Models\User $userMock */
         $this->userService->updateSensitives($userMock, $data);
 
-        $this->assertEquals(4, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations match.');
+        $this->assertEquals(2, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations match.');
     }
 
     /**

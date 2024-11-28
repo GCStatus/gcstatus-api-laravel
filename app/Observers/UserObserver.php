@@ -35,4 +35,17 @@ class UserObserver
             'share' => false,
         ]);
     }
+
+    /**
+     * Handle the User "updated" event.
+     *
+     * @param \App\Models\User $user
+     * @return void
+     */
+    public function updated(User $user): void
+    {
+        $key = "auth.user.{$user->id}";
+
+        cacher()->forget($key);
+    }
 }

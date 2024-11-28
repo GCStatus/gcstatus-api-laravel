@@ -12,5 +12,5 @@ interface LogServiceInterface
      * @param ?string $trace
      * @return void
      */
-    public function error(string $title, string $message, ?string $trace): void;
+    public function error(string $title, string $message, ?string $trace = null): void;
 }
