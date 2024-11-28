@@ -4,9 +4,12 @@ namespace Tests\Feature\Http;
 
 use Tests\TestCase;
 use Tests\Traits\HasDummyUser;
-use Database\Seeders\LevelSeeder;
 use App\Contracts\Services\AuthServiceInterface;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Database\Seeders\{
+    LevelSeeder,
+    TransactionTypeSeeder,
+};
 
 abstract class BaseIntegrationTesting extends TestCase
 {
@@ -29,7 +32,11 @@ abstract class BaseIntegrationTesting extends TestCase
     {
         parent::setUp();
 
-        $this->seed([LevelSeeder::class]);
+        $this->seed([
+            LevelSeeder::class,
+            TransactionTypeSeeder::class,
+        ]);
+
         $this->authService = app(AuthServiceInterface::class);
     }
 }

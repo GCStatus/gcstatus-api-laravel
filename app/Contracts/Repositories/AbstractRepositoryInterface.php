@@ -47,6 +47,15 @@ interface AbstractRepositoryInterface
     public function findBy(string $field, mixed $value): ?Model;
 
     /**
+     * Find all models by given field.
+     *
+     * @param string $field
+     * @param mixed $value
+     * @return \Illuminate\Database\Eloquent\Collection<int, Model>
+     */
+    public function findAllBy(string $field, mixed $value): Collection;
+
+    /**
      * Should have method find or fail.
      *
      * @param mixed $id

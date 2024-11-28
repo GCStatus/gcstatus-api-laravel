@@ -2,10 +2,11 @@
 
 namespace App\Services;
 
+use App\Contracts\Services\AbstractServiceInterface;
 use Illuminate\Database\Eloquent\{Model, Collection};
 use App\Contracts\Repositories\AbstractRepositoryInterface;
 
-abstract class AbstractService
+abstract class AbstractService implements AbstractServiceInterface
 {
     /**
      * Get the repository instance.
@@ -56,6 +57,18 @@ abstract class AbstractService
     public function findBy(string $field, mixed $value): ?Model
     {
         return $this->repository()->findBy($field, $value);
+    }
+
+    /**
+     * Find all models by given field.
+     *
+     * @param string $field
+     * @param mixed $value
+     * @return \Illuminate\Database\Eloquent\Collection<int, Model>
+     */
+    public function findAllBy(string $field, mixed $value): Collection
+    {
+        return $this->repository()->findAllBy($field, $value);
     }
 
     /**

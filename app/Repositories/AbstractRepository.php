@@ -59,6 +59,18 @@ abstract class AbstractRepository implements AbstractRepositoryInterface
     }
 
     /**
+     * Find all models by given field.
+     *
+     * @param string $field
+     * @param mixed $value
+     * @return \Illuminate\Database\Eloquent\Collection<int, Model>
+     */
+    public function findAllBy(string $field, mixed $value): Collection
+    {
+        return $this->model()->where($field, $value)->get();
+    }
+
+    /**
      * Find a model collection where in array.
      *
      * @param array<int, mixed> $ids

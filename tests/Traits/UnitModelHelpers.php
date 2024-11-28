@@ -2,6 +2,8 @@
 
 namespace Tests\Traits;
 
+use ReflectionClass;
+
 trait UnitModelHelpers
 {
     /**
@@ -91,5 +93,23 @@ trait UnitModelHelpers
         $model = new $model();
 
         $this->assertEqualsCanonicalizing($relations, $model->getModelRelationships());
+    }
+
+    /**
+     * Test if the constants are correctly defined.
+     *
+     * @param array<string, mixed> $expectedConstants
+     * @return void
+     */
+    public function assertHasConstants(array $expectedConstants): void
+    {
+        /** @var class-string $model */
+        $model = $this->model();
+
+        $reflection = new ReflectionClass($model);
+
+        $constants = $reflection->getConstants();
+
+        $this->assertEqualsCanonicalizing($expectedConstants, $constants);
     }
 }

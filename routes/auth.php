@@ -5,6 +5,7 @@ use App\Http\Controllers\{
     UserController,
     LevelController,
     Auth\LogoutController,
+    TransactionController,
     Profile\SocialController,
     Profile\PictureController,
     EmailVerify\NotifyController,
@@ -34,6 +35,7 @@ Route::middleware(['registration.should.complete'])->group(function () {
     Route::put('profiles/picture/update', PictureController::class)->name('profiles.picture.update');
     Route::put('profiles/password/update', ResetPasswordController::class)->name('profiles.password.update');
     Route::apiResource('levels', LevelController::class)->only('index');
+    Route::apiResource('transactions', TransactionController::class)->only('index', 'destroy');
     Route::controller(UserController::class)->group(function () {
         Route::get('me', 'me')->name('auth.me');
         Route::put('users/basics/update', 'updateBasics')->name('users.basics.update');
