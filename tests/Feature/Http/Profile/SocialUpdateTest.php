@@ -194,7 +194,7 @@ class SocialUpdateTest extends BaseIntegrationTesting
                 'updated_at',
                 'wallet' => [
                     'id',
-                    'amount',
+                    'balance',
                 ],
                 'profile' => [
                     'id',

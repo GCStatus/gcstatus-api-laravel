@@ -9,7 +9,13 @@ use Tests\Contracts\Models\BaseModelTesting;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\{BelongsTo, HasOne, MorphMany};
+use Illuminate\Database\Eloquent\Relations\{
+    HasOne,
+    HasMany,
+    MorphMany,
+    BelongsTo,
+    BelongsToMany,
+};
 use Tests\Contracts\Models\{
     ShouldTestCasts,
     ShouldTestTraits,
@@ -115,6 +121,8 @@ class UserTest extends BaseModelTesting implements
             'wallet' => HasOne::class,
             'profile' => HasOne::class,
             'level' => BelongsTo::class,
+            'transactions' => HasMany::class,
+            'missions' => BelongsToMany::class,
             'notifications' => MorphMany::class,
             'readNotifications' => MorphMany::class,
             'unreadNotifications' => MorphMany::class,

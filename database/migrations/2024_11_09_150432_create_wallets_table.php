@@ -12,7 +12,7 @@ return new class () extends Migration {
     {
         Schema::create('wallets', function (Blueprint $table) {
             $table->id();
-            $table->integer('amount');
+            $table->integer('balance');
             $table->foreignId('user_id')->constrained();
             $table->softDeletes();
             $table->timestamps();

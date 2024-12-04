@@ -15,15 +15,12 @@ class TransactionTypeResource extends JsonResource
     public function toArray(Request $request): array
     {
         /** @var \App\Models\TransactionType $transactionType */
-        $transactionType = $this;
+        $transactionType = $this->resource;
 
-        /** @var array<string, mixed> $arrayable */
-        $arrayable = [
+        return [
             'id' => $transactionType->id,
             'type' => $transactionType->type,
             'transactions' => TransactionResource::collection($this->whenLoaded('transactions')),
         ];
-
-        return $arrayable;
     }
 }

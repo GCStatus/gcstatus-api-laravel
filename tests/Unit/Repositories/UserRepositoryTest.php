@@ -77,6 +77,44 @@ class UserRepositoryTest extends TestCase
     }
 
     /**
+     * Test if can add experience to the user.
+     *
+     * @return void
+     */
+    public function test_if_can_add_experience_to_the_user(): void
+    {
+        $userId = 1;
+        $amount = 100;
+
+        $userMock = Mockery::mock(User::class);
+        $userMock->shouldAllowMockingProtectedMethods();
+        $userMock->shouldReceive('increment')
+            ->once()
+            ->with('experience', $amount)
+            ->andReturnTrue();
+
+        $userRepository = Mockery::mock(UserRepositoryInterface::class);
+        $userRepository
+            ->shouldReceive('findOrFail')
+            ->once()
+            ->with($userId)
+            ->andReturn($userMock);
+        $userRepository
+            ->shouldReceive('addExperience')
+            ->once()
+            ->with($userId, $amount)
+            ->andReturnUsing(function (mixed $id, int $amount) use ($userRepository) {
+                /** @var \App\Contracts\Repositories\UserRepositoryInterface $userRepository */
+                return $userRepository->findOrFail($id)->increment('experience', $amount);
+            });
+
+        /** @var \App\Contracts\Repositories\UserRepositoryInterface $userRepository */
+        $userRepository->addExperience($userId, $amount);
+
+        $this->assertEquals(3, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations meet.');
+    }
+
+    /**
      * Cleanup Mockery after each test.
      *
      * @return void

@@ -54,9 +54,7 @@ abstract class BaseRequestTesting extends TestCase implements ShouldTestRequests
 
         if (method_exists($requestObject, 'rules')) {
             $this->rules = $requestObject->rules();
-            $this->messages = method_exists($requestObject, 'messages')
-                ? $requestObject->messages()
-                : [];
+            $this->messages = $requestObject->messages();
         } else {
             throw new LogicException("The request class must implement a rules method.");
         }

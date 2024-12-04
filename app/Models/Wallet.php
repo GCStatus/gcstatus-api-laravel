@@ -8,17 +8,17 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Wallet extends Model
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
+    /** @use HasFactory<\Database\Factories\WalletFactory> */
     use HasFactory;
     use SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
-        'amount',
+        'balance',
         'user_id',
     ];
 

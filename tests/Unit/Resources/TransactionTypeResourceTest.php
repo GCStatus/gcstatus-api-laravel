@@ -40,7 +40,7 @@ class TransactionTypeResourceTest extends BaseResourceTesting
         $transactionMock = Mockery::mock(Transaction::class)->makePartial();
         $transactionMock->shouldAllowMockingMethod('getAttribute');
         $transactionMock->shouldReceive('getAttribute')->with('id')->andReturn(1);
-        $transactionMock->shouldReceive('getAttribute')->with('amount')->andReturn(200);
+        $transactionMock->shouldReceive('getAttribute')->with('balance')->andReturn(200);
         $transactionMock->shouldReceive('getAttribute')->with('description')->andReturn(fake()->realText());
 
         $transactionTypeMock = Mockery::mock(TransactionType::class)->makePartial();

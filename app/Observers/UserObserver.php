@@ -28,7 +28,7 @@ class UserObserver
     public function created(User $user): void
     {
         $user->wallet()->create([
-            'amount' => 0,
+            'balance' => 0,
         ]);
 
         $user->profile()->create([

@@ -28,4 +28,16 @@ class UserRepository extends AbstractRepository implements UserRepositoryInterfa
     {
         return $this->model()->firstOrCreate($searchable, $creatable);
     }
+
+    /**
+     * Increment experience for given user.
+     *
+     * @param mixed $id
+     * @param int $amount
+     * @return void
+     */
+    public function addExperience(mixed $id, int $amount): void
+    {
+        $this->findOrFail($id)->increment('experience', $amount);
+    }
 }

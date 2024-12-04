@@ -52,6 +52,7 @@ class CachedAuthUserProvider extends EloquentUserProvider
             if ($user) {
                 $user->load('profile', 'level', 'wallet');
 
+                /** @var int $jwtTtl */
                 $jwtTtl = config('jwt.ttl');
 
                 $this->cacheService->put(

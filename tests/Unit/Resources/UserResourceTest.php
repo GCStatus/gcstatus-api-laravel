@@ -55,7 +55,7 @@ class UserResourceTest extends BaseResourceTesting
 
         $walletMock = Mockery::mock(Wallet::class);
         $walletMock->shouldReceive('getAttribute')->with('id')->andReturn(1);
-        $walletMock->shouldReceive('getAttribute')->with('amount')->andReturn(100);
+        $walletMock->shouldReceive('getAttribute')->with('balance')->andReturn(100);
 
         $userMock = Mockery::mock(User::class)->makePartial();
         $userMock->shouldAllowMockingMethod('getAttribute');

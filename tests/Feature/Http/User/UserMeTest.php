@@ -80,7 +80,7 @@ class UserMeTest extends BaseIntegrationTesting
                 'updated_at',
                 'wallet' => [
                     'id',
-                    'amount',
+                    'balance',
                 ],
                 'profile' => [
                     'id',
@@ -127,7 +127,7 @@ class UserMeTest extends BaseIntegrationTesting
                 'updated_at' => $this->user->updated_at?->toISOString(),
                 'wallet' => [
                     'id' => $wallet->id,
-                    'amount' => $wallet->amount,
+                    'balance' => $wallet->balance,
                 ],
                 'profile' => [
                     'id' => $profile->id,

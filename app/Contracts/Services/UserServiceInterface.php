@@ -32,4 +32,13 @@ interface UserServiceInterface extends AbstractServiceInterface
      * @return void
      */
     public function updateSensitives(User $user, array $data): void;
+
+    /**
+     * Increment experience for given user.
+     *
+     * @param mixed $id
+     * @param int $amount
+     * @return void
+     */
+    public function addExperience(mixed $id, int $amount): void;
 }

@@ -38,7 +38,7 @@ class WalletTest extends BaseModelTesting implements
     public function test_fillable_attributes(): void
     {
         $fillable = [
-            'amount',
+            'balance',
             'user_id',
         ];
 

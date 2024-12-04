@@ -6,6 +6,7 @@ use Tests\TestCase;
 use App\Contracts\Services\{
     CacheServiceInterface,
     StorageServiceInterface,
+    ProgressCalculatorServiceInterface,
 };
 
 class ResolversTest extends TestCase
@@ -32,5 +33,17 @@ class ResolversTest extends TestCase
         $resolvedCacher = cacher();
 
         $this->assertInstanceOf(CacheServiceInterface::class, $resolvedCacher);
+    }
+
+    /**
+     * Test if can get correct binded interface for progress calculator service.
+     *
+     * @return void
+     */
+    public function test_if_can_get_correct_binded_interface_for_progress_calculator_service(): void
+    {
+        $resolvedProgressCalculator = progressCalculator();
+
+        $this->assertInstanceOf(ProgressCalculatorServiceInterface::class, $resolvedProgressCalculator);
     }
 }
