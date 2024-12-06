@@ -60,6 +60,8 @@ class UserMissionRepositoryTest extends TestCase
             ->with('id')
             ->andReturn(1);
 
+        /** @var \App\Models\User $user */
+        /** @var \App\Models\Mission $mission */
         $payload = [
             'verifiable' => [
                 'user_id' => $user->id,

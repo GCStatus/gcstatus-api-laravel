@@ -61,6 +61,7 @@ class WalletRepositoryTest extends TestCase
 
         $wallet->shouldReceive('getAttribute')->with('id')->andReturn(1);
 
+        /** @var \App\Models\Wallet $wallet */
         $walletRepository
             ->shouldReceive('findOrFail')
             ->once()
@@ -102,6 +103,7 @@ class WalletRepositoryTest extends TestCase
 
         $wallet->shouldReceive('getAttribute')->with('id')->andReturn(1);
 
+        /** @var \App\Models\Wallet $wallet */
         $walletRepository
             ->shouldReceive('findOrFail')
             ->once()

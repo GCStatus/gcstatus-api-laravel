@@ -54,6 +54,8 @@ class UserMissionProgressRepositoryTest extends TestCase
             ->with('goal')
             ->andReturn(5);
 
+        /** @var \App\Models\User $user */
+        /** @var \App\Models\MissionRequirement $requirement */
         $payload = [
             'verifiable' => ['user_id' => $user->id, 'mission_requirement_id' => $requirement->id],
             'updatable' => ['progress' => 3, 'completed' => false],

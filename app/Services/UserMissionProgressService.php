@@ -2,9 +2,9 @@
 
 namespace App\Services;
 
-use App\Contracts\Repositories\UserMissionProgressRepositoryInterface;
 use App\Models\{User, MissionRequirement};
 use App\Contracts\Services\UserMissionProgressServiceInterface;
+use App\Contracts\Repositories\UserMissionProgressRepositoryInterface;
 
 class UserMissionProgressService implements UserMissionProgressServiceInterface
 {

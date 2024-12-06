@@ -197,6 +197,7 @@ class CalculateMissionProgressByKeyJobTest extends TestCase
         $job->handle();
 
         Bus::assertDispatched(GiveMissionRewardsJob::class, function (GiveMissionRewardsJob $job) use ($user, $mission1) {
+            /** @var \App\Models\Mission $mission1 */
             return $job->user->id === $user->id && $job->mission->id === $mission1->id;
         });
 

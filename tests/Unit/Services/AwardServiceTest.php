@@ -77,6 +77,8 @@ class AwardServiceTest extends TestCase
         $mission->shouldReceive('getAttribute')->with('coins')->andReturn(50);
         $mission->shouldReceive('getAttribute')->with('experience')->andReturn(100);
 
+        /** @var \App\Models\User $user */
+        /** @var \App\Models\Mission $mission */
         $this->userService
             ->shouldReceive('addExperience')
             ->once()
@@ -87,8 +89,6 @@ class AwardServiceTest extends TestCase
             ->once()
             ->with($user, $mission->coins);
 
-        /** @var \App\Models\User $user */
-        /** @var \App\Models\Mission $mission */
         $this->awardService->awardCoinsAndExperience($user, $mission);
 
         $this->assertEquals(2, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations meet.');
@@ -108,6 +108,8 @@ class AwardServiceTest extends TestCase
         $mission->shouldReceive('getAttribute')->with('coins')->andReturn(50);
         $mission->shouldReceive('getAttribute')->with('experience')->andReturn(100);
 
+        /** @var \App\Models\User $user */
+        /** @var \App\Models\Mission $mission */
         $this->userService
             ->shouldReceive('addExperience')
             ->once()
@@ -123,8 +125,6 @@ class AwardServiceTest extends TestCase
             ->once()
             ->with($user, $mission);
 
-        /** @var \App\Models\User $user */
-        /** @var \App\Models\Mission $mission */
         $this->awardService->handleMissionCompletion($user, $mission);
 
         $this->assertEquals(3, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations meet.');

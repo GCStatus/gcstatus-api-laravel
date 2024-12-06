@@ -45,6 +45,6 @@ class WalletService extends AbstractService implements WalletServiceInterface
         /** @var \App\Models\Wallet $wallet */
         $wallet = $this->repository()->findBy('user_id', $user->id);
 
-        $this->repository()->increment($wallet->id, $amount);
+        $this->repository()->decrement($wallet->id, $amount);
     }
 }

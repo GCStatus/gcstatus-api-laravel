@@ -5,6 +5,7 @@ namespace Tests\Unit\Repositories;
 use Mockery;
 use Tests\TestCase;
 use App\Models\{Status, MissionRequirement};
+use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 use Illuminate\Database\Eloquent\{Builder, Collection};
 use App\Contracts\Repositories\MissionRequirementRepositoryInterface;
 
@@ -34,6 +35,7 @@ class MissionRequirementRepositoryTest extends TestCase
      *
      * @return void
      */
+    #[RunInSeparateProcess]
     public function test_if_can_get_mission_requirements_for_given_key_when_available(): void
     {
         $key = 'mock_mission_key';

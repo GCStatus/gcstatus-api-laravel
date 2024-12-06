@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Services;
 
+use App\Contracts\Repositories\UserRepositoryInterface;
 use Mockery;
 use Tests\TestCase;
 use App\Models\User;
@@ -224,6 +225,34 @@ class UserServiceTest extends TestCase
 
         /** @var \App\Models\User $userMock */
         $this->userService->updateSensitives($userMock, $data);
+    }
+
+    /**
+     * Test if can add experience to the given user.
+     *
+     * @return void
+     */
+    public function test_if_can_add_experience_to_the_given_user(): void
+    {
+        $userId = 1;
+        $amount = 100;
+
+        $user = Mockery::mock(User::class);
+
+        $user->shouldReceive('getAttribute')->with('id')->andReturn($userId);
+
+        $userRepository = Mockery::mock(UserRepositoryInterface::class);
+
+        $this->app->instance(UserRepositoryInterface::class, $userRepository);
+
+        $userRepository
+            ->shouldReceive('addExperience')
+            ->once()
+            ->with($userId, $amount);
+
+        $this->userService->addExperience($userId, $amount);
+
+        $this->assertEquals(1, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations match.');
     }
 
     /**
