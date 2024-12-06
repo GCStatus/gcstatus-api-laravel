@@ -7,6 +7,7 @@ use Tests\TestCase;
 use Mockery\MockInterface;
 use Illuminate\Support\Carbon;
 use App\Models\{User, Mission, UserMission};
+use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 use App\Contracts\Services\UserMissionServiceInterface;
 use App\Contracts\Repositories\UserMissionRepositoryInterface;
 
@@ -47,6 +48,7 @@ class UserMissionServiceTest extends TestCase
      *
      * @return void
      */
+    #[RunInSeparateProcess]
     public function test_if_can_mark_a_mission_as_complete(): void
     {
         $user = Mockery::mock(User::class);
