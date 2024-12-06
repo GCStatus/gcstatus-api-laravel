@@ -5,6 +5,7 @@ namespace Tests\Unit\Repositories;
 use Mockery;
 use Tests\TestCase;
 use App\Models\User;
+use App\Repositories\UserRepository;
 use App\Contracts\Repositories\UserRepositoryInterface;
 
 class UserRepositoryTest extends TestCase
@@ -86,32 +87,22 @@ class UserRepositoryTest extends TestCase
         $userId = 1;
         $amount = 100;
 
-        $userMock = Mockery::mock(User::class);
-        $userMock->shouldAllowMockingProtectedMethods();
-        $userMock->shouldReceive('increment')
+        $mockUser = Mockery::mock(User::class);
+        $mockUser->shouldAllowMockingProtectedMethods();
+        $mockUser->shouldReceive('increment')
             ->once()
-            ->with('experience', $amount)
-            ->andReturnTrue();
+            ->with('experience', $amount);
 
-        $userRepository = Mockery::mock(UserRepositoryInterface::class);
-        $userRepository
-            ->shouldReceive('findOrFail')
-            ->once()
+        $mockRepository = Mockery::mock(UserRepository::class)->makePartial();
+
+        $mockRepository->shouldReceive('findOrFail')
             ->with($userId)
-            ->andReturn($userMock);
-        $userRepository
-            ->shouldReceive('addExperience')
-            ->once()
-            ->with($userId, $amount)
-            ->andReturnUsing(function (mixed $id, int $amount) use ($userRepository) {
-                /** @var \App\Contracts\Repositories\UserRepositoryInterface $userRepository */
-                return $userRepository->findOrFail($id)->increment('experience', $amount);
-            });
+            ->andReturn($mockUser);
 
-        /** @var \App\Contracts\Repositories\UserRepositoryInterface $userRepository */
-        $userRepository->addExperience($userId, $amount);
+        /** @var \App\Contracts\Repositories\UserRepositoryInterface $mockRepository */
+        $mockRepository->addExperience($userId, $amount);
 
-        $this->assertEquals(3, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations meet.');
+        $this->assertEquals(1, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations meet.');
     }
 
     /**

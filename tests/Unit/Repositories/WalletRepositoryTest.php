@@ -5,6 +5,7 @@ namespace Tests\Unit\Repositories;
 use Mockery;
 use Tests\TestCase;
 use App\Models\Wallet;
+use App\Repositories\WalletRepository;
 use App\Contracts\Repositories\WalletRepositoryInterface;
 
 class WalletRepositoryTest extends TestCase
@@ -51,36 +52,23 @@ class WalletRepositoryTest extends TestCase
         $amount = 100;
 
         $wallet = Mockery::mock(Wallet::class);
-        $walletRepository = Mockery::mock(WalletRepositoryInterface::class);
-
         $wallet->shouldAllowMockingProtectedMethods();
         $wallet->shouldReceive('increment')
             ->once()
             ->with('balance', $amount)
             ->andReturnTrue();
 
-        $wallet->shouldReceive('getAttribute')->with('id')->andReturn(1);
+        $walletRepository = Mockery::mock(WalletRepository::class)->makePartial();
 
-        /** @var \App\Models\Wallet $wallet */
-        $walletRepository
-            ->shouldReceive('findOrFail')
+        $walletRepository->shouldReceive('findOrFail')
             ->once()
-            ->with($wallet->id)
+            ->with(1)
             ->andReturn($wallet);
 
-        $walletRepository
-            ->shouldReceive('increment')
-            ->once()
-            ->with($wallet->id, $amount)
-            ->andReturnUsing(function (mixed $id, int $amount) use ($walletRepository) {
-                /** @var \App\Contracts\Repositories\WalletRepositoryInterface $walletRepository */
-                return $walletRepository->findOrFail($id)->increment('balance', $amount);
-            });
-
         /** @var \App\Contracts\Repositories\WalletRepositoryInterface $walletRepository */
-        $walletRepository->increment($wallet->id, $amount);
+        $walletRepository->increment(1, $amount);
 
-        $this->assertEquals(3, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations meet.');
+        $this->assertEquals(2, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations meet.');
     }
 
     /**
@@ -93,36 +81,23 @@ class WalletRepositoryTest extends TestCase
         $amount = 100;
 
         $wallet = Mockery::mock(Wallet::class);
-        $walletRepository = Mockery::mock(WalletRepositoryInterface::class);
-
         $wallet->shouldAllowMockingProtectedMethods();
         $wallet->shouldReceive('decrement')
             ->once()
             ->with('balance', $amount)
             ->andReturnTrue();
 
-        $wallet->shouldReceive('getAttribute')->with('id')->andReturn(1);
+        $walletRepository = Mockery::mock(WalletRepository::class)->makePartial();
 
-        /** @var \App\Models\Wallet $wallet */
-        $walletRepository
-            ->shouldReceive('findOrFail')
+        $walletRepository->shouldReceive('findOrFail')
             ->once()
-            ->with($wallet->id)
+            ->with(1)
             ->andReturn($wallet);
 
-        $walletRepository
-            ->shouldReceive('decrement')
-            ->once()
-            ->with($wallet->id, $amount)
-            ->andReturnUsing(function (mixed $id, int $amount) use ($walletRepository) {
-                /** @var \App\Contracts\Repositories\WalletRepositoryInterface $walletRepository */
-                return $walletRepository->findOrFail($id)->decrement('balance', $amount);
-            });
-
         /** @var \App\Contracts\Repositories\WalletRepositoryInterface $walletRepository */
-        $walletRepository->decrement($wallet->id, $amount);
+        $walletRepository->decrement(1, $amount);
 
-        $this->assertEquals(3, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations meet.');
+        $this->assertEquals(2, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations meet.');
     }
 
     /**
