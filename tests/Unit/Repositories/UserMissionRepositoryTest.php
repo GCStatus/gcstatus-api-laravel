@@ -4,8 +4,9 @@ namespace Tests\Unit\Repositories;
 
 use Mockery;
 use Tests\TestCase;
-use App\Models\{Mission, User, MissionRequirement, UserMission};
+use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 use App\Contracts\Repositories\UserMissionRepositoryInterface;
+use App\Models\{Mission, User, MissionRequirement, UserMission};
 
 class UserMissionRepositoryTest extends TestCase
 {
@@ -33,6 +34,7 @@ class UserMissionRepositoryTest extends TestCase
      *
      * @return void
      */
+    #[RunInSeparateProcess]
     public function test_if_can_update_or_create_user_mission(): void
     {
         $user = Mockery::mock(User::class);
