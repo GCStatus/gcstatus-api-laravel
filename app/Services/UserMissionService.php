@@ -42,4 +42,16 @@ class UserMissionService implements UserMissionServiceInterface
             'last_completed_at' => now(),
         ]);
     }
+
+    /**
+     * Check if user already completed mission.
+     *
+     * @param \App\Models\User $user
+     * @param \App\Models\Mission $mission
+     * @return bool
+     */
+    public function userAlreadyCompletedMission(User $user, Mission $mission): bool
+    {
+        return $this->userMissionRepository->userAlreadyCompletedMission($user->id, $mission->id);
+    }
 }

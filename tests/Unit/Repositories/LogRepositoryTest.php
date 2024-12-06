@@ -48,4 +48,28 @@ class LogRepositoryTest extends TestCase
 
         $this->logRepository->error($title, $message, $trace);
     }
+
+    /**
+     * Test if can log any with context.
+     *
+     * @return void
+     */
+    public function test_if_can_log_any_with_context(): void
+    {
+        $title = 'Failed title text.';
+        $message = 'Failed message text.';
+        $trace = (new Exception('Testing exception throwing.'))->getTraceAsString();
+
+        $context = [
+            'trace' => $trace,
+            'message' => $message,
+            'testing' => 'Asserting tested.',
+        ];
+
+        Log::shouldReceive('info')
+            ->once()
+            ->with($title, $context);
+
+        $this->logRepository->withContext($title, $context);
+    }
 }

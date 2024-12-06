@@ -2,17 +2,11 @@
 
 namespace Tests\Unit\Models;
 
-use App\Models\Mission;
+use App\Models\Rewardable;
 use Tests\Contracts\Models\BaseModelTesting;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\{
-    HasMany,
-    BelongsTo,
-    MorphMany,
-    BelongsToMany,
-    HasManyThrough,
-};
 use Tests\Contracts\Models\{
     ShouldTestCasts,
     ShouldTestTraits,
@@ -20,7 +14,7 @@ use Tests\Contracts\Models\{
     ShouldTestRelations,
 };
 
-class MissionTest extends BaseModelTesting implements
+class RewardableTest extends BaseModelTesting implements
     ShouldTestCasts,
     ShouldTestTraits,
     ShouldTestFillables,
@@ -33,7 +27,7 @@ class MissionTest extends BaseModelTesting implements
      */
     public function model(): string
     {
-        return Mission::class;
+        return Rewardable::class;
     }
 
     /**
@@ -44,13 +38,10 @@ class MissionTest extends BaseModelTesting implements
     public function test_fillable_attributes(): void
     {
         $fillable = [
-            'coins',
-            'mission',
-            'for_all',
-            'frequency',
-            'status_id',
-            'experience',
-            'description',
+            'sourceable_id',
+            'rewardable_id',
+            'sourceable_type',
+            'rewardable_type',
         ];
 
         $this->assertHasFillables($fillable);
@@ -94,11 +85,8 @@ class MissionTest extends BaseModelTesting implements
     public function test_relations_attributes(): void
     {
         $relations = [
-            'status' => BelongsTo::class,
-            'rewards' => MorphMany::class,
-            'users' => BelongsToMany::class,
-            'requirements' => HasMany::class,
-            'progresses' => HasManyThrough::class,
+            'sourceable' => MorphTo::class,
+            'rewardable' => MorphTo::class,
         ];
 
         $this->assertHasRelations($relations);

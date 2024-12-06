@@ -12,4 +12,13 @@ interface UserMissionRepositoryInterface
      * @return void
      */
     public function updateOrCreate(array $verifiable, array $updatable): void;
+
+    /**
+     * Check if user already completed mission.
+     *
+     * @param mixed $userId
+     * @param mixed $missionId
+     * @return bool
+     */
+    public function userAlreadyCompletedMission(mixed $userId, mixed $missionId): bool;
 }

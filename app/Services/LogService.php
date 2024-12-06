@@ -37,4 +37,16 @@ class LogService implements LogServiceInterface
     {
         $this->logRepository->error($title, $message, $trace);
     }
+
+    /**
+     * Log with context.
+     *
+     * @param string $title
+     * @param array<string, mixed> $context
+     * @return void
+     */
+    public function withContext(string $title, array $context): void
+    {
+        $this->logRepository->withContext($title, $context);
+    }
 }

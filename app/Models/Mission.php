@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\{
     HasMany,
     BelongsTo,
+    MorphMany,
     BelongsToMany,
     HasManyThrough,
 };
@@ -70,5 +71,15 @@ class Mission extends Model
     public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class)->using(MissionUser::class);
+    }
+
+    /**
+     * Get all of the rewards for the Mission
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany<Rewardable, $this>
+     */
+    public function rewards(): MorphMany
+    {
+        return $this->morphMany(Rewardable::class, 'sourceable');
     }
 }

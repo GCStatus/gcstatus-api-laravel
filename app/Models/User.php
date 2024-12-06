@@ -160,4 +160,17 @@ class User extends Authenticatable implements
     {
         return $this->belongsToMany(Mission::class)->using(MissionUser::class);
     }
+
+    /**
+     * The titles that belong to the Title
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<Title, $this>
+     */
+    public function titles(): BelongsToMany
+    {
+        return $this->belongsToMany(Title::class, 'user_titles')
+            ->using(UserTitle::class)
+            ->withPivot('enabled')
+            ->withTimestamps();
+    }
 }

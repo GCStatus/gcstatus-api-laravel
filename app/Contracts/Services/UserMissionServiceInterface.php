@@ -14,4 +14,13 @@ interface UserMissionServiceInterface
      * @return void
      */
     public function markMissionComplete(User $user, Mission $mission): void;
+
+    /**
+     * Check if user already completed mission.
+     *
+     * @param \App\Models\User $user
+     * @param \App\Models\Mission $mission
+     * @return bool
+     */
+    public function userAlreadyCompletedMission(User $user, Mission $mission): bool;
 }

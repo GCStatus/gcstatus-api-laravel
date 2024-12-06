@@ -2,6 +2,7 @@
 
 use App\Contracts\Services\{
     CacheServiceInterface,
+    LogServiceInterface,
     StorageServiceInterface,
     ProgressCalculatorServiceInterface,
 };
@@ -39,5 +40,17 @@ if (!function_exists('progressCalculator')) {
     function progressCalculator(): ProgressCalculatorServiceInterface
     {
         return resolve(ProgressCalculatorServiceInterface::class);
+    }
+}
+
+if (!function_exists('logService')) {
+    /**
+     * Bind the log service to helper function.
+     *
+     * @return \App\Contracts\Services\LogServiceInterface
+     */
+    function logService(): LogServiceInterface
+    {
+        return resolve(LogServiceInterface::class);
     }
 }

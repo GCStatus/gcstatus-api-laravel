@@ -2,16 +2,14 @@
 
 namespace Tests\Unit\Models;
 
-use App\Models\Mission;
+use App\Models\Title;
 use Tests\Contracts\Models\BaseModelTesting;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\{
-    HasMany,
+    MorphOne,
     BelongsTo,
-    MorphMany,
     BelongsToMany,
-    HasManyThrough,
 };
 use Tests\Contracts\Models\{
     ShouldTestCasts,
@@ -20,7 +18,7 @@ use Tests\Contracts\Models\{
     ShouldTestRelations,
 };
 
-class MissionTest extends BaseModelTesting implements
+class TitleTest extends BaseModelTesting implements
     ShouldTestCasts,
     ShouldTestTraits,
     ShouldTestFillables,
@@ -33,7 +31,7 @@ class MissionTest extends BaseModelTesting implements
      */
     public function model(): string
     {
-        return Mission::class;
+        return Title::class;
     }
 
     /**
@@ -44,13 +42,11 @@ class MissionTest extends BaseModelTesting implements
     public function test_fillable_attributes(): void
     {
         $fillable = [
-            'coins',
-            'mission',
-            'for_all',
-            'frequency',
+            'cost',
+            'title',
             'status_id',
-            'experience',
             'description',
+            'purchasable',
         ];
 
         $this->assertHasFillables($fillable);
@@ -65,6 +61,7 @@ class MissionTest extends BaseModelTesting implements
     {
         $casts = [
             'id' => 'int',
+            'purchasable' => 'bool',
             'deleted_at' => 'datetime',
         ];
 
@@ -95,10 +92,8 @@ class MissionTest extends BaseModelTesting implements
     {
         $relations = [
             'status' => BelongsTo::class,
-            'rewards' => MorphMany::class,
+            'rewardable' => MorphOne::class,
             'users' => BelongsToMany::class,
-            'requirements' => HasMany::class,
-            'progresses' => HasManyThrough::class,
         ];
 
         $this->assertHasRelations($relations);

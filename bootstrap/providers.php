@@ -8,4 +8,5 @@ return [
     App\Providers\HorizonServiceProvider::class,
     App\Providers\MissionStrategyServiceProvider::class,
     App\Providers\PulseServiceProvider::class,
+    App\Providers\RewardStrategyServiceProvider::class,
 ];

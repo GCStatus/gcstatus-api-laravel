@@ -2,7 +2,9 @@
 
 namespace App\Services;
 
-use App\Models\{User, Mission};
+use Throwable;
+use App\Models\{User, Mission, Rewardable};
+use App\Contracts\Factories\RewardStrategyFactoryInterface;
 use App\Contracts\Services\{
     UserServiceInterface,
     AwardServiceInterface,
@@ -34,6 +36,13 @@ class AwardService implements AwardServiceInterface
     private UserMissionServiceInterface $userMissionService;
 
     /**
+     * The reward strategy.
+     *
+     * @var \App\Contracts\Factories\RewardStrategyFactoryInterface
+     */
+    private RewardStrategyFactoryInterface $rewardStrategyFactory;
+
+    /**
      * Create a new class instance.
      *
      * @return void
@@ -43,6 +52,7 @@ class AwardService implements AwardServiceInterface
         $this->userService = app(UserServiceInterface::class);
         $this->walletService = app(WalletServiceInterface::class);
         $this->userMissionService = app(UserMissionServiceInterface::class);
+        $this->rewardStrategyFactory = app(RewardStrategyFactoryInterface::class);
     }
 
     /**
@@ -54,6 +64,10 @@ class AwardService implements AwardServiceInterface
      */
     public function handleMissionCompletion(User $user, Mission $mission): void
     {
+        if ($this->userMissionService->userAlreadyCompletedMission($user, $mission)) {
+            return;
+        }
+
         $this->awardCoinsAndExperience($user, $mission);
 
         $this->awardRewards($user, $mission);
@@ -83,6 +97,18 @@ class AwardService implements AwardServiceInterface
      */
     public function awardRewards(User $user, Mission $mission): void
     {
-        // TODO: Implement the award rewards method when exists.
+        $mission->rewards->each(function (Rewardable $rewardable) use ($user) {
+            try {
+                $strategy = $this->rewardStrategyFactory->resolve($rewardable);
+
+                $strategy->award($user, $rewardable);
+            } catch (Throwable $e) {
+                logService()->error(
+                    'Failed to award title to user.',
+                    $e->getMessage(),
+                    $e->getTraceAsString(),
+                );
+            }
+        });
     }
 }
