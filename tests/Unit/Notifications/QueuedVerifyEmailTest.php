@@ -84,7 +84,10 @@ class QueuedVerifyEmailTest extends TestCase
         QueuedVerifyEmail::createUrlUsing(function ($notifiable) {
             $this->assertInstanceOf(User::class, $notifiable);
 
-            return 'https://custom-url.com/verification/' . $notifiable->getKey();
+            /** @var string $notifiableKey */
+            $notifiableKey = $notifiable->getKey();
+
+            return "https://custom-url.com/verification/$notifiableKey";
         });
 
         $notification = new QueuedVerifyEmail();

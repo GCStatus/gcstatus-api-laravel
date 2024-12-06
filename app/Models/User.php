@@ -16,7 +16,9 @@ use App\Notifications\{
 };
 use Illuminate\Database\Eloquent\Relations\{
     HasOne,
+    HasMany,
     BelongsTo,
+    BelongsToMany,
 };
 
 #[ObservedBy([UserObserver::class])]
@@ -32,7 +34,7 @@ class User extends Authenticatable implements
     /**
      * The attributes that are mass assignable.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'name',
@@ -48,7 +50,7 @@ class User extends Authenticatable implements
     /**
      * The attributes that should be hidden for serialization.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $hidden = [
         'password',
@@ -137,5 +139,25 @@ class User extends Authenticatable implements
     public function profile(): HasOne
     {
         return $this->hasOne(Profile::class);
+    }
+
+    /**
+     * Get all of the transactions for the User
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<Transaction, $this>
+     */
+    public function transactions(): HasMany
+    {
+        return $this->hasMany(Transaction::class);
+    }
+
+    /**
+     * The missions that belong to the User
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<Mission, $this>
+     */
+    public function missions(): BelongsToMany
+    {
+        return $this->belongsToMany(Mission::class)->using(MissionUser::class);
     }
 }

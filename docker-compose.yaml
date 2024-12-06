@@ -8,10 +8,13 @@ services:
       CHOKIDAR_USEPOLLING: 'true'
     ports:
       - "8000:80"
+      - "443:443"
+      - "443:443/udp"
     volumes:
       - ".:/var/www"
     networks:
       - sail
+      - sail_external
     depends_on:
       - redis
       - mysql
@@ -48,6 +51,7 @@ services:
       - "saildatabase:/var/lib/mysql"
     networks:
       - sail
+      - sail_external
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin:latest
@@ -64,6 +68,8 @@ services:
 networks:
   sail:
     driver: bridge
+  sail_external:
+    external: true
 
 volumes:
   sailredis:

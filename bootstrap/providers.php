@@ -6,5 +6,6 @@ return [
     App\Providers\BindRepositoryInterfaceServiceProvider::class,
     App\Providers\BindServiceInterfaceServiceProvider::class,
     App\Providers\HorizonServiceProvider::class,
+    App\Providers\MissionStrategyServiceProvider::class,
     App\Providers\PulseServiceProvider::class,
 ];

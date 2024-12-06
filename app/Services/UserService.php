@@ -35,6 +35,18 @@ class UserService extends AbstractService implements UserServiceInterface
     }
 
     /**
+     * Increment experience for given user.
+     *
+     * @param mixed $id
+     * @param int $amount
+     * @return void
+     */
+    public function addExperience(mixed $id, int $amount): void
+    {
+        $this->repository()->addExperience($id, $amount);
+    }
+
+    /**
      * Update the user password.
      *
      * @param \App\Models\User $user

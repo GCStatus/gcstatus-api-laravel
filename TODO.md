@@ -1,0 +1,6 @@
+-   [ ] Refactor the repositories and services to correct CRUD data structure (not all will be created on this API);
+-   [ ] Review entire application types;
+-   [ ] Create cron jobs to reset mission with frequency - daily at midnight;
+-   [ ] Update arward method to deliver user titles on mission complete if applicable;
+-   [ ] Create documentation - Swagger/OpenAPI;
+-   [ ] Create database transactions;

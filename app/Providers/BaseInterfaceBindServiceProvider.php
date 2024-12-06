@@ -22,7 +22,7 @@ abstract class BaseInterfaceBindServiceProvider extends ServiceProvider
     ): void {
         $contractsPath = app_path($contractPath);
 
-        /** @var array<int, string> $files */
+        /** @var list<string> $files */
         $files = scandir($contractsPath);
 
         foreach ($files as $file) {

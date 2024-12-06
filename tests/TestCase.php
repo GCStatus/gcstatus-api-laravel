@@ -17,7 +17,7 @@ abstract class TestCase extends BaseTestCase
         parent::setUp();
 
         /** @var string $fakeFilesystemDisk */
-        $fakeFilesystemDisk = env('FILESYSTEM_DISK', 'aws');
+        $fakeFilesystemDisk = config('filesystems.default', 'aws');
 
         Storage::fake($fakeFilesystemDisk);
     }

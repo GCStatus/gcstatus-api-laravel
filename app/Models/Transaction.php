@@ -2,20 +2,23 @@
 
 namespace App\Models;
 
+use App\Observers\TransactionObserver;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\{Model, SoftDeletes};
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 
+#[ObservedBy(TransactionObserver::class)]
 class Transaction extends Model
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
+    /** @use HasFactory<\Database\Factories\TransactionFactory> */
     use HasFactory;
     use SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'amount',
@@ -27,7 +30,7 @@ class Transaction extends Model
     /**
      * The default relations to be loaded.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $with = [
         'type',

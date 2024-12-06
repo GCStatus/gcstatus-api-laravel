@@ -15,15 +15,12 @@ class WalletResource extends JsonResource
     public function toArray(Request $request): array
     {
         /** @var \App\Models\Wallet $wallet */
-        $wallet = $this;
+        $wallet = $this->resource;
 
-        /** @var array<string, mixed> $arrayable */
-        $arrayable = [
+        return [
             'id' => $wallet->id,
-            'amount' => $wallet->amount,
+            'balance' => $wallet->balance,
             'user' => UserResource::make($this->whenLoaded('user')),
         ];
-
-        return $arrayable;
     }
 }

@@ -16,7 +16,7 @@ class WalletResourceTest extends BaseResourceTesting
      */
     protected array $expectedStructure = [
         'id' => 'int',
-        'amount' => 'int',
+        'balance' => 'int',
         'user' => 'object',
     ];
 
@@ -49,7 +49,7 @@ class WalletResourceTest extends BaseResourceTesting
         $walletMock = Mockery::mock(Wallet::class)->makePartial();
         $walletMock->shouldAllowMockingMethod('getAttribute');
         $walletMock->shouldReceive('getAttribute')->with('id')->andReturn(1);
-        $walletMock->shouldReceive('getAttribute')->with('amount')->andReturn(100);
+        $walletMock->shouldReceive('getAttribute')->with('balance')->andReturn(100);
 
         $walletMock->shouldReceive('relationLoaded')
             ->with('user')

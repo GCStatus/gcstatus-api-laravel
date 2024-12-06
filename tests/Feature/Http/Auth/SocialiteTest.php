@@ -141,7 +141,7 @@ class SocialiteTest extends TestCase
         ]);
         $this->assertDatabaseCount('wallets', 1)->assertDatabaseHas('wallets', [
             'user_id' => 1,
-            'amount' => 0,
+            'balance' => 0,
         ]);
         $this->assertDatabaseCount('profiles', 1)->assertDatabaseHas('profiles', [
             'user_id' => 1,

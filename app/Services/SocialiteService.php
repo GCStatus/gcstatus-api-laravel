@@ -236,6 +236,7 @@ class SocialiteService implements SocialiteServiceInterface
      */
     public function getRedirectablePath(ModelsUser $user): string
     {
+        /** @var string $base */
         $base = config('gcstatus.front_base_url');
 
         /** @var string $path */

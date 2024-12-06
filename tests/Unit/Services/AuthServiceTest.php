@@ -5,7 +5,6 @@ namespace Tests\Unit\Services;
 use Mockery;
 use Tests\TestCase;
 use App\Models\User;
-use Mockery\MockInterface;
 use App\Services\AuthService;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Foundation\Application;
@@ -25,7 +24,7 @@ class AuthServiceTest extends TestCase
      *
      * @var \Mockery\MockInterface
      */
-    private MockInterface $mockRepository;
+    private $mockRepository;
 
     /**
      * Setup new test environments.

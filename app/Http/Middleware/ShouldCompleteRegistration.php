@@ -37,9 +37,10 @@ class ShouldCompleteRegistration
         /** @var \App\Models\User $user */
         $user = $this->authService->getAuthUser();
 
+        /** @var string $base */
         $base = config('gcstatus.front_base_url');
 
-        /** @var string $path */
+        /** @var non-falsy-string $path */
         $path = $base .= 'register/complete';
 
         if (!$user->password) {

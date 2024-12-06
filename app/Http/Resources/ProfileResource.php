@@ -15,10 +15,9 @@ class ProfileResource extends JsonResource
     public function toArray(Request $request): array
     {
         /** @var \App\Models\Profile $profile */
-        $profile = $this;
+        $profile = $this->resource;
 
-        /** @var array<string, mixed> $arrayable */
-        $arrayable = [
+        return [
             'id' => $profile->id,
             'photo' => storage()->getPath($profile->photo),
             'share' => $profile->share,
@@ -31,7 +30,5 @@ class ProfileResource extends JsonResource
             'instagram' => $profile->instagram,
             'user' => UserResource::make($this->whenLoaded('user')),
         ];
-
-        return $arrayable;
     }
 }

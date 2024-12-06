@@ -140,7 +140,7 @@ class SocialiteServiceTest extends TestCase
             ->once()
             ->withArgs(function (string $key, bool $value, DateTime $expiration) use (&$state) {
                 $state = str_replace('oauth_state_', '', $key);
-                return $value === true && $expiration instanceof DateTime;
+                return !!$value;
             });
 
         $this->mockSocialiteRepository
@@ -186,7 +186,6 @@ class SocialiteServiceTest extends TestCase
     {
         $result = $this->socialiteService->generateState();
 
-        $this->assertNotNull($result);
         $this->assertTrue(Str::length($result) === 40);
     }
 
@@ -254,7 +253,6 @@ class SocialiteServiceTest extends TestCase
         /** @var \Laravel\Socialite\Two\User $mockSocialiteUser */
         $result = $this->socialiteService->formatSocialUser($mockSocialiteUser);
 
-        $this->assertIsArray($result);
         $this->assertEqualsCanonicalizing([
             'id' => $id,
             'name' => $name,
@@ -345,9 +343,11 @@ class SocialiteServiceTest extends TestCase
     {
         // Recently created
         $mockUser = Mockery::mock(User::class)->makePartial();
+
+        /** @var string $base */
         $base = config('gcstatus.front_base_url');
 
-        /** @var string $path */
+        /** @var non-falsy-string $path */
         $path = $base . 'register/complete';
 
         /** @var \App\Models\User $mockUser */

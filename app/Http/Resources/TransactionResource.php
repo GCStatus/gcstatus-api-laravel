@@ -15,10 +15,9 @@ class TransactionResource extends JsonResource
     public function toArray(Request $request): array
     {
         /** @var \App\Models\Transaction $transaction */
-        $transaction = $this;
+        $transaction = $this->resource;
 
-        /** @var array<string, mixed> $arrayable */
-        $arrayable = [
+        return [
             'id' => $transaction->id,
             'amount' => $transaction->amount,
             'description' => $transaction->description,
@@ -26,7 +25,5 @@ class TransactionResource extends JsonResource
             'user' => UserResource::make($this->whenLoaded('user')),
             'type' => TransactionTypeResource::make($this->whenLoaded('type')),
         ];
-
-        return $arrayable;
     }
 }

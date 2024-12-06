@@ -15,17 +15,14 @@ class LevelResource extends JsonResource
     public function toArray(Request $request): array
     {
         /** @var \App\Models\Level $level */
-        $level = $this;
+        $level = $this->resource;
 
-        /** @var array<string, mixed> $arrayable */
-        $arrayable = [
+        return [
             'id' => $level->id,
             'level' => $level->level,
             'coins' => $level->coins,
             'experience' => $level->experience,
             'users' => UserResource::collection($this->whenLoaded('users')),
         ];
-
-        return $arrayable;
     }
 }

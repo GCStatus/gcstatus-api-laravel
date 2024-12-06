@@ -107,6 +107,6 @@ class JWTRepositoryTest extends TestCase
         /** @var \App\Contracts\Repositories\JWTRepositoryInterface $jwtRepository */
         $user = $jwtRepository->decode($token);
 
-        $this->assertNull($user);
+        $this->assertEmpty($user);
     }
 }

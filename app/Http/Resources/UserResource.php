@@ -15,10 +15,9 @@ class UserResource extends JsonResource
     public function toArray(Request $request): array
     {
         /** @var \App\Models\User $user */
-        $user = $this;
+        $user = $this->resource;
 
-        /** @var array<string, mixed> $arrayable */
-        $arrayable = [
+        return [
             'id' => $user->id,
             'name' => $user->name,
             'email' => $user->email,
@@ -31,7 +30,5 @@ class UserResource extends JsonResource
             'wallet' => WalletResource::make($this->whenLoaded('wallet')),
             'profile' => ProfileResource::make($this->whenLoaded('profile')),
         ];
-
-        return $arrayable;
     }
 }

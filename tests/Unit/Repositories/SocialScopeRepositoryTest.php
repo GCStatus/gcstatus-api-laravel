@@ -4,7 +4,6 @@ namespace Tests\Unit\Repositories;
 
 use Mockery;
 use Tests\TestCase;
-use Mockery\MockInterface;
 use App\Models\SocialScope;
 use App\Contracts\Repositories\SocialScopeRepositoryInterface;
 
@@ -15,7 +14,7 @@ class SocialScopeRepositoryTest extends TestCase
      *
      * @var \Mockery\MockInterface
      */
-    private MockInterface $socialScopeRepository;
+    private $socialScopeRepository;
 
     /**
      * Setup new test environments.

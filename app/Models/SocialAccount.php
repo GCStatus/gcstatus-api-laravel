@@ -8,14 +8,14 @@ use Illuminate\Database\Eloquent\Relations\{BelongsTo, HasMany};
 
 class SocialAccount extends Model
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
+    /** @use HasFactory<\Database\Factories\SocialAccountFactory> */
     use HasFactory;
     use SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'user_id',

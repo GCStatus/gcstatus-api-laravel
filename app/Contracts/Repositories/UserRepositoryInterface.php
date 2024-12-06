@@ -14,4 +14,13 @@ interface UserRepositoryInterface extends AbstractRepositoryInterface
      * @return \App\Models\User
      */
     public function firstOrCreate(array $searchable, array $creatable): User;
+
+    /**
+     * Increment experience for given user.
+     *
+     * @param mixed $id
+     * @param int $amount
+     * @return void
+     */
+    public function addExperience(mixed $id, int $amount): void;
 }

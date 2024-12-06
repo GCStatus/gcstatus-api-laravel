@@ -321,7 +321,7 @@ class RegisterTest extends BaseIntegrationTesting
         $userId = DB::table('users')->value('id');
 
         $this->assertDatabaseHas('wallets', [
-            'amount' => 0,
+            'balance' => 0,
             'user_id' => $userId,
         ]);
     }
