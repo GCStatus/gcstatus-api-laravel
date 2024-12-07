@@ -13,4 +13,13 @@ interface LogRepositoryInterface
      * @return void
      */
     public function error(string $title, string $message, ?string $trace = null): void;
+
+    /**
+     * Log with context.
+     *
+     * @param string $title
+     * @param array<string, mixed> $context
+     * @return void
+     */
+    public function withContext(string $title, array $context): void;
 }

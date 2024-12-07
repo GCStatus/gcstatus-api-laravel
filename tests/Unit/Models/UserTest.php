@@ -121,6 +121,7 @@ class UserTest extends BaseModelTesting implements
             'wallet' => HasOne::class,
             'profile' => HasOne::class,
             'level' => BelongsTo::class,
+            'titles' => BelongsToMany::class,
             'transactions' => HasMany::class,
             'missions' => BelongsToMany::class,
             'notifications' => MorphMany::class,

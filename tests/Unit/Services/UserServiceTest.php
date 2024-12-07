@@ -2,12 +2,12 @@
 
 namespace Tests\Unit\Services;
 
-use App\Contracts\Repositories\UserRepositoryInterface;
 use Mockery;
 use Tests\TestCase;
 use App\Models\User;
 use App\Repositories\UserRepository;
 use Illuminate\Support\Facades\Hash;
+use App\Contracts\Repositories\UserRepositoryInterface;
 use App\Exceptions\Password\CurrentPasswordDoesNotMatchException;
 use App\Contracts\Services\{
     UserServiceInterface,

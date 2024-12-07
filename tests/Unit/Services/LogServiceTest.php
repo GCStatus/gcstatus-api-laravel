@@ -64,6 +64,33 @@ class LogServiceTest extends TestCase
     }
 
     /**
+     * Test if can log any with context.
+     *
+     * @return void
+     */
+    public function test_if_can_log_any_with_context(): void
+    {
+        $title = 'Failed title text.';
+        $message = 'Failed message text.';
+        $trace = (new Exception('Testing exception throwing.'))->getTraceAsString();
+
+        $context = [
+            'trace' => $trace,
+            'message' => $message,
+            'testing' => 'Asserting tested.',
+        ];
+
+        $this->mockRepository
+            ->shouldReceive('withContext')
+            ->once()
+            ->with($title, $context);
+
+        $this->logService->withContext($title, $context);
+
+        $this->assertEquals(1, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations executed.');
+    }
+
+    /**
      * Cleanup Mockery after each test.
      *
      * @return void

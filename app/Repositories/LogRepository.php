@@ -22,4 +22,16 @@ class LogRepository implements LogRepositoryInterface
             'message' => $message,
         ]);
     }
+
+    /**
+     * Log with context.
+     *
+     * @param string $title
+     * @param array<string, mixed> $context
+     * @return void
+     */
+    public function withContext(string $title, array $context): void
+    {
+        Log::info($title, $context);
+    }
 }

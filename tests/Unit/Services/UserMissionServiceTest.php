@@ -6,6 +6,7 @@ use Mockery;
 use Tests\TestCase;
 use Mockery\MockInterface;
 use Illuminate\Support\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use App\Models\{User, Mission, UserMission};
 use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 use App\Contracts\Services\UserMissionServiceInterface;
@@ -75,6 +76,49 @@ class UserMissionServiceTest extends TestCase
         $this->userMissionService->markMissionComplete($user, $mission);
 
         $this->assertEquals(1, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations met.');
+    }
+
+    /**
+     * Test if can check if user already completed mission.
+     *
+     * @return void
+     */
+    #[RunInSeparateProcess]
+    public function test_if_can_check_if_user_already_completed_mission(): void
+    {
+        $userId = 1;
+        $missionId = 1;
+
+        $user = Mockery::mock(User::class);
+        $mission = Mockery::mock(Mission::class);
+        $builder = Mockery::mock(Builder::class);
+
+        $user->shouldReceive('getAttribute')->with('id')->andReturn($userId);
+        $mission->shouldReceive('getAttribute')->with('id')->andReturn($missionId);
+
+        /** @var \App\Models\User $user */
+        /** @var \App\Models\Mission $mission */
+        $builder
+            ->shouldReceive('where')
+            ->once()
+            ->with('user_id', $user->id)
+            ->andReturnSelf();
+        $builder
+            ->shouldReceive('where')
+            ->once()
+            ->with('mission_id', $mission->id)
+            ->andReturnSelf();
+        $builder
+            ->shouldReceive('exists')
+            ->once()
+            ->andReturn(fake()->boolean());
+
+        $userMission = Mockery::mock('overload:' . UserMission::class);
+        $userMission->shouldReceive('query')->andReturn($builder);
+
+        $this->userMissionService->userAlreadyCompletedMission($user, $mission);
+
+        $this->assertEquals(3, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations met.');
     }
 
     /**

@@ -4,6 +4,7 @@ namespace Tests\Unit\Helpers;
 
 use Tests\TestCase;
 use App\Contracts\Services\{
+    LogServiceInterface,
     CacheServiceInterface,
     StorageServiceInterface,
     ProgressCalculatorServiceInterface,
@@ -45,5 +46,17 @@ class ResolversTest extends TestCase
         $resolvedProgressCalculator = progressCalculator();
 
         $this->assertInstanceOf(ProgressCalculatorServiceInterface::class, $resolvedProgressCalculator);
+    }
+
+    /**
+     * Test if can get correct binded interface for log service.
+     *
+     * @return void
+     */
+    public function test_if_can_get_correct_binded_interface_for_log_service(): void
+    {
+        $resolvedLogService = logService();
+
+        $this->assertInstanceOf(LogServiceInterface::class, $resolvedLogService);
     }
 }
