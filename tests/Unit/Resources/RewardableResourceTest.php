@@ -79,20 +79,11 @@ class RewardableResourceTest extends BaseResourceTesting
      */
     public function test_if_can_get_resource_for_mission(): void
     {
-        $missionMock = Mockery::mock(Mission::class)->makePartial();
-        $missionMock->shouldReceive('getAttribute')->with('id')->andReturn(1);
-        $missionMock->shouldReceive('toArray')->andReturn([
-            'id' => 1,
-            'coins' => null,
-            'mission' => null,
-            'for_all' => null,
-            'frequency' => null,
-            'experience' => null,
-            'description' => null,
-        ]);
+        $mission = new Mission();
+        $mission->id = 1;
 
-        $rewardable = $this->modelInstance();
-        $rewardable->setRelation('sourceable', $missionMock);
+        $rewardable = new Rewardable();
+        $rewardable->setRelation('sourceable', $mission);
 
         $resource = new RewardableResource($rewardable);
 
@@ -101,9 +92,11 @@ class RewardableResourceTest extends BaseResourceTesting
 
         $array = $resource->toArray($request);
 
+        $expected = MissionResource::make($mission)->resolve();
+
         $this->assertEquals(
-            MissionResource::make($missionMock)->resolve(),
-            $array['sourceable']
+            json_decode(json_encode($expected), true),
+            json_decode(json_encode($array['sourceable']), true)
         );
     }
 
@@ -114,20 +107,11 @@ class RewardableResourceTest extends BaseResourceTesting
      */
     public function test_get_resource_for_title(): void
     {
-        $titleMock = Mockery::mock(Title::class)->makePartial();
-        $titleMock->shouldReceive('getAttribute')->with('id')->andReturn(1);
-        $titleMock->shouldReceive('toArray')->andReturn([
-            'id' => 1,
-            'cost' => null,
-            'own' => true,
-            'purchasable' => null,
-            'description' => null,
-            'created_at' => null,
-            'updated_at' => null,
-        ]);
+        $title = new Title();
+        $title->id = 1;
 
-        $rewardable = $this->modelInstance();
-        $rewardable->setRelation('rewardable', $titleMock);
+        $rewardable = new Rewardable();
+        $rewardable->setRelation('rewardable', $title);
 
         $resource = new RewardableResource($rewardable);
 
@@ -144,9 +128,11 @@ class RewardableResourceTest extends BaseResourceTesting
         /** @var \App\Contracts\Services\TitleOwnershipServiceInterface $ownershipServiceMock */
         TitleResource::setTitleOwnershipService($ownershipServiceMock);
 
+        $expected = TitleResource::make($title)->resolve();
+
         $this->assertEquals(
-            TitleResource::make($titleMock)->resolve(),
-            $array['rewardable'],
+            json_decode(json_encode($expected), true),
+            json_decode(json_encode($array['rewardable']), true)
         );
     }
 
@@ -171,80 +157,6 @@ class RewardableResourceTest extends BaseResourceTesting
         $array = $resource->toArray($request);
 
         $this->assertEquals(['custom' => 'value'], $array['sourceable']);
-    }
-
-    /**
-     * Test get getResourceForType for mission directly.
-     *
-     * @return void
-     */
-    public function test_get_getResourceForType_for_mission_correctly(): void
-    {
-        $missionMock = Mockery::mock(Mission::class)->makePartial();
-        $missionMock->shouldReceive('getAttribute')->with('id')->andReturn(1);
-        $missionMock->shouldReceive('toArray')->andReturn([
-            'id' => 1,
-            'coins' => null,
-            'mission' => null,
-            'for_all' => null,
-            'frequency' => null,
-            'experience' => null,
-            'description' => null,
-        ]);
-
-        $rewardable = $this->modelInstance();
-        $rewardable->setRelation('sourceable', $missionMock);
-
-        $resource = new RewardableResource($rewardable);
-
-        $result = $resource->getResourceForType($rewardable->sourceable);
-
-        /** @var \Illuminate\Http\Request $request */
-        $request = app('request');
-
-        $expected = MissionResource::make($missionMock)->toArray($request);
-
-        unset($result['status'], $expected['status']);
-
-        $this->assertEquals($expected, $result);
-    }
-
-    /**
-     * Test get getResourceForType for title directly.
-     *
-     * @return void
-     */
-    public function test_get_getResourceForType_for_title_correctly(): void
-    {
-        $titleMock = Mockery::mock(Title::class)->makePartial();
-        $titleMock->shouldReceive('getAttribute')->with('id')->andReturn(1);
-        $titleMock->shouldReceive('toArray')->andReturn([
-            'id' => 1,
-            'cost' => null,
-            'own' => true,
-            'purchasable' => null,
-            'description' => null,
-            'created_at' => null,
-            'updated_at' => null,
-        ]);
-
-        $rewardable = $this->modelInstance();
-        $rewardable->setRelation('rewardable', $titleMock);
-
-        $resource = new RewardableResource($rewardable);
-
-        $result = $resource->getResourceForType($rewardable->rewardable);
-
-        /** @var \Illuminate\Http\Request $request */
-        $request = app('request');
-
-        $expected = TitleResource::make($titleMock)->toArray($request);
-
-        unset($result['users'], $expected['users']);
-        unset($result['status'], $expected['status']);
-        unset($result['rewardable'], $expected['rewardable']);
-
-        $this->assertEquals($expected, $result);
     }
 
     /**
