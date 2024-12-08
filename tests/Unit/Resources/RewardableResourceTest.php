@@ -2,14 +2,13 @@
 
 namespace Tests\Unit\Resources;
 
-use App\Http\Resources\MissionResource;
 use Mockery;
 use Illuminate\Database\Eloquent\Model;
-use App\Http\Resources\RewardableResource;
-use App\Http\Resources\TitleResource;
 use App\Models\{Title, Mission, Rewardable};
 use Illuminate\Http\Resources\Json\JsonResource;
 use Tests\Contracts\Resources\BaseResourceTesting;
+use App\Contracts\Services\TitleOwnershipServiceInterface;
+use App\Http\Resources\{TitleResource, RewardableResource, MissionResource};
 
 class RewardableResourceTest extends BaseResourceTesting
 {
@@ -82,7 +81,15 @@ class RewardableResourceTest extends BaseResourceTesting
     {
         $missionMock = Mockery::mock(Mission::class)->makePartial();
         $missionMock->shouldReceive('getAttribute')->with('id')->andReturn(1);
-        $missionMock->shouldReceive('toArray')->andReturn(['id' => 1]);
+        $missionMock->shouldReceive('toArray')->andReturn([
+            'id' => 1,
+            'coins' => null,
+            'mission' => null,
+            'for_all' => null,
+            'frequency' => null,
+            'experience' => null,
+            'description' => null,
+        ]);
 
         $rewardable = $this->modelInstance();
         $rewardable->setRelation('sourceable', $missionMock);
@@ -94,13 +101,10 @@ class RewardableResourceTest extends BaseResourceTesting
 
         $array = $resource->toArray($request);
 
-        /** @var array<string, mixed> $sourceable */
-        $sourceable = $array['sourceable'];
-
-        /** @var \App\Models\Mission $missionMock */
-        $this->assertEquals($missionMock->toArray(), $sourceable);
-
-        $this->assertInstanceOf(MissionResource::class, MissionResource::make($missionMock));
+        $this->assertEquals(
+            MissionResource::make($missionMock)->resolve(),
+            $array['sourceable']
+        );
     }
 
     /**
@@ -112,7 +116,15 @@ class RewardableResourceTest extends BaseResourceTesting
     {
         $titleMock = Mockery::mock(Title::class)->makePartial();
         $titleMock->shouldReceive('getAttribute')->with('id')->andReturn(1);
-        $titleMock->shouldReceive('toArray')->andReturn(['id' => 1]);
+        $titleMock->shouldReceive('toArray')->andReturn([
+            'id' => 1,
+            'cost' => null,
+            'own' => true,
+            'purchasable' => null,
+            'description' => null,
+            'created_at' => null,
+            'updated_at' => null,
+        ]);
 
         $rewardable = $this->modelInstance();
         $rewardable->setRelation('rewardable', $titleMock);
@@ -124,13 +136,18 @@ class RewardableResourceTest extends BaseResourceTesting
 
         $array = $resource->toArray($request);
 
-        /** @var array<string, mixed> $rewardable */
-        $rewardable = $array['rewardable'];
+        $ownershipServiceMock = Mockery::mock(TitleOwnershipServiceInterface::class);
+        $ownershipServiceMock
+            ->shouldReceive('isOwnedByCurrentUser')
+            ->andReturnTrue();
 
-        /** @var \App\Models\Title $titleMock */
-        $this->assertEquals($titleMock->toArray(), $rewardable);
+        /** @var \App\Contracts\Services\TitleOwnershipServiceInterface $ownershipServiceMock */
+        TitleResource::setTitleOwnershipService($ownershipServiceMock);
 
-        $this->assertInstanceOf(TitleResource::class, TitleResource::make($titleMock));
+        $this->assertEquals(
+            TitleResource::make($titleMock)->resolve(),
+            $array['rewardable'],
+        );
     }
 
     /**
