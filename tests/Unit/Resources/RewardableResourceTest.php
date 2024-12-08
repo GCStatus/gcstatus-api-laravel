@@ -2,9 +2,11 @@
 
 namespace Tests\Unit\Resources;
 
+use App\Http\Resources\MissionResource;
 use Mockery;
 use Illuminate\Database\Eloquent\Model;
 use App\Http\Resources\RewardableResource;
+use App\Http\Resources\TitleResource;
 use App\Models\{Title, Mission, Rewardable};
 use Illuminate\Http\Resources\Json\JsonResource;
 use Tests\Contracts\Resources\BaseResourceTesting;
@@ -95,7 +97,10 @@ class RewardableResourceTest extends BaseResourceTesting
         /** @var array<string, mixed> $sourceable */
         $sourceable = $array['sourceable'];
 
-        $this->assertEquals(1, $sourceable['id']);
+        /** @var \App\Models\Mission $missionMock */
+        $this->assertEquals($missionMock->toArray(), $sourceable);
+
+        $this->assertInstanceOf(MissionResource::class, MissionResource::make($missionMock));
     }
 
     /**
@@ -122,7 +127,10 @@ class RewardableResourceTest extends BaseResourceTesting
         /** @var array<string, mixed> $rewardable */
         $rewardable = $array['rewardable'];
 
-        $this->assertEquals(1, $rewardable['id']);
+        /** @var \App\Models\Title $titleMock */
+        $this->assertEquals($titleMock->toArray(), $rewardable);
+
+        $this->assertInstanceOf(TitleResource::class, TitleResource::make($titleMock));
     }
 
     /**
