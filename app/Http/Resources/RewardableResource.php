@@ -35,7 +35,7 @@ class RewardableResource extends JsonResource
      * @param \Illuminate\Database\Eloquent\Model|null $model
      * @return \Illuminate\Http\Resources\Json\JsonResource|array<mixed>
      */
-    private function getResourceForType(?Model $model): JsonResource|array
+    public function getResourceForType(?Model $model): JsonResource|array
     {
         if (!$model) {
             return new JsonResource([]);
