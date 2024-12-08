@@ -7,6 +7,7 @@ use App\Http\Controllers\{
     TitleController,
     Auth\LogoutController,
     TransactionController,
+    NotificationController,
     Profile\SocialController,
     Profile\PictureController,
     EmailVerify\NotifyController,
@@ -38,6 +39,16 @@ Route::middleware(['registration.should.complete'])->group(function () {
     Route::get('levels', LevelController::class)->name('levels.index');
     Route::get('titles', TitleController::class)->name('titles.index');
     Route::apiResource('transactions', TransactionController::class)->only('index', 'destroy');
+    Route::apiResource('notifications', NotificationController::class)->only('index', 'destroy');
+
+    Route::controller(NotificationController::class)->group(function () {
+        Route::put('notifications/{id}/read', 'markAsRead')->name('notifications.mark-as-read');
+        Route::put('notifications/{id}/unread', 'markAsUnread')->name('notifications.mark-as-unread');
+        Route::put('notifications/all/read', 'markAllAsRead')->name('notifications.mark-all-as-read');
+        Route::put('notifications/all/unread', 'markAllAsUnread')->name('notifications.mark-all-as-unread');
+        Route::put('notifications/all/remove', 'removeAll')->name('notifications.remove-all');
+    });
+
     Route::controller(UserController::class)->group(function () {
         Route::get('me', 'me')->name('auth.me');
         Route::put('users/basics/update', 'updateBasics')->name('users.basics.update');

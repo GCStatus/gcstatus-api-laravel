@@ -9,4 +9,5 @@ return [
     App\Providers\MissionStrategyServiceProvider::class,
     App\Providers\PulseServiceProvider::class,
     App\Providers\RewardStrategyServiceProvider::class,
+    Illuminate\Broadcasting\BroadcastServiceProvider::class,
 ];
