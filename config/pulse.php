@@ -1,8 +1,10 @@
 <?php
 
-use Laravel\Pulse\Http\Middleware\Authorize;
 use Laravel\Pulse\Pulse;
 use Laravel\Pulse\Recorders;
+use Laravel\Pulse\Http\Middleware\Authorize;
+use Laravel\Reverb\Pulse\Recorders\ReverbMessages;
+use Laravel\Reverb\Pulse\Recorders\ReverbConnections;
 
 return [
 
@@ -240,6 +242,14 @@ return [
             'ignore' => [
                 '#^/pulse$#', // Pulse dashboard...
             ],
+        ],
+
+        ReverbConnections::class => [
+            'sample_rate' => 1,
+        ],
+
+        ReverbMessages::class => [
+            'sample_rate' => 1,
         ],
     ],
 ];
