@@ -10,6 +10,7 @@ services:
       - "8000:80"
       - "443:443"
       - "443:443/udp"
+      - '${REVERB_PORT:-8080}:8080'
     volumes:
       - ".:/var/www"
     networks:
