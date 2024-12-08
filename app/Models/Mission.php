@@ -34,6 +34,28 @@ class Mission extends Model
     ];
 
     /**
+     * The relations that should be loaded by default.
+     *
+     * @var list<string>
+     */
+    protected $with = [
+        'status',
+    ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    public function casts(): array
+    {
+        return [
+            'for_all' => 'bool',
+            'status_id' => 'int',
+        ];
+    }
+
+    /**
      * Get the status that owns the Mission
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Status, $this>

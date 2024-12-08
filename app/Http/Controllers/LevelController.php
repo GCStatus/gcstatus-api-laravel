@@ -27,11 +27,11 @@ class LevelController extends Controller
     }
 
     /**
-     * Display a listing of the resource.
+     * Handle the incoming request.
      *
      * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
      */
-    public function index(): AnonymousResourceCollection
+    public function __invoke(): AnonymousResourceCollection
     {
         return LevelResource::collection(
             $this->levelService->all(),

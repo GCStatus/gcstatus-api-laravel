@@ -4,9 +4,9 @@ namespace Tests\Unit\Services;
 
 use Mockery;
 use PHPUnit\Framework\TestCase;
-use App\Models\{Mission, User, MissionRequirement};
 use App\Services\ProgressCalculatorService;
 use App\Contracts\Strategies\MissionStrategyInterface;
+use App\Models\{Mission, User, MissionRequirement, Status};
 use App\Contracts\Factories\MissionStrategyFactoryInterface;
 
 class ProgressCalculatorServiceTest extends TestCase
@@ -18,27 +18,77 @@ class ProgressCalculatorServiceTest extends TestCase
      */
     public function test_if_can_determine_progress(): void
     {
-        $mockFactory = $this->createMock(MissionStrategyFactoryInterface::class);
-        $mockStrategy = $this->createMock(MissionStrategyInterface::class);
+        $mockFactory = Mockery::mock(MissionStrategyFactoryInterface::class);
+        $mockStrategy = Mockery::mock(MissionStrategyInterface::class);
+        $userMock = Mockery::mock(User::class);
+        $requirementMock = Mockery::mock(MissionRequirement::class);
+        $missionMock = Mockery::mock(Mission::class);
 
-        $user = $this->createMock(User::class);
-        $requirement = $this->createMock(MissionRequirement::class);
+        $requirementMock
+            ->shouldReceive('getAttribute')
+            ->with('mission')
+            ->andReturn($missionMock);
 
-        $mockFactory->expects($this->once())
-            ->method('resolve')
-            ->with($requirement)
-            ->willReturn($mockStrategy);
+        $missionMock
+            ->shouldReceive('getAttribute')
+            ->with('status_id')
+            ->andReturn(Status::AVAILABLE_STATUS_ID);
 
-        $mockStrategy->expects($this->once())
-            ->method('calculateProgress')
-            ->with($user, $requirement)
-            ->willReturn(10);
+        $mockFactory
+            ->shouldReceive('resolve')
+            ->with($requirementMock)
+            ->once()
+            ->andReturn($mockStrategy);
 
+        $mockStrategy
+            ->shouldReceive('calculateProgress')
+            ->with($userMock, $requirementMock)
+            ->once()
+            ->andReturn(10);
+
+        /** @var \App\Contracts\Factories\MissionStrategyFactoryInterface $mockFactory */
         $service = new ProgressCalculatorService($mockFactory);
 
-        $progress = $service->determineProgress($user, $requirement);
+        /** @var \App\Models\User $userMock */
+        /** @var \App\Models\MissionRequirement $requirementMock */
+        $progress = $service->determineProgress($userMock, $requirementMock);
 
         $this->assertEquals(10, $progress);
+    }
+    /**
+     * Test if can't determine progress if mission is not available.
+     *
+     * @return void
+     */
+    public function test_if_cant_determine_progress_if_mission_is_not_available(): void
+    {
+        $mockFactory = Mockery::mock(MissionStrategyFactoryInterface::class);
+        $mockStrategy = Mockery::mock(MissionStrategyInterface::class);
+        $userMock = Mockery::mock(User::class);
+        $requirementMock = Mockery::mock(MissionRequirement::class);
+        $missionMock = Mockery::mock(Mission::class);
+
+        $requirementMock
+            ->shouldReceive('getAttribute')
+            ->with('mission')
+            ->andReturn($missionMock);
+
+        $missionMock
+            ->shouldReceive('getAttribute')
+            ->with('status_id')
+            ->andReturn(9999999);
+
+        $mockFactory->shouldNotReceive('resolve');
+        $mockStrategy->shouldNotReceive('calculateProgress');
+
+        /** @var \App\Contracts\Factories\MissionStrategyFactoryInterface $mockFactory */
+        $service = new ProgressCalculatorService($mockFactory);
+
+        /** @var \App\Models\User $userMock */
+        /** @var \App\Models\MissionRequirement $requirementMock */
+        $progress = $service->determineProgress($userMock, $requirementMock);
+
+        $this->assertEquals(0, $progress);
     }
 
     /**

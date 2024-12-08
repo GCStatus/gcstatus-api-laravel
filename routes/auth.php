@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\{
     UserController,
     LevelController,
+    TitleController,
     Auth\LogoutController,
     TransactionController,
     Profile\SocialController,
@@ -34,7 +35,8 @@ Route::middleware(['registration.should.complete'])->group(function () {
     Route::put('profiles/socials/update', SocialController::class)->name('profiles.socials.update');
     Route::put('profiles/picture/update', PictureController::class)->name('profiles.picture.update');
     Route::put('profiles/password/update', ResetPasswordController::class)->name('profiles.password.update');
-    Route::apiResource('levels', LevelController::class)->only('index');
+    Route::get('levels', LevelController::class)->name('levels.index');
+    Route::get('titles', TitleController::class)->name('titles.index');
     Route::apiResource('transactions', TransactionController::class)->only('index', 'destroy');
     Route::controller(UserController::class)->group(function () {
         Route::get('me', 'me')->name('auth.me');

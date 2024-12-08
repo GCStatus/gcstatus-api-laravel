@@ -9,13 +9,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Tests\Contracts\Models\{
     ShouldTestCasts,
     ShouldTestTraits,
+    ShouldTestConstants,
     ShouldTestFillables,
 };
 
 class StatusTest extends BaseModelTesting implements
     ShouldTestCasts,
     ShouldTestTraits,
-    ShouldTestFillables
+    ShouldTestFillables,
+    ShouldTestConstants
 {
     /**
      * The testable model string class.
@@ -69,5 +71,22 @@ class StatusTest extends BaseModelTesting implements
         ];
 
         $this->assertUsesTraits($traits);
+    }
+
+    /**
+     * The contract constant attributes that should be tested.
+     *
+     * @return void
+     */
+    public function test_constant_attributes(): void
+    {
+        $expectedConstants = [
+            'AVAILABLE_STATUS_ID' => 1,
+            'UNAVAILABLE_STATUS_ID' => 2,
+            'CREATED_AT' => 'created_at',
+            'UPDATED_AT' => 'updated_at',
+        ];
+
+        $this->assertHasConstants($expectedConstants);
     }
 }

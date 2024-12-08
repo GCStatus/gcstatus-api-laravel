@@ -2,13 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\UserResource;
+use App\Http\Resources\{
+    UserResource,
+    TitleResource,
+};
 use App\Http\Requests\User\{
     BasicUpdateRequest,
     SensitiveUpdateRequest,
 };
 use App\Contracts\Services\{
     AuthServiceInterface,
+    TitleOwnershipServiceInterface,
     UserServiceInterface,
 };
 
@@ -29,18 +33,28 @@ class UserController extends Controller
     private $userService;
 
     /**
+     * The title ownership service.
+     *
+     * @var \App\Contracts\Services\TitleOwnershipServiceInterface
+     */
+    private TitleOwnershipServiceInterface $titleOwnershipService;
+
+    /**
      * Create a new class instance.
      *
      * @param \App\Contracts\Services\AuthServiceInterface $authService
      * @param \App\Contracts\Services\UserServiceInterface $userService
+     * @param \App\Contracts\Services\TitleOwnershipServiceInterface $titleOwnershipService
      * @return void
      */
     public function __construct(
         AuthServiceInterface $authService,
         UserServiceInterface $userService,
+        TitleOwnershipServiceInterface $titleOwnershipService,
     ) {
         $this->authService = $authService;
         $this->userService = $userService;
+        $this->titleOwnershipService = $titleOwnershipService;
     }
 
     /**
@@ -50,9 +64,16 @@ class UserController extends Controller
      */
     public function me(): UserResource
     {
-        return UserResource::make(
-            $this->authService->getAuthUser(),
-        );
+        /** @var \App\Models\User $user */
+        $user = $this->authService->getAuthUser();
+
+        /** @var ?\App\Models\Title $title */
+        $title = $user->title;
+
+        TitleResource::setTitleOwnershipService($this->titleOwnershipService);
+        TitleResource::preloadOwnership([$title?->title]);
+
+        return UserResource::make($user);
     }
 
     /**
