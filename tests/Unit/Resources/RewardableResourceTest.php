@@ -94,9 +94,15 @@ class RewardableResourceTest extends BaseResourceTesting
 
         $expected = MissionResource::make($mission)->resolve();
 
+        /** @var non-empty-string $expected */
+        $expected = json_encode($expected);
+
+        /** @var non-empty-string $value */
+        $value = json_encode($array['sourceable']);
+
         $this->assertEquals(
-            json_decode(json_encode($expected), true),
-            json_decode(json_encode($array['sourceable']), true)
+            json_decode($expected, true),
+            json_decode($value, true)
         );
     }
 
@@ -130,9 +136,15 @@ class RewardableResourceTest extends BaseResourceTesting
 
         $expected = TitleResource::make($title)->resolve();
 
+        /** @var non-empty-string $expected */
+        $expected = json_encode($expected);
+
+        /** @var non-empty-string $value */
+        $value = json_encode($array['rewardable']);
+
         $this->assertEquals(
-            json_decode(json_encode($expected), true),
-            json_decode(json_encode($array['rewardable']), true)
+            json_decode($expected, true),
+            json_decode($value, true),
         );
     }
 
