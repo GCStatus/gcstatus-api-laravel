@@ -21,6 +21,7 @@ yarn-error.log
 /.vscode
 /.zed
 coverage.xml
+ray.php
 
 **/caddy
 frankenphp

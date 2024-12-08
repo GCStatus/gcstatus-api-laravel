@@ -65,6 +65,8 @@ class MissionTest extends BaseModelTesting implements
     {
         $casts = [
             'id' => 'int',
+            'for_all' => 'bool',
+            'status_id' => 'int',
             'deleted_at' => 'datetime',
         ];
 

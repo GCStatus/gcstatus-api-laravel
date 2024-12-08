@@ -4,8 +4,8 @@ namespace Tests\Unit\Resources;
 
 use Mockery;
 use App\Http\Resources\UserResource;
-use App\Models\{User, Level, Profile, Wallet};
 use Tests\Contracts\Resources\BaseResourceTesting;
+use App\Models\{User, Level, Profile, Title, Wallet};
 
 class UserResourceTest extends BaseResourceTesting
 {
@@ -26,6 +26,7 @@ class UserResourceTest extends BaseResourceTesting
         'updated_at' => 'string',
         'wallet' => 'object',
         'profile' => 'object',
+        'title' => 'object',
     ];
 
     /**
@@ -57,6 +58,10 @@ class UserResourceTest extends BaseResourceTesting
         $walletMock->shouldReceive('getAttribute')->with('id')->andReturn(1);
         $walletMock->shouldReceive('getAttribute')->with('balance')->andReturn(100);
 
+        $titleMock = Mockery::mock(Title::class);
+        $titleMock->shouldReceive('getAttribute')->with('id')->andReturn(1);
+        $titleMock->shouldReceive('getAttribute')->with('title')->andReturn(fake()->title());
+
         $userMock = Mockery::mock(User::class)->makePartial();
         $userMock->shouldAllowMockingMethod('getAttribute');
 
@@ -72,6 +77,7 @@ class UserResourceTest extends BaseResourceTesting
         $userMock->shouldReceive('getAttribute')->with('level')->andReturn($levelMock);
         $userMock->shouldReceive('getAttribute')->with('profile')->andReturn($profileMock);
         $userMock->shouldReceive('getAttribute')->with('wallet')->andReturn($walletMock);
+        $userMock->shouldReceive('getAttribute')->with('title')->andReturn($titleMock);
 
         /** @var \App\Models\User $castedUser */
         $castedUser = $userMock;

@@ -5,11 +5,11 @@ namespace App\Models;
 use App\Observers\UserObserver;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\{Builder, SoftDeletes};
 use App\Notifications\{
     QueuedVerifyEmail,
     QueuedResetPassword,
@@ -45,6 +45,18 @@ class User extends Authenticatable implements
         'nickname',
         'birthdate',
         'experience',
+    ];
+
+    /**
+     * The relations that should be loaded by default.
+     *
+     * @var list<string>
+     */
+    protected $with = [
+        'title',
+        'level',
+        'wallet',
+        'profile',
     ];
 
     /**
@@ -162,7 +174,7 @@ class User extends Authenticatable implements
     }
 
     /**
-     * The titles that belong to the Title
+     * The titles that belong to the User
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<Title, $this>
      */
@@ -172,5 +184,19 @@ class User extends Authenticatable implements
             ->using(UserTitle::class)
             ->withPivot('enabled')
             ->withTimestamps();
+    }
+
+    /**
+     * Get the title associated with the User
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne<UserTitle, $this>
+     */
+    public function title(): HasOne
+    {
+        return $this->hasOne(UserTitle::class)->ofMany([
+            'enabled' => 'max',
+        ], function (Builder $query) {
+            $query->where('enabled', true);
+        });
     }
 }

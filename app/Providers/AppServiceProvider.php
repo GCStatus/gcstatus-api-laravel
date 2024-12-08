@@ -8,7 +8,7 @@ use ReflectionMethod;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Contracts\Hashing\Hasher;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\{App, Auth, DB};
+use Illuminate\Support\Facades\{Auth, DB};
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Contracts\Foundation\Application;
 use App\Contracts\Services\CacheServiceInterface;
@@ -53,19 +53,6 @@ class AppServiceProvider extends ServiceProvider
 
             /** @var \App\Models\User $notifiable */
             return "{$baseUrl}password/reset/{$token}/?email={$notifiable->getEmailForPasswordReset()}";
-        });
-
-        app('db')->listen(function ($query) {
-            /** @var string $rule */
-            $rule = '/\b(pulse|cache_locks|queue:restart)\b/';
-
-            if (App::isLocal() && !(preg_match($rule, $query->sql) || preg_grep($rule, $query->bindings))) {
-                app('log')->info('Database log', [
-                    'sql' => $query->sql,
-                    'bindings' => $query->bindings,
-                    'time' => $query->time,
-                ]);
-            }
         });
 
         Builder::macro('getModelRelationships', function () {

@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Models\{User, Mission, MissionRequirement};
+use App\Models\{User, Mission, MissionRequirement, Status};
 use App\Contracts\Factories\MissionStrategyFactoryInterface;
 use App\Contracts\Services\ProgressCalculatorServiceInterface;
 
@@ -35,9 +35,16 @@ class ProgressCalculatorService implements ProgressCalculatorServiceInterface
      */
     public function determineProgress(User $user, MissionRequirement $requirement): int
     {
-        $strategy = $this->factory->resolve($requirement);
+        /** @var \App\Models\Mission $mission */
+        $mission = $requirement->mission;
 
-        return $strategy->calculateProgress($user, $requirement);
+        if ($this->assertCanCalculate($mission)) {
+            $strategy = $this->factory->resolve($requirement);
+
+            return $strategy->calculateProgress($user, $requirement);
+        }
+
+        return 0;
     }
 
     /**
@@ -70,5 +77,16 @@ class ProgressCalculatorService implements ProgressCalculatorServiceInterface
         }
 
         return true;
+    }
+
+    /**
+     * Assert can calculate the mission progress.
+     *
+     * @param \App\Models\Mission $mission
+     * @return bool
+     */
+    private function assertCanCalculate(Mission $mission): bool
+    {
+        return (int)$mission->status_id === Status::AVAILABLE_STATUS_ID;
     }
 }

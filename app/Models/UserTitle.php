@@ -31,6 +31,13 @@ class UserTitle extends Pivot
     public $incrementing = true;
 
     /**
+     * The user titles related table.
+     *
+     * @var string
+     */
+    public $table = 'user_titles';
+
+    /**
      * The attributes that should be cast.
      *
      * @return array<string, string>

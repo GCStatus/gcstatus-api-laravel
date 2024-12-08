@@ -5,9 +5,12 @@ namespace Tests\Unit\Repositories;
 use Mockery;
 use Tests\TestCase;
 use App\Models\User;
-use Tymon\JWTAuth\JWT;
-use App\Contracts\Repositories\JWTRepositoryInterface;
 use RuntimeException;
+use DateTimeImmutable;
+use Tymon\JWTAuth\JWT;
+use Lcobucci\JWT\Signer\Hmac\Sha256;
+use Lcobucci\JWT\Signer\Key\InMemory;
+use App\Contracts\Repositories\JWTRepositoryInterface;
 
 class JWTRepositoryTest extends TestCase
 {
@@ -88,24 +91,26 @@ class JWTRepositoryTest extends TestCase
      */
     public function test_if_can_throw_runtime_validation_exception_if_token_validation_fails(): void
     {
-        $token = 'invalid_token';
-        $jwtRepository = Mockery::mock(JWTRepositoryInterface::class);
+        /** @var \App\Repositories\JWTRepository $jwtRepository */
+        $jwtRepository = $this->jwtRepository;
 
-        $userMock = Mockery::mock(User::class)->makePartial();
-        $userMock->shouldAllowMockingMethod('setAttribute');
-        $userMock->shouldReceive('getAttribute')->with('id')->andReturn(1);
+        /** @var non-empty-string $key */
+        $key = config('app.key');
 
-        $jwtRepository
-            ->shouldReceive('decode')
-            ->once()
-            ->with($token)
-            ->andThrow(RuntimeException::class, 'Token validation failed');
+        $invalidToken = $jwtRepository->config
+            ->builder()
+            ->issuedBy('http://example.com')
+            ->issuedAt(new DateTimeImmutable())
+            ->expiresAt((new DateTimeImmutable())->modify('-1 hour'))
+            ->getToken(
+                new Sha256(),
+                InMemory::plainText($key),
+            )->toString();
 
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Token validation failed');
 
-        /** @var \App\Contracts\Repositories\JWTRepositoryInterface $jwtRepository */
-        $user = $jwtRepository->decode($token);
+        $user = $this->jwtRepository->decode($invalidToken);
 
         $this->assertEmpty($user);
     }

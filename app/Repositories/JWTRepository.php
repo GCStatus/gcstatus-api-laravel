@@ -25,7 +25,7 @@ class JWTRepository implements JWTRepositoryInterface
      *
      * @var \Lcobucci\JWT\Configuration
      */
-    protected $config;
+    public $config;
 
     /**
      * Create a new class instance.

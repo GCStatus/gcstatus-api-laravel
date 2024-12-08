@@ -26,4 +26,11 @@ class Status extends Model
      * @var int
      */
     public const AVAILABLE_STATUS_ID = 1;
+
+    /**
+     * The unavailable status id.
+     *
+     * @var int
+     */
+    public const UNAVAILABLE_STATUS_ID = 2;
 }

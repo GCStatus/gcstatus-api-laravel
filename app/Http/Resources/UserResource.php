@@ -17,6 +17,9 @@ class UserResource extends JsonResource
         /** @var \App\Models\User $user */
         $user = $this->resource;
 
+        /** @var ?\App\Models\Title $title */
+        $title = $user->title;
+
         return [
             'id' => $user->id,
             'name' => $user->name,
@@ -29,6 +32,7 @@ class UserResource extends JsonResource
             'updated_at' => $user->updated_at,
             'wallet' => WalletResource::make($this->whenLoaded('wallet')),
             'profile' => ProfileResource::make($this->whenLoaded('profile')),
+            'title' => TitleResource::make($this->whenLoaded('title', $title?->title)),
         ];
     }
 }

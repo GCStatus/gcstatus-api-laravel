@@ -3,10 +3,14 @@
 namespace Tests\Feature\Http\User;
 
 use App\Models\User;
+use Tests\Traits\HasDummyTitle;
 use Tests\Feature\Http\BaseIntegrationTesting;
+use App\Contracts\Services\TitleOwnershipServiceInterface;
 
 class UserMeTest extends BaseIntegrationTesting
 {
+    use HasDummyTitle;
+
     /**
      * The dummy authenticated user.
      *
@@ -57,7 +61,7 @@ class UserMeTest extends BaseIntegrationTesting
      */
     public function test_if_can_get_correctly_me_json_attributes_count(): void
     {
-        $this->getJson(route('auth.me'))->assertOk()->assertJsonCount(11, 'data');
+        $this->getJson(route('auth.me'))->assertOk()->assertJsonCount(12, 'data');
     }
 
     /**
@@ -67,6 +71,8 @@ class UserMeTest extends BaseIntegrationTesting
      */
     public function test_if_can_get_me_correctly_json_structure(): void
     {
+        $this->createDummyTitleToUser($this->user);
+
         $this->getJson(route('auth.me'))->assertOk()->assertJsonStructure([
             'data' => [
                 'id',
@@ -94,6 +100,19 @@ class UserMeTest extends BaseIntegrationTesting
                     'facebook',
                     'instagram',
                 ],
+                'title' => [
+                    'id',
+                    'own',
+                    'cost',
+                    'created_at',
+                    'updated_at',
+                    'purchasable',
+                    'description',
+                    'status' => [
+                        'id',
+                        'name',
+                    ],
+                ],
             ]
         ]);
     }
@@ -105,6 +124,8 @@ class UserMeTest extends BaseIntegrationTesting
      */
     public function test_if_can_get_correctly_me_json_data(): void
     {
+        $this->createDummyTitleToUser($this->user);
+
         /** @var \App\Models\Wallet $wallet */
         $wallet = $this->user->wallet;
 
@@ -113,6 +134,15 @@ class UserMeTest extends BaseIntegrationTesting
 
         /** @var \App\Models\Level $level */
         $level = $this->user->level;
+
+        /** @var \App\Models\Title $title */
+        $title = $this->user->title?->title;
+
+        /** @var \App\Models\Status $status */
+        $status = $title->status;
+
+        /** @var \App\Contracts\Services\TitleOwnershipServiceInterface $titleOwnershipService */
+        $titleOwnershipService = app(TitleOwnershipServiceInterface::class);
 
         $this->getJson(route('auth.me'))->assertOk()->assertJson([
             'data' => [
@@ -140,6 +170,19 @@ class UserMeTest extends BaseIntegrationTesting
                     'youtube' => $profile->youtube,
                     'facebook' => $profile->facebook,
                     'instagram' => $profile->instagram,
+                ],
+                'title' => [
+                    'id' => $title->id,
+                    'own' => $titleOwnershipService->isOwnedByCurrentUser($title),
+                    'cost' => $title->cost,
+                    'created_at' => $title->created_at?->toISOString(),
+                    'updated_at' => $title->updated_at?->toISOString(),
+                    'purchasable' => $title->purchasable,
+                    'description' => $title->description,
+                    'status' => [
+                        'id' => $status->id,
+                        'name' => $status->name,
+                    ],
                 ],
             ]
         ]);

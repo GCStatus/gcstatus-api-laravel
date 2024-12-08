@@ -118,6 +118,7 @@ class UserTest extends BaseModelTesting implements
     public function test_relations_attributes(): void
     {
         $relations = [
+            'title' => HasOne::class,
             'wallet' => HasOne::class,
             'profile' => HasOne::class,
             'level' => BelongsTo::class,
