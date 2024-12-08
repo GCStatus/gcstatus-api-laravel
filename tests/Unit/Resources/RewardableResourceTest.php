@@ -3,8 +3,10 @@
 namespace Tests\Unit\Resources;
 
 use Mockery;
-use App\Models\Rewardable;
+use Illuminate\Database\Eloquent\Model;
 use App\Http\Resources\RewardableResource;
+use App\Models\{Title, Mission, Rewardable};
+use Illuminate\Http\Resources\Json\JsonResource;
 use Tests\Contracts\Resources\BaseResourceTesting;
 
 class RewardableResourceTest extends BaseResourceTesting
@@ -44,6 +46,106 @@ class RewardableResourceTest extends BaseResourceTesting
 
         /** @var \App\Models\Rewardable $rewardableMock */
         return $rewardableMock;
+    }
+
+    /**
+     * Test if get resource for null model.
+     *
+     * @return void
+     */
+    public function test_if_get_resource_for_null_model(): void
+    {
+        $rewardable = $this->modelInstance();
+
+        $rewardable->setRelation('sourceable', null);
+        $rewardable->setRelation('rewardable', null);
+
+        $resource = new RewardableResource($rewardable);
+
+        /** @var \Illuminate\Http\Request $request */
+        $request = app('request');
+
+        $array = $resource->toArray($request);
+
+        $this->assertEquals(new JsonResource([]), $array['sourceable']);
+        $this->assertEquals(new JsonResource([]), $array['rewardable']);
+    }
+
+    /**
+     * Test if can get resource for mission.
+     *
+     * @return void
+     */
+    public function test_if_can_get_resource_for_mission(): void
+    {
+        $missionMock = Mockery::mock(Mission::class)->makePartial();
+        $missionMock->shouldReceive('getAttribute')->with('id')->andReturn(1);
+        $missionMock->shouldReceive('toArray')->andReturn(['id' => 1]);
+
+        $rewardable = $this->modelInstance();
+        $rewardable->setRelation('sourceable', $missionMock);
+
+        $resource = new RewardableResource($rewardable);
+
+        /** @var \Illuminate\Http\Request $request */
+        $request = app('request');
+
+        $array = $resource->toArray($request);
+
+        /** @var array<string, mixed> $sourceable */
+        $sourceable = $array['sourceable'];
+
+        $this->assertEquals(1, $sourceable['id']);
+    }
+
+    /**
+     * Test if can get resource for title.
+     *
+     * @return void
+     */
+    public function test_get_resource_for_title(): void
+    {
+        $titleMock = Mockery::mock(Title::class)->makePartial();
+        $titleMock->shouldReceive('getAttribute')->with('id')->andReturn(1);
+        $titleMock->shouldReceive('toArray')->andReturn(['id' => 1]);
+
+        $rewardable = $this->modelInstance();
+        $rewardable->setRelation('rewardable', $titleMock);
+
+        $resource = new RewardableResource($rewardable);
+
+        /** @var \Illuminate\Http\Request $request */
+        $request = app('request');
+
+        $array = $resource->toArray($request);
+
+        /** @var array<string, mixed> $rewardable */
+        $rewardable = $array['rewardable'];
+
+        $this->assertEquals(1, $rewardable['id']);
+    }
+
+    /**
+     * Test if can get resource for default case.
+     *
+     * @return void
+     */
+    public function test_if_can_get_resource_for_default_case(): void
+    {
+        $genericModel = Mockery::mock(Model::class)->makePartial();
+        $genericModel->shouldReceive('toArray')->andReturn(['custom' => 'value']);
+
+        $rewardable = $this->modelInstance();
+        $rewardable->setRelation('sourceable', $genericModel);
+
+        $resource = new RewardableResource($rewardable);
+
+        /** @var \Illuminate\Http\Request $request */
+        $request = app('request');
+
+        $array = $resource->toArray($request);
+
+        $this->assertEquals(['custom' => 'value'], $array['sourceable']);
     }
 
     /**
