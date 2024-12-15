@@ -42,11 +42,10 @@ Route::middleware(['registration.should.complete'])->group(function () {
     Route::apiResource('notifications', NotificationController::class)->only('index', 'destroy');
 
     Route::controller(NotificationController::class)->group(function () {
+        Route::put('notifications/all/read', 'markAllAsRead')->name('notifications.mark-all-as-read');
+        Route::delete('notifications/all/remove', 'removeAll')->name('notifications.remove-all');
         Route::put('notifications/{id}/read', 'markAsRead')->name('notifications.mark-as-read');
         Route::put('notifications/{id}/unread', 'markAsUnread')->name('notifications.mark-as-unread');
-        Route::put('notifications/all/read', 'markAllAsRead')->name('notifications.mark-all-as-read');
-        Route::put('notifications/all/unread', 'markAllAsUnread')->name('notifications.mark-all-as-unread');
-        Route::put('notifications/all/remove', 'removeAll')->name('notifications.remove-all');
     });
 
     Route::controller(UserController::class)->group(function () {

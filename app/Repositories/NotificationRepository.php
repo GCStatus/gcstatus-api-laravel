@@ -14,7 +14,7 @@ class NotificationRepository implements NotificationRepositoryInterface
      */
     public function all(User $user): Collection
     {
-        return $user->notifications;
+        return $user->notifications()->get();
     }
 
     /**
@@ -47,16 +47,13 @@ class NotificationRepository implements NotificationRepositoryInterface
     public function markAllAsRead(User $user): void
     {
         /** @var \Illuminate\Notifications\DatabaseNotificationCollection<int, \Illuminate\Notifications\DatabaseNotification> $notifications */
-        $notifications = $user->notifications;
+        $notifications = $user->notifications()->get();
 
         $notifications->markAsRead();
     }
 
     /**
-     * Remove a notification.
-     *
-     * @param \Illuminate\Notifications\DatabaseNotification $notification
-     * @return void
+     * @inheritDoc
      */
     public function remove(DatabaseNotification $notification): void
     {
@@ -64,15 +61,12 @@ class NotificationRepository implements NotificationRepositoryInterface
     }
 
     /**
-     * Remove all notifications.
-     *
-     * @param \App\Models\User $user
-     * @return void
+     * @inheritDoc
      */
     public function removeAll(User $user): void
     {
         /** @var \Illuminate\Notifications\DatabaseNotificationCollection<int, \Illuminate\Notifications\DatabaseNotification> $notifications */
-        $notifications = $user->notifications;
+        $notifications = $user->notifications()->get();
 
         $notifications->each->delete();
     }

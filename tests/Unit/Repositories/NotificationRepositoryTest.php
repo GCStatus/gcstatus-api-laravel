@@ -11,6 +11,7 @@ use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Notifications\DatabaseNotificationCollection;
 use App\Contracts\Repositories\NotificationRepositoryInterface;
+use Illuminate\Database\Eloquent\Builder;
 
 class NotificationRepositoryTest extends TestCase
 {
@@ -41,14 +42,21 @@ class NotificationRepositoryTest extends TestCase
     public function test_if_can_get_all_user_notifications(): void
     {
         $user = Mockery::mock(User::class);
+        $builder = Mockery::mock(Builder::class);
         $notification = Mockery::mock(DatabaseNotification::class);
 
         $notificationCollection = Collection::make([$notification]);
 
         $user
-            ->shouldReceive('getAttribute')
+            ->shouldReceive('notifications')
             ->once()
-            ->with('notifications')
+            ->withNoArgs()
+            ->andReturn($builder);
+
+        $builder
+            ->shouldReceive('get')
+            ->once()
+            ->withNoArgs()
             ->andReturn($notificationCollection);
 
         /** @var \App\Models\User $user */
@@ -135,16 +143,27 @@ class NotificationRepositoryTest extends TestCase
     public function test_if_can_mark_all_notifications_as_read(): void
     {
         $user = Mockery::mock(User::class);
+        $builder = Mockery::mock(Builder::class);
 
         $notifications = Mockery::mock(DatabaseNotificationCollection::class);
         $notifications->shouldReceive('markAsRead')->once();
 
-        $user->shouldReceive('getAttribute')->once()->with('notifications')->andReturn($notifications);
+        $user
+            ->shouldReceive('notifications')
+            ->once()
+            ->withNoArgs()
+            ->andReturn($builder);
+
+        $builder
+            ->shouldReceive('get')
+            ->once()
+            ->withNoArgs()
+            ->andReturn($notifications);
 
         /** @var \App\Models\User $user */
         $this->notificationRepository->markAllAsRead($user);
 
-        $this->assertEquals(2, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations met.');
+        $this->assertEquals(3, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations met.');
     }
 
     /**
@@ -171,6 +190,7 @@ class NotificationRepositoryTest extends TestCase
     public function test_if_can_remove_all_notifications_for_given_user(): void
     {
         $user = Mockery::mock(User::class);
+        $builder = Mockery::mock(Builder::class);
 
         $notificationMock = Mockery::mock(DatabaseNotificationCollection::class);
 
@@ -183,12 +203,22 @@ class NotificationRepositoryTest extends TestCase
                 return true;
             }));
 
-        $user->shouldReceive('getAttribute')->with('notifications')->andReturn($notificationMock);
+        $user
+            ->shouldReceive('notifications')
+            ->once()
+            ->withNoArgs()
+            ->andReturn($builder);
+
+        $builder
+            ->shouldReceive('get')
+            ->once()
+            ->withNoArgs()
+            ->andReturn($notificationMock);
 
         /** @var \App\Models\User $user */
         $this->notificationRepository->removeAll($user);
 
-        $this->assertEquals(2, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations met.');
+        $this->assertEquals(4, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations met.');
     }
 
     /**
