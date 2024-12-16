@@ -170,7 +170,7 @@ class User extends Authenticatable implements
      */
     public function missions(): BelongsToMany
     {
-        return $this->belongsToMany(Mission::class)->using(MissionUser::class);
+        return $this->belongsToMany(Mission::class, 'mission_users')->using(MissionUser::class);
     }
 
     /**

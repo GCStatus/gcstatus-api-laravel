@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\{Model, SoftDeletes};
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\{BelongsTo, HasMany};
+use Illuminate\Database\Eloquent\Relations\{HasOne, BelongsTo, HasMany};
 
 class MissionRequirement extends Model
 {
@@ -43,5 +43,15 @@ class MissionRequirement extends Model
     public function progresses(): HasMany
     {
         return $this->hasMany(UserMissionProgress::class);
+    }
+
+    /**
+     * Get the progress for the authenticated user.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne<UserMissionProgress, $this>
+     */
+    public function userProgress(): HasOne
+    {
+        return $this->hasOne(UserMissionProgress::class);
     }
 }

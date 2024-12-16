@@ -23,7 +23,7 @@ class MissionFactory extends Factory
             'description' => fake()->realText(),
             'coins' => fake()->numberBetween(1, 99999),
             'experience' => fake()->numberBetween(1, 99999),
-            'frequency' => fake()->randomElement(['one_time', 'daily', 'weekly', 'monthly', 'early']),
+            'frequency' => fake()->randomElement(['one_time', 'daily', 'weekly', 'monthly', 'yearly']),
             'status_id' => Status::factory()->create(),
         ];
     }

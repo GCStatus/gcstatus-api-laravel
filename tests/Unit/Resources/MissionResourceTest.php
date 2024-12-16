@@ -23,6 +23,9 @@ class MissionResourceTest extends BaseResourceTesting
         'experience' => 'int',
         'frequency' => 'string',
         'description' => 'string',
+        'progress' => 'object',
+        'rewards' => 'resourceCollection',
+        'requirements' => 'resourceCollection',
     ];
 
     /**

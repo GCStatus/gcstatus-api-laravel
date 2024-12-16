@@ -5,7 +5,6 @@ namespace Tests\Unit\Resources;
 use Mockery;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\{Title, Mission, Rewardable};
-use Illuminate\Http\Resources\Json\JsonResource;
 use Tests\Contracts\Resources\BaseResourceTesting;
 use App\Contracts\Services\TitleOwnershipServiceInterface;
 use App\Http\Resources\{TitleResource, RewardableResource, MissionResource};
@@ -19,6 +18,8 @@ class RewardableResourceTest extends BaseResourceTesting
      */
     protected array $expectedStructure = [
         'id' => 'int',
+        'rewardable_type' => 'string',
+        'sourceable_type' => 'string',
         'sourceable' => 'object',
         'rewardable' => 'object',
     ];
@@ -44,6 +45,8 @@ class RewardableResourceTest extends BaseResourceTesting
         $rewardableMock->shouldAllowMockingMethod('getAttribute');
 
         $rewardableMock->shouldReceive('getAttribute')->with('id')->andReturn(1);
+        $rewardableMock->shouldReceive('getAttribute')->with('rewardable_type')->andReturn(Title::class);
+        $rewardableMock->shouldReceive('getAttribute')->with('sourceable_type')->andReturn(Mission::class);
 
         /** @var \App\Models\Rewardable $rewardableMock */
         return $rewardableMock;
@@ -68,8 +71,8 @@ class RewardableResourceTest extends BaseResourceTesting
 
         $array = $resource->toArray($request);
 
-        $this->assertEquals(new JsonResource([]), $array['sourceable']);
-        $this->assertEquals(new JsonResource([]), $array['rewardable']);
+        $this->assertNull($array['sourceable']);
+        $this->assertNull($array['rewardable']);
     }
 
     /**
