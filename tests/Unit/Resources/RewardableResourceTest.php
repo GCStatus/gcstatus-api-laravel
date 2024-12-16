@@ -5,6 +5,7 @@ namespace Tests\Unit\Resources;
 use Mockery;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\{Title, Mission, Rewardable};
+use Illuminate\Http\Resources\Json\JsonResource;
 use Tests\Contracts\Resources\BaseResourceTesting;
 use App\Contracts\Services\TitleOwnershipServiceInterface;
 use App\Http\Resources\{TitleResource, RewardableResource, MissionResource};
@@ -73,6 +74,23 @@ class RewardableResourceTest extends BaseResourceTesting
 
         $this->assertNull($array['sourceable']);
         $this->assertNull($array['rewardable']);
+    }
+
+    /**
+     * Test if getResourceForType handles null model.
+     *
+     * @return void
+     */
+    public function test_if_get_resource_for_type_handles_null_model(): void
+    {
+        $rewardable = $this->modelInstance();
+
+        $resource = new RewardableResource($rewardable);
+
+        $result = $resource->getResourceForType(null);
+
+        $this->assertInstanceOf(JsonResource::class, $result);
+        $this->assertEquals([], $result->resolve());
     }
 
     /**
