@@ -56,6 +56,7 @@ class UserMissionProgressTest extends BaseModelTesting implements
     {
         $casts = [
             'id' => 'int',
+            'completed' => 'bool',
             'deleted_at' => 'datetime',
         ];
 

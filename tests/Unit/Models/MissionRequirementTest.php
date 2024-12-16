@@ -7,6 +7,7 @@ use Tests\Contracts\Models\BaseModelTesting;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\{
+    HasOne,
     HasMany,
     BelongsTo,
 };
@@ -91,6 +92,7 @@ class MissionRequirementTest extends BaseModelTesting implements
         $relations = [
             'mission' => BelongsTo::class,
             'progresses' => HasMany::class,
+            'userProgress' => HasOne::class,
         ];
 
         $this->assertHasRelations($relations);

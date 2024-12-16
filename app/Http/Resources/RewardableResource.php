@@ -24,8 +24,14 @@ class RewardableResource extends JsonResource
 
         return [
             'id' => $rewardable->id,
-            'sourceable' => $this->getResourceForType($rewardable->sourceable),
-            'rewardable' => $this->getResourceForType($rewardable->rewardable),
+            'rewardable_type' => $rewardable->rewardable_type,
+            'sourceable_type' => $rewardable->sourceable_type,
+            'sourceable' => $this->whenLoaded('sourceable', function () use ($rewardable) {
+                return $this->getResourceForType($rewardable->sourceable);
+            }),
+            'rewardable' => $this->whenLoaded('rewardable', function () use ($rewardable) {
+                return $this->getResourceForType($rewardable->rewardable);
+            }),
         ];
     }
 

@@ -7,6 +7,7 @@ use Tests\Contracts\Models\BaseModelTesting;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\{
+    HasOne,
     HasMany,
     BelongsTo,
     MorphMany,
@@ -98,6 +99,7 @@ class MissionTest extends BaseModelTesting implements
         $relations = [
             'status' => BelongsTo::class,
             'rewards' => MorphMany::class,
+            'userMission' => HasOne::class,
             'users' => BelongsToMany::class,
             'requirements' => HasMany::class,
             'progresses' => HasManyThrough::class,

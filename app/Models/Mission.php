@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\{Model, SoftDeletes};
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\{
+    HasOne,
     HasMany,
     BelongsTo,
     MorphMany,
@@ -92,7 +93,7 @@ class Mission extends Model
      */
     public function users(): BelongsToMany
     {
-        return $this->belongsToMany(User::class)->using(MissionUser::class);
+        return $this->belongsToMany(User::class, 'mission_users')->using(MissionUser::class);
     }
 
     /**
@@ -103,5 +104,15 @@ class Mission extends Model
     public function rewards(): MorphMany
     {
         return $this->morphMany(Rewardable::class, 'sourceable');
+    }
+
+    /**
+     * Get the status for the authenticated user.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne<UserMission, $this>
+     */
+    public function userMission(): HasOne
+    {
+        return $this->hasOne(UserMission::class);
     }
 }

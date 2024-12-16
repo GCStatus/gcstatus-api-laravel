@@ -17,8 +17,6 @@ class MissionResource extends JsonResource
         /** @var \App\Models\Mission $mission */
         $mission = $this->resource;
 
-        // TODO: implement requirements and rewards when create resource.
-
         return [
             'id' => $mission->id,
             'coins' => $mission->coins,
@@ -28,6 +26,9 @@ class MissionResource extends JsonResource
             'experience' => $mission->experience,
             'description' => $mission->description,
             'status' => StatusResource::make($this->whenLoaded('status')),
+            'progress' => UserMissionResource::make($this->whenLoaded('userMission')),
+            'rewards' => RewardableResource::collection($this->whenLoaded('rewards')),
+            'requirements' => MissionRequirementResource::collection($this->whenLoaded('requirements')),
         ];
     }
 }

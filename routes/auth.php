@@ -5,6 +5,7 @@ use App\Http\Controllers\{
     UserController,
     LevelController,
     TitleController,
+    MissionController,
     Auth\LogoutController,
     TransactionController,
     NotificationController,
@@ -40,6 +41,7 @@ Route::middleware(['registration.should.complete'])->group(function () {
     Route::get('titles', TitleController::class)->name('titles.index');
     Route::apiResource('transactions', TransactionController::class)->only('index', 'destroy');
     Route::apiResource('notifications', NotificationController::class)->only('index', 'destroy');
+    Route::apiResource('missions', MissionController::class)->only('index');
 
     Route::controller(NotificationController::class)->group(function () {
         Route::put('notifications/all/read', 'markAllAsRead')->name('notifications.mark-all-as-read');

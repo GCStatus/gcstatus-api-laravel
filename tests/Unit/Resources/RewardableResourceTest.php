@@ -19,6 +19,8 @@ class RewardableResourceTest extends BaseResourceTesting
      */
     protected array $expectedStructure = [
         'id' => 'int',
+        'rewardable_type' => 'string',
+        'sourceable_type' => 'string',
         'sourceable' => 'object',
         'rewardable' => 'object',
     ];
@@ -44,6 +46,8 @@ class RewardableResourceTest extends BaseResourceTesting
         $rewardableMock->shouldAllowMockingMethod('getAttribute');
 
         $rewardableMock->shouldReceive('getAttribute')->with('id')->andReturn(1);
+        $rewardableMock->shouldReceive('getAttribute')->with('rewardable_type')->andReturn(Title::class);
+        $rewardableMock->shouldReceive('getAttribute')->with('sourceable_type')->andReturn(Mission::class);
 
         /** @var \App\Models\Rewardable $rewardableMock */
         return $rewardableMock;
@@ -68,8 +72,25 @@ class RewardableResourceTest extends BaseResourceTesting
 
         $array = $resource->toArray($request);
 
-        $this->assertEquals(new JsonResource([]), $array['sourceable']);
-        $this->assertEquals(new JsonResource([]), $array['rewardable']);
+        $this->assertNull($array['sourceable']);
+        $this->assertNull($array['rewardable']);
+    }
+
+    /**
+     * Test if getResourceForType handles null model.
+     *
+     * @return void
+     */
+    public function test_if_get_resource_for_type_handles_null_model(): void
+    {
+        $rewardable = $this->modelInstance();
+
+        $resource = new RewardableResource($rewardable);
+
+        $result = $resource->getResourceForType(null);
+
+        $this->assertInstanceOf(JsonResource::class, $result);
+        $this->assertEquals([], $result->resolve());
     }
 
     /**
