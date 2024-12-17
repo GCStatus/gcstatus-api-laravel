@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\Database\CacheQueryBuilder;
 use Illuminate\Database\Eloquent\{Model, SoftDeletes};
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -10,6 +11,7 @@ class Status extends Model
     /** @use HasFactory<\Database\Factories\StatusFactory> */
     use HasFactory;
     use SoftDeletes;
+    use CacheQueryBuilder;
 
     /**
      * The attributes that are mass assignable.

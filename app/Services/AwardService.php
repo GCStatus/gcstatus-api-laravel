@@ -97,6 +97,8 @@ class AwardService implements AwardServiceInterface
      */
     public function awardRewards(User $user, Mission $mission): void
     {
+        $mission->load('rewards.rewardable');
+
         $mission->rewards->each(function (Rewardable $rewardable) use ($user) {
             try {
                 $strategy = $this->rewardStrategyFactory->resolve($rewardable);

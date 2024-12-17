@@ -43,6 +43,8 @@ Route::middleware(['registration.should.complete'])->group(function () {
     Route::apiResource('notifications', NotificationController::class)->only('index', 'destroy');
     Route::apiResource('missions', MissionController::class)->only('index');
 
+    Route::post('missions/{mission}', [MissionController::class, 'complete'])->name('missions.complete');
+
     Route::controller(NotificationController::class)->group(function () {
         Route::put('notifications/all/read', 'markAllAsRead')->name('notifications.mark-all-as-read');
         Route::delete('notifications/all/remove', 'removeAll')->name('notifications.remove-all');

@@ -3,6 +3,7 @@
 namespace Tests\Unit\Models;
 
 use App\Models\Rewardable;
+use App\Support\Database\CacheQueryBuilder;
 use Tests\Contracts\Models\BaseModelTesting;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
@@ -72,6 +73,7 @@ class RewardableTest extends BaseModelTesting implements
         $traits = [
             HasFactory::class,
             SoftDeletes::class,
+            CacheQueryBuilder::class,
         ];
 
         $this->assertUsesTraits($traits);

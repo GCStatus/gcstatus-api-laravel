@@ -19,6 +19,7 @@ class UserMissionRepository implements UserMissionRepositoryInterface
         return UserMission::query()
             ->where('user_id', $userId)
             ->where('mission_id', $missionId)
+            ->where('completed', true)
             ->exists();
     }
 

@@ -4,6 +4,8 @@ namespace Tests\Unit\Jobs;
 
 use Mockery;
 use Tests\TestCase;
+use ReflectionClass;
+use Mockery\MockInterface;
 use Illuminate\Support\Facades\{Bus, Queue};
 use Illuminate\Database\Eloquent\Collection;
 use App\Models\{User, Mission, MissionRequirement};
@@ -22,28 +24,28 @@ class CalculateMissionProgressByKeyJobTest extends TestCase
      *
      * @var \Mockery\MockInterface
      */
-    private $awardService;
+    private MockInterface $awardService;
 
     /**
      * The progress calculator service.
      *
      * @var \Mockery\MockInterface
      */
-    private $progressCalculatorService;
+    private MockInterface $progressCalculatorService;
 
     /**
      * The mission requirement service.
      *
      * @var \Mockery\MockInterface
      */
-    private $missionRequirementService;
+    private MockInterface $missionRequirementService;
 
     /**
      * The user mission progress service.
      *
      * @var \Mockery\MockInterface
      */
-    private $userMissionProgressService;
+    private MockInterface $userMissionProgressService;
 
     /**
      * Setup new test environments.
@@ -129,8 +131,10 @@ class CalculateMissionProgressByKeyJobTest extends TestCase
                 return $userArg === $user && in_array($requirementArg, [$missionRequirement1, $missionRequirement2]);
             });
 
-        $mission1 = Mockery::mock(Mission::class);
-        $mission2 = Mockery::mock(Mission::class);
+        $mission1 = Mockery::mock(Mission::class)->makePartial();
+        $mission2 = Mockery::mock(Mission::class)->makePartial();
+        $mission1->shouldReceive('getAttribute')->with('id')->andReturn(1);
+        $mission2->shouldReceive('getAttribute')->with('id')->andReturn(2);
 
         $missionRequirement1->shouldReceive('getAttribute')->with('mission')->andReturn($mission1);
         $missionRequirement2->shouldReceive('getAttribute')->with('mission')->andReturn($mission2);
@@ -138,9 +142,7 @@ class CalculateMissionProgressByKeyJobTest extends TestCase
         $this->progressCalculatorService
             ->shouldReceive('isMissionComplete')
             ->twice()
-            ->withArgs(function (User $userArg, Mission $missionArg) use ($user, $mission1, $mission2) {
-                return $userArg === $user && in_array($missionArg, [$mission1, $mission2]);
-            })->andReturnFalse();
+            ->andReturnFalse();
 
         $job = new CalculateMissionProgressByKeyJob($key, $user);
 
@@ -202,6 +204,67 @@ class CalculateMissionProgressByKeyJobTest extends TestCase
         });
 
         $this->assertEquals(3, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations match.');
+    }
+
+    /**
+     * Test if dispatched missions are correctly updated.
+     *
+     * @return void
+     */
+    public function test_if_dispatched_missions_are_correctly_updated(): void
+    {
+        Bus::fake();
+
+        $key = 'mock_missions_key';
+        $user = Mockery::mock(User::class)->makePartial();
+        $user->shouldReceive('getAttribute')->with('id')->andReturn(1);
+
+        $missionRequirement1 = Mockery::mock(MissionRequirement::class);
+        $missionRequirement2 = Mockery::mock(MissionRequirement::class);
+
+        $missionRequirements = Collection::make([$missionRequirement1, $missionRequirement2]);
+
+        $this->missionRequirementService
+            ->shouldReceive('findByKey')
+            ->once()
+            ->with($key)
+            ->andReturn($missionRequirements);
+
+        /** @var \App\Models\User $user */
+        $this->userMissionProgressService
+            ->shouldReceive('updateProgress')
+            ->twice()
+            ->withArgs(function ($userArg, $requirementArg) use ($user, $missionRequirement1, $missionRequirement2) {
+                return $userArg === $user && in_array($requirementArg, [$missionRequirement1, $missionRequirement2]);
+            });
+
+        $mission1 = Mockery::mock(Mission::class)->makePartial();
+        $mission2 = Mockery::mock(Mission::class)->makePartial();
+        $mission1->shouldReceive('getAttribute')->with('id')->andReturn(1);
+        $mission2->shouldReceive('getAttribute')->with('id')->andReturn(2);
+
+        $missionRequirement1->shouldReceive('getAttribute')->with('mission')->andReturn($mission1);
+        $missionRequirement2->shouldReceive('getAttribute')->with('mission')->andReturn($mission2);
+
+        $this->progressCalculatorService
+            ->shouldReceive('isMissionComplete')
+            ->twice()
+            ->andReturnTrue(); // Simulate both missions being complete
+
+        $job = new CalculateMissionProgressByKeyJob($key, $user);
+
+        $job->handle();
+
+        Bus::assertDispatched(GiveMissionRewardsJob::class, 2);
+
+        $reflection = new ReflectionClass($job);
+        $property = $reflection->getProperty('dispatchedMissions');
+        $property->setAccessible(true);
+        $dispatchedMissions = $property->getValue($job);
+
+        $this->assertCount(2, $dispatchedMissions);
+        $this->assertContains(1, $dispatchedMissions);
+        $this->assertContains(2, $dispatchedMissions);
     }
 
     /**

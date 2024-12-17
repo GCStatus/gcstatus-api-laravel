@@ -2,15 +2,15 @@
 
 namespace Tests\Unit\Services;
 
-use App\Contracts\Repositories\UserTitleRepositoryInterface;
 use Mockery;
 use Tests\TestCase;
+use App\Services\UserTitleService;
 use App\Models\{User, Title, UserTitle};
 use App\Repositories\UserTitleRepository;
-use App\Contracts\Services\UserTitleServiceInterface;
-use App\Exceptions\UserTitle\UserAlreadyHasGivenUserTitleException;
-use App\Services\UserTitleService;
 use Illuminate\Database\Eloquent\Collection;
+use App\Contracts\Services\UserTitleServiceInterface;
+use App\Contracts\Repositories\UserTitleRepositoryInterface;
+use App\Exceptions\UserTitle\UserAlreadyHasGivenUserTitleException;
 
 class UserTitleServiceTest extends TestCase
 {
@@ -55,15 +55,20 @@ class UserTitleServiceTest extends TestCase
     {
         $titleId = 1;
 
-        $user = Mockery::mock(User::class)->makePartial();
+        $user = Mockery::mock(User::class);
         $title = Mockery::mock(Title::class);
 
         $title->shouldReceive('getAttribute')->with('id')->andReturn($titleId);
 
+        $user->shouldReceive('load')
+            ->once()
+            ->with('titles')
+            ->andReturnSelf();
+
         $user->shouldReceive('getAttribute')
             ->with('titles')
             ->andReturn(Collection::make([
-                (object)['id' => $titleId],
+                (object)['pivot' => (object)['title_id' => $titleId]],
             ]));
 
         $this->expectException(UserAlreadyHasGivenUserTitleException::class);
@@ -84,13 +89,18 @@ class UserTitleServiceTest extends TestCase
         $userId = 1;
         $titleId = 2;
 
-        $user = Mockery::mock(User::class)->makePartial();
+        $user = Mockery::mock(User::class);
         $title = Mockery::mock(Title::class);
         $repository = Mockery::mock(UserTitleRepositoryInterface::class);
         $service = Mockery::mock(UserTitleService::class, [])->makePartial();
 
         $user->shouldReceive('getAttribute')->with('id')->andReturn($userId);
         $title->shouldReceive('getAttribute')->with('id')->andReturn($titleId);
+
+        $user->shouldReceive('load')
+            ->once()
+            ->with('titles')
+            ->andReturnSelf();
 
         $user->shouldReceive('getAttribute')
             ->with('titles')

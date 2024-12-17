@@ -135,6 +135,10 @@ class AwardServiceTest extends TestCase
         $rewardable->shouldReceive('getAttribute')->with('rewardable')->andReturn($title);
         $mission->shouldReceive('getAttribute')->with('rewards')->andReturn($rewardable);
 
+        $mission->shouldReceive('load')
+            ->with('rewards.rewardable')
+            ->andReturnSelf();
+
         $rewardable
             ->shouldReceive('each')
             ->once();
@@ -215,6 +219,10 @@ class AwardServiceTest extends TestCase
         $mission = Mockery::mock(Mission::class);
         $mission->shouldReceive('getAttribute')->with('rewards')->andReturn(Collection::make([$rewardable]));
 
+        $mission->shouldReceive('load')
+            ->with('rewards.rewardable')
+            ->andReturnSelf();
+
         $rewardStrategyFactoryMock
             ->shouldReceive('resolve')
             ->once()
@@ -248,6 +256,10 @@ class AwardServiceTest extends TestCase
         $user = Mockery::mock(User::class);
         $mission = Mockery::mock(Mission::class);
         $mission->shouldReceive('getAttribute')->with('rewards')->andReturn(Collection::make([$rewardable]));
+
+        $mission->shouldReceive('load')
+            ->with('rewards.rewardable')
+            ->andReturnSelf();
 
         $rewardStrategyFactoryMock
             ->shouldReceive('resolve')

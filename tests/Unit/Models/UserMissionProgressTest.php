@@ -3,6 +3,7 @@
 namespace Tests\Unit\Models;
 
 use App\Models\UserMissionProgress;
+use App\Support\Database\CacheQueryBuilder;
 use Tests\Contracts\Models\BaseModelTesting;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -73,6 +74,7 @@ class UserMissionProgressTest extends BaseModelTesting implements
         $traits = [
             HasFactory::class,
             SoftDeletes::class,
+            CacheQueryBuilder::class,
         ];
 
         $this->assertUsesTraits($traits);

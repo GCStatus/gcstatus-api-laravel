@@ -171,6 +171,10 @@ class ProgressCalculatorServiceTest extends TestCase
             ->with('requirements')
             ->andReturn([$requirement1, $requirement2]);
 
+        $mission->shouldReceive('load')
+            ->with('requirements')
+            ->once();
+
         $mockService->shouldReceive('isRequirementComplete')
             ->with($user, $requirement1)
             ->once()
@@ -209,6 +213,10 @@ class ProgressCalculatorServiceTest extends TestCase
         $mission->shouldReceive('getAttribute')
             ->with('requirements')
             ->andReturn([$requirement1, $requirement2]);
+
+        $mission->shouldReceive('load')
+            ->with('requirements')
+            ->once();
 
         $mockService->shouldReceive('isRequirementComplete')
             ->with($user, $requirement1)

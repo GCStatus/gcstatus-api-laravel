@@ -7,7 +7,6 @@ use App\Models\{User, MissionRequirement};
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use App\Contracts\Services\{
-    AwardServiceInterface,
     MissionRequirementServiceInterface,
     UserMissionProgressServiceInterface,
 };
@@ -25,18 +24,18 @@ class CalculateMissionProgressByKeyJob implements ShouldQueue
     public string $key;
 
     /**
+     * The array to store the already dispatched missions.
+     *
+     * @var array<int, int>
+     */
+    protected array $dispatchedMissions = [];
+
+    /**
      * The related user.
      *
      * @var \App\Models\User
      */
     public User $user;
-
-    /**
-     * The award service.
-     *
-     * @var \App\Contracts\Services\AwardServiceInterface
-     */
-    public AwardServiceInterface $awardService;
 
     /**
      * The mission requirements service.
@@ -63,7 +62,6 @@ class CalculateMissionProgressByKeyJob implements ShouldQueue
     {
         $this->key = $key;
         $this->user = $user;
-        $this->awardService = app(AwardServiceInterface::class);
         $this->missionRequirementService = app(MissionRequirementServiceInterface::class);
         $this->userMissionProgressService = app(UserMissionProgressServiceInterface::class);
     }
@@ -77,14 +75,18 @@ class CalculateMissionProgressByKeyJob implements ShouldQueue
     {
         $requirements = $this->missionRequirementService->findByKey($this->key);
 
-        $requirements->each(function (MissionRequirement $missionRequirement) {
-            $this->userMissionProgressService->updateProgress($this->user, $missionRequirement);
+        $requirements->each(function (MissionRequirement $requirement) {
+            $this->userMissionProgressService->updateProgress($this->user, $requirement);
 
             /** @var \App\Models\Mission $mission */
-            $mission = $missionRequirement->mission;
+            $mission = $requirement->mission;
 
-            if (progressCalculator()->isMissionComplete($this->user, $mission)) {
+            if (
+                !in_array($mission->id, $this->dispatchedMissions, true) &&
+                progressCalculator()->isMissionComplete($this->user, $mission)
+            ) {
                 GiveMissionRewardsJob::dispatch($this->user, $mission);
+                $this->dispatchedMissions[] = $mission->id;
             }
         });
     }
