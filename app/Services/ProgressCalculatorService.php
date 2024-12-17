@@ -70,6 +70,8 @@ class ProgressCalculatorService implements ProgressCalculatorServiceInterface
      */
     public function isMissionComplete(User $user, Mission $mission): bool
     {
+        $mission->load('requirements');
+
         foreach ($mission->requirements as $requirement) {
             if (!$this->isRequirementComplete($user, $requirement)) {
                 return false;

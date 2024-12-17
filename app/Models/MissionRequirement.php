@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\Database\CacheQueryBuilder;
 use Illuminate\Database\Eloquent\{Model, SoftDeletes};
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\{HasOne, BelongsTo, HasMany};
@@ -11,6 +12,7 @@ class MissionRequirement extends Model
     /** @use HasFactory<\Database\Factories\MissionRequirementFactory> */
     use HasFactory;
     use SoftDeletes;
+    use CacheQueryBuilder;
 
     /**
      * The attributes that are mass assignable.

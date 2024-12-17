@@ -124,6 +124,11 @@ class UserMissionRepositoryTest extends TestCase
             ->with('mission_id', $mission->id)
             ->andReturnSelf();
         $builder
+            ->shouldReceive('where')
+            ->once()
+            ->with('completed', true)
+            ->andReturnSelf();
+        $builder
             ->shouldReceive('exists')
             ->once()
             ->andReturn(fake()->boolean());
@@ -132,7 +137,7 @@ class UserMissionRepositoryTest extends TestCase
 
         $this->userMissionRepository->userAlreadyCompletedMission($user->id, $mission->id);
 
-        $this->assertEquals(3, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations met.');
+        $this->assertEquals(4, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations met.');
     }
 
     /**

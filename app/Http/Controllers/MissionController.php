@@ -56,4 +56,15 @@ class MissionController extends Controller
             $this->missionService->allForUser(),
         );
     }
+
+    /**
+     * Complete some mission.
+     *
+     * @param mixed $id
+     * @return \App\Http\Resources\MissionResource
+     */
+    public function complete(mixed $id): void
+    {
+        $this->missionService->complete($id);
+    }
 }
