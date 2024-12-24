@@ -2,8 +2,8 @@
 
 namespace App\Observers;
 
-use App\Models\Transaction;
 use App\Jobs\CalculateMissionProgressByKeyJob;
+use App\Models\{Transaction, MissionRequirement};
 
 class TransactionObserver
 {
@@ -18,6 +18,9 @@ class TransactionObserver
         /** @var \App\Models\User $user */
         $user = $transaction->user;
 
-        CalculateMissionProgressByKeyJob::dispatch('make_transactions', $user);
+        CalculateMissionProgressByKeyJob::dispatch(
+            MissionRequirement::TRANSACTIONS_COUNT_STRATEGY_KEY,
+            $user,
+        );
     }
 }

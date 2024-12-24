@@ -21,7 +21,7 @@ class MissionStrategyFactoryTest extends TestCase
         $factory = new MissionStrategyFactory();
         $mockStrategy = $this->createMock(MissionStrategyInterface::class);
 
-        $key = 'make_transactions';
+        $key = MissionRequirement::TRANSACTIONS_COUNT_STRATEGY_KEY;
 
         $factory->register($key, $mockStrategy);
 

@@ -7,7 +7,6 @@ use App\Models\{User, MissionRequirement};
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use App\Contracts\Services\{
-    AwardServiceInterface,
     MissionRequirementServiceInterface,
     UserMissionProgressServiceInterface,
 };
@@ -30,13 +29,6 @@ class CalculateMissionProgressByKeyJob implements ShouldQueue
      * @var \App\Models\User
      */
     public User $user;
-
-    /**
-     * The award service.
-     *
-     * @var \App\Contracts\Services\AwardServiceInterface
-     */
-    public AwardServiceInterface $awardService;
 
     /**
      * The mission requirements service.
@@ -63,7 +55,6 @@ class CalculateMissionProgressByKeyJob implements ShouldQueue
     {
         $this->key = $key;
         $this->user = $user;
-        $this->awardService = app(AwardServiceInterface::class);
         $this->missionRequirementService = app(MissionRequirementServiceInterface::class);
         $this->userMissionProgressService = app(UserMissionProgressServiceInterface::class);
     }
@@ -77,15 +68,8 @@ class CalculateMissionProgressByKeyJob implements ShouldQueue
     {
         $requirements = $this->missionRequirementService->findByKey($this->key);
 
-        $requirements->each(function (MissionRequirement $missionRequirement) {
-            $this->userMissionProgressService->updateProgress($this->user, $missionRequirement);
-
-            /** @var \App\Models\Mission $mission */
-            $mission = $missionRequirement->mission;
-
-            if (progressCalculator()->isMissionComplete($this->user, $mission)) {
-                GiveMissionRewardsJob::dispatch($this->user, $mission);
-            }
+        $requirements->each(function (MissionRequirement $requirement) {
+            $this->userMissionProgressService->updateProgress($this->user, $requirement);
         });
     }
 }

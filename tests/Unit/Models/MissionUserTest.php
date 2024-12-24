@@ -3,14 +3,17 @@
 namespace Tests\Unit\Models;
 
 use App\Models\MissionUser;
+use App\Support\Database\CacheQueryBuilder;
 use Tests\Contracts\Models\BaseModelTesting;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Tests\Contracts\Models\{
     ShouldTestFillables,
     ShouldTestRelations,
+    ShouldTestTraits,
 };
 
 class MissionUserTest extends BaseModelTesting implements
+    ShouldTestTraits,
     ShouldTestFillables,
     ShouldTestRelations
 {
@@ -37,6 +40,20 @@ class MissionUserTest extends BaseModelTesting implements
         ];
 
         $this->assertHasFillables($fillable);
+    }
+
+    /**
+     * The traits tests.
+     *
+     * @return void
+     */
+    public function test_traits_attributes(): void
+    {
+        $traits = [
+            CacheQueryBuilder::class,
+        ];
+
+        $this->assertUsesTraits($traits);
     }
 
     /**

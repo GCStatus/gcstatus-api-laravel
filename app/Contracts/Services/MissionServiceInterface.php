@@ -12,4 +12,12 @@ interface MissionServiceInterface
      * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator<\App\Models\Mission>
      */
     public function allForUser(): LengthAwarePaginator;
+
+    /**
+     * Complete some given mission for user.
+     *
+     * @param mixed $id
+     * @return void
+     */
+    public function complete(mixed $id): void;
 }

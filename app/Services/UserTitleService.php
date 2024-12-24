@@ -28,7 +28,9 @@ class UserTitleService extends AbstractService implements UserTitleServiceInterf
      */
     public function assignTitleToUser(User $user, Title $title): UserTitle
     {
-        if ($user->titles->contains('id', $title->id)) {
+        $user->load('titles');
+
+        if ($user->titles->contains('pivot.title_id', $title->id)) {
             throw new UserAlreadyHasGivenUserTitleException();
         }
 

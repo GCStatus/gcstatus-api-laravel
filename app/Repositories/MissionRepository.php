@@ -29,4 +29,15 @@ class MissionRepository implements MissionRepositoryInterface
             });
         })->paginate(10);
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function findOrFail(mixed $id): Mission
+    {
+        /** @var \App\Models\Mission $mission */
+        $mission = Mission::findOrFail($id);
+
+        return $mission;
+    }
 }

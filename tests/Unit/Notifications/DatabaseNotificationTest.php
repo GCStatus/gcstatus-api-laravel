@@ -1,5 +1,9 @@
 <?php
 
+namespace Tests\Unit\Notifications;
+
+use Mockery;
+use stdClass;
 use Tests\TestCase;
 use Illuminate\Support\Carbon;
 use Illuminate\Broadcasting\Channel;

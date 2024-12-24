@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use App\Support\Database\CacheQueryBuilder;
 use Illuminate\Database\Eloquent\Relations\{Pivot, BelongsTo};
 
 class MissionUser extends Pivot
 {
+    use CacheQueryBuilder;
+
     /**
      * The attributes that are mass assignable.
      *

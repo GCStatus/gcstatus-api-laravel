@@ -94,6 +94,29 @@ class MissionRepositoryTest extends TestCase
     }
 
     /**
+     * Test if can find or fail the mission by id.
+     *
+     * @return void
+     */
+    #[RunInSeparateProcess]
+    public function test_if_can_find_or_fail_the_mission_by_id(): void
+    {
+        $missionId = 1;
+
+        $mission = Mockery::mock('overload:' . Mission::class);
+        $mission->shouldReceive('getAttribute')->with('id')->andReturn($missionId);
+
+        $mission->shouldReceive('findOrFail')
+            ->once()
+            ->with($missionId)
+            ->andReturn($mission);
+
+        $result = $this->missionRepository->findOrFail($missionId);
+
+        $this->assertEquals($result, $mission);
+    }
+
+    /**
      * Tear down application tests.
      *
      * @return void

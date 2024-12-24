@@ -2,12 +2,11 @@
 
 namespace App\Providers;
 
+use App\Models\MissionRequirement;
 use Illuminate\Support\ServiceProvider;
 use App\Factories\MissionStrategyFactory;
+use App\Strategies\TransactionCountStrategy;
 use App\Contracts\Factories\MissionStrategyFactoryInterface;
-use App\Strategies\{
-    TransactionCountStrategy,
-};
 
 class MissionStrategyServiceProvider extends ServiceProvider
 {
@@ -22,7 +21,7 @@ class MissionStrategyServiceProvider extends ServiceProvider
             $registry = new MissionStrategyFactory();
 
             // Register strategies
-            $registry->register('make_transactions', new TransactionCountStrategy());
+            $registry->register(MissionRequirement::TRANSACTIONS_COUNT_STRATEGY_KEY, new TransactionCountStrategy());
 
             return $registry;
         });
