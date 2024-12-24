@@ -61,7 +61,7 @@ class MissionController extends Controller
      * Complete some mission.
      *
      * @param mixed $id
-     * @return \App\Http\Resources\MissionResource
+     * @return void
      */
     public function complete(mixed $id): void
     {

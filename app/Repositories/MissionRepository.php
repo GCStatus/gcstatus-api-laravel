@@ -35,6 +35,9 @@ class MissionRepository implements MissionRepositoryInterface
      */
     public function findOrFail(mixed $id): Mission
     {
-        return Mission::findOrFail($id);
+        /** @var \App\Models\Mission $mission */
+        $mission = Mission::findOrFail($id);
+
+        return $mission;
     }
 }

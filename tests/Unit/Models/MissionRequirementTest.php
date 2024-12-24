@@ -17,13 +17,15 @@ use Tests\Contracts\Models\{
     ShouldTestTraits,
     ShouldTestFillables,
     ShouldTestRelations,
+    ShouldTestConstants
 };
 
 class MissionRequirementTest extends BaseModelTesting implements
     ShouldTestCasts,
     ShouldTestTraits,
     ShouldTestFillables,
-    ShouldTestRelations
+    ShouldTestRelations,
+    ShouldTestConstants
 {
     /**
      * The testable model string class.
@@ -98,5 +100,21 @@ class MissionRequirementTest extends BaseModelTesting implements
         ];
 
         $this->assertHasRelations($relations);
+    }
+
+    /**
+     * The contract constant attributes that should be tested.
+     *
+     * @return void
+     */
+    public function test_constant_attributes(): void
+    {
+        $expectedConstants = [
+            'CREATED_AT' => 'created_at',
+            'UPDATED_AT' => 'updated_at',
+            'TRANSACTIONS_COUNT_STRATEGY_KEY' => 'make_transactions',
+        ];
+
+        $this->assertHasConstants($expectedConstants);
     }
 }

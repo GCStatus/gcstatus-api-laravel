@@ -28,6 +28,13 @@ class MissionRequirement extends Model
     ];
 
     /**
+     * The make transactions strategy key.
+     *
+     * @var string
+     */
+    public const TRANSACTIONS_COUNT_STRATEGY_KEY = 'make_transactions';
+
+    /**
      * Get the mission that owns the MissionRequirement
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Mission, $this>

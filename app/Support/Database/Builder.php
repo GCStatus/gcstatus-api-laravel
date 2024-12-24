@@ -10,7 +10,7 @@ class Builder extends QueryBuilder
     /**
      * Run the query as a "select" statement against the connection.
      *
-     * @return array
+     * @return array<string, mixed>
      */
     protected function runSelect(): array
     {
@@ -26,8 +26,11 @@ class Builder extends QueryBuilder
      */
     protected function getCacheKey(): string
     {
-        return json_encode([
+        /** @var non-empty-string $cacheKey */
+        $cacheKey = json_encode([
             $this->toSql() => $this->getBindings()
         ]);
+
+        return $cacheKey;
     }
 }

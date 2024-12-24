@@ -176,8 +176,11 @@ class MissionServiceTest extends TestCase
         $user = Mockery::mock(User::class)->makePartial();
         $mission = Mockery::mock(Mission::class)->makePartial();
         $pivotMock = Mockery::mock();
+
+        /** @phpstan-ignore property.notFound */
         $pivotMock->user_id = $userId;
 
+        /** @phpstan-ignore property.notFound */
         $user->pivot = $pivotMock;
 
         $user->shouldReceive('getAttribute')->with('id')->andReturn($userId);

@@ -84,7 +84,7 @@ class CompleteMissionJobTest extends TestCase
         $requirement1 = Mockery::mock(MissionRequirement::class);
         $requirement2 = Mockery::mock(MissionRequirement::class);
 
-        $requirements = new Collection([$requirement1, $requirement2]);
+        $requirements = Collection::make([$requirement1, $requirement2]);
 
         $mission->shouldReceive('load')->once()->with('requirements')->andReturnSelf();
         $mission->shouldReceive('getAttribute')->with('requirements')->andReturn($requirements);

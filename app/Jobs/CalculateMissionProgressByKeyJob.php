@@ -24,13 +24,6 @@ class CalculateMissionProgressByKeyJob implements ShouldQueue
     public string $key;
 
     /**
-     * The array to store the already dispatched missions.
-     *
-     * @var array<int, int>
-     */
-    protected array $dispatchedMissions = [];
-
-    /**
      * The related user.
      *
      * @var \App\Models\User
@@ -77,17 +70,6 @@ class CalculateMissionProgressByKeyJob implements ShouldQueue
 
         $requirements->each(function (MissionRequirement $requirement) {
             $this->userMissionProgressService->updateProgress($this->user, $requirement);
-
-            /** @var \App\Models\Mission $mission */
-            $mission = $requirement->mission;
-
-            if (
-                !in_array($mission->id, $this->dispatchedMissions, true) &&
-                progressCalculator()->isMissionComplete($this->user, $mission)
-            ) {
-                GiveMissionRewardsJob::dispatch($this->user, $mission);
-                $this->dispatchedMissions[] = $mission->id;
-            }
         });
     }
 }
