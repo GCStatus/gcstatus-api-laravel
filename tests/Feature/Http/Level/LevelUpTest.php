@@ -176,32 +176,30 @@ class LevelUpTest extends BaseIntegrationTesting
         /** @var \App\Models\Level $level2Amount */
         $level2Amount = Level::where('level', 2)->firstOrFail();
 
-        /** @var \App\Models\Wallet $wallet */
-        $wallet = $this->user->wallet;
-
-        $this->assertEquals(0, $wallet->balance);
+        $this->assertDatabaseHas('wallets', [
+            'balance' => 0,
+            'user_id' => $this->user->id,
+        ]);
 
         awarder()->awardExperience($this->user, 100); // enough for level 2.
 
-        $this->user->refresh();
-
         $amount = $level2Amount->coins;
 
-        /** @var \App\Models\Wallet $wallet */
-        $wallet = $this->user->wallet;
+        $this->assertDatabaseHas('wallets', [
+            'balance' => $amount,
+            'user_id' => $this->user->id,
+        ]);
 
-        $this->assertEquals($amount, $wallet->balance);
+        $this->user->refresh();
 
         awarder()->awardExperience($this->user, 1700); // enough for level 5.
 
         $amount = Level::all()->sum(fn (Level $level) => $level->coins);
 
-        $this->user->refresh();
-
-        /** @var \App\Models\Wallet $wallet */
-        $wallet = $this->user->wallet;
-
-        $this->assertEquals($amount, $wallet->balance);
+        $this->assertDatabaseHas('wallets', [
+            'balance' => $amount,
+            'user_id' => $this->user->id,
+        ]);
     }
 
     /**
