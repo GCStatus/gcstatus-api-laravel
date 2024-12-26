@@ -18,26 +18,18 @@ class WalletRepository extends AbstractRepository implements WalletRepositoryInt
     }
 
     /**
-     * Increment an balance on user wallet.
-     *
-     * @param mixed $id
-     * @param int $amount
-     * @return void
+     * @inheritDoc
      */
-    public function increment(mixed $id, int $amount): void
+    public function increment(Wallet $wallet, int $amount): void
     {
-        $this->findOrFail($id)->increment('balance', $amount);
+        $wallet->increment('balance', $amount);
     }
 
     /**
-     * Decrement an balance on user wallet.
-     *
-     * @param mixed $id
-     * @param int $amount
-     * @return void
+     * @inheritDoc
      */
-    public function decrement(mixed $id, int $amount): void
+    public function decrement(Wallet $wallet, int $amount): void
     {
-        $this->findOrFail($id)->decrement('balance', $amount);
+        $wallet->decrement('balance', $amount);
     }
 }

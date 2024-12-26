@@ -36,9 +36,9 @@ interface UserServiceInterface extends AbstractServiceInterface
     /**
      * Increment experience for given user.
      *
-     * @param mixed $id
+     * @param \App\Models\User $user
      * @param int $amount
      * @return void
      */
-    public function addExperience(mixed $id, int $amount): void;
+    public function addExperience(User $user, int $amount): void;
 }

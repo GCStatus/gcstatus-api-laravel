@@ -20,7 +20,12 @@ class DatabaseNotificationTest extends TestCase
      */
     public function test_if_via_returns_correct_channels(): void
     {
-        $data = ['key' => 'value'];
+        $data = [
+            'userId' => '1',
+            'icon' => fake()->word(),
+            'actionUrl' => fake()->url(),
+            'title' => fake()->realText(),
+        ];
 
         $notification = new DatabaseNotification($data);
 
@@ -38,7 +43,11 @@ class DatabaseNotificationTest extends TestCase
      */
     public function test_toArray_returns_correct_data(): void
     {
-        $data = ['key' => 'value'];
+        $data = [
+            'icon' => fake()->word(),
+            'actionUrl' => fake()->url(),
+            'title' => fake()->realText(),
+        ];
 
         $notification = new DatabaseNotification($data);
 
@@ -56,7 +65,12 @@ class DatabaseNotificationTest extends TestCase
      */
     public function test_if_toBroadcast_returns_correct_structure(): void
     {
-        $data = ['key' => 'value', 'userId' => '1'];
+        $data = [
+            'userId' => '1',
+            'icon' => fake()->word(),
+            'actionUrl' => fake()->url(),
+            'title' => fake()->realText(),
+        ];
 
         $notification = new DatabaseNotification($data);
 
@@ -86,7 +100,12 @@ class DatabaseNotificationTest extends TestCase
      */
     public function test_if_broadcastAs_returns_correct_event_name(): void
     {
-        $data = ['key' => 'value'];
+        $data = [
+            'userId' => '1',
+            'icon' => fake()->word(),
+            'actionUrl' => fake()->url(),
+            'title' => fake()->realText(),
+        ];
 
         $notification = new DatabaseNotification($data);
 
@@ -102,7 +121,14 @@ class DatabaseNotificationTest extends TestCase
      */
     public function test_if_broadcastOn_returns_correct_channel(): void
     {
-        $data = ['userId' => '123'];
+        $userId = '123';
+
+        $data = [
+            'userId' => $userId,
+            'icon' => fake()->word(),
+            'actionUrl' => fake()->url(),
+            'title' => fake()->realText(),
+        ];
 
         $notification = new DatabaseNotification($data);
 
@@ -110,7 +136,7 @@ class DatabaseNotificationTest extends TestCase
 
         $this->assertInstanceOf(Channel::class, $result[0]);
 
-        $this->assertEquals('App.Models.User.123', $result[0]->name);
+        $this->assertEquals("App.Models.User.$userId", $result[0]->name);
     }
 
     /**
@@ -122,7 +148,12 @@ class DatabaseNotificationTest extends TestCase
     {
         Notification::fake();
 
-        $data = ['key' => 'value', 'userId' => '1'];
+        $data = [
+            'userId' => '1',
+            'icon' => fake()->word(),
+            'actionUrl' => fake()->url(),
+            'title' => fake()->realText(),
+        ];
 
         $notifiable = new class () {
             /**
@@ -158,7 +189,12 @@ class DatabaseNotificationTest extends TestCase
     {
         Queue::fake();
 
-        $data = ['key' => 'value', 'userId' => '1'];
+        $data = [
+            'userId' => '1',
+            'icon' => fake()->word(),
+            'actionUrl' => fake()->url(),
+            'title' => fake()->realText(),
+        ];
 
         $notification = new DatabaseNotification($data);
 

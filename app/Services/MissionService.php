@@ -9,6 +9,7 @@ use App\Contracts\Repositories\MissionRepositoryInterface;
 use App\Contracts\Services\{
     AuthServiceInterface,
     MissionServiceInterface,
+    UserMissionServiceInterface,
 };
 use App\Exceptions\Mission\{
     MissionIsNotCompletedException,
@@ -33,6 +34,13 @@ class MissionService implements MissionServiceInterface
     private AuthServiceInterface $authService;
 
     /**
+     * The user mission service.
+     *
+     * @var \App\Contracts\Services\UserMissionServiceInterface
+     */
+    private UserMissionServiceInterface $userMissionService;
+
+    /**
      * Create a new class instance.
      *
      * @return void
@@ -41,6 +49,7 @@ class MissionService implements MissionServiceInterface
     {
         $this->authService = app(AuthServiceInterface::class);
         $this->missionRepository = app(MissionRepositoryInterface::class);
+        $this->userMissionService = app(UserMissionServiceInterface::class);
     }
 
     /**
@@ -68,6 +77,41 @@ class MissionService implements MissionServiceInterface
         $this->assertCanCompleteMission($user, $mission);
 
         CompleteMissionJob::dispatchSync($user, $mission);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function handleMissionCompletion(User $user, Mission $mission): void
+    {
+        if ($this->userMissionService->userAlreadyCompletedMission($user, $mission)) {
+            return;
+        }
+
+        $this->awardCoinsAndExperience($user, $mission);
+
+        $mission->load('rewards.rewardable');
+
+        /** @var \Illuminate\Database\Eloquent\Collection<int, \App\Models\Rewardable> $rewards */
+        $rewards = $mission->rewards;
+
+        awarder()->awardRewards($user, $rewards);
+
+        $this->userMissionService->markMissionComplete($user, $mission);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function awardCoinsAndExperience(User $user, Mission $mission): void
+    {
+        awarder()->awardCoins(
+            $user,
+            $mission->coins,
+            "You earned {$mission->coins} for completing the mission {$mission->mission}.",
+        );
+
+        awarder()->awardExperience($user, $mission->experience);
     }
 
     /**

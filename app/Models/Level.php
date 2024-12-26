@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\{Model, SoftDeletes};
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\{HasMany, MorphMany};
 
 class Level extends Model
 {
@@ -31,5 +31,15 @@ class Level extends Model
     public function users(): HasMany
     {
         return $this->hasMany(User::class);
+    }
+
+    /**
+     * Get all of the rewards for the Mission
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany<Rewardable, $this>
+     */
+    public function rewards(): MorphMany
+    {
+        return $this->morphMany(Rewardable::class, 'sourceable');
     }
 }

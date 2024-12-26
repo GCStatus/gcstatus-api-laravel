@@ -3,13 +3,13 @@
 namespace App\Services;
 
 use Throwable;
-use App\Models\{User, Mission, Rewardable};
+use App\Models\{User, Rewardable};
+use Illuminate\Database\Eloquent\Collection;
 use App\Contracts\Factories\RewardStrategyFactoryInterface;
 use App\Contracts\Services\{
     UserServiceInterface,
     AwardServiceInterface,
     WalletServiceInterface,
-    UserMissionServiceInterface,
 };
 
 class AwardService implements AwardServiceInterface
@@ -29,13 +29,6 @@ class AwardService implements AwardServiceInterface
     private WalletServiceInterface $walletService;
 
     /**
-     * The user mission service.
-     *
-     * @var \App\Contracts\Services\UserMissionServiceInterface
-     */
-    private UserMissionServiceInterface $userMissionService;
-
-    /**
      * The reward strategy.
      *
      * @var \App\Contracts\Factories\RewardStrategyFactoryInterface
@@ -51,55 +44,15 @@ class AwardService implements AwardServiceInterface
     {
         $this->userService = app(UserServiceInterface::class);
         $this->walletService = app(WalletServiceInterface::class);
-        $this->userMissionService = app(UserMissionServiceInterface::class);
         $this->rewardStrategyFactory = app(RewardStrategyFactoryInterface::class);
     }
 
     /**
-     * Handle the mission completion.
-     *
-     * @param \App\Models\User $user
-     * @param \App\Models\Mission $mission
-     * @return void
+     * @inheritDoc
      */
-    public function handleMissionCompletion(User $user, Mission $mission): void
+    public function awardRewards(User $user, Collection $rewards): void
     {
-        if ($this->userMissionService->userAlreadyCompletedMission($user, $mission)) {
-            return;
-        }
-
-        $this->awardCoinsAndExperience($user, $mission);
-
-        $this->awardRewards($user, $mission);
-
-        $this->userMissionService->markMissionComplete($user, $mission);
-    }
-
-    /**
-     * Awaird mission coins and experience for user.
-     *
-     * @param \App\Models\User $user
-     * @param \App\Models\Mission $mission
-     * @return void
-     */
-    public function awardCoinsAndExperience(User $user, Mission $mission): void
-    {
-        $this->walletService->addFunds($user, $mission->coins);
-        $this->userService->addExperience($user->id, $mission->experience);
-    }
-
-    /**
-     * Award the mission rewards.
-     *
-     * @param \App\Models\User $user
-     * @param \App\Models\Mission $mission
-     * @return void
-     */
-    public function awardRewards(User $user, Mission $mission): void
-    {
-        $mission->load('rewards.rewardable');
-
-        $mission->rewards->each(function (Rewardable $rewardable) use ($user) {
+        $rewards->each(function (Rewardable $rewardable) use ($user) {
             try {
                 $strategy = $this->rewardStrategyFactory->resolve($rewardable);
 
@@ -112,5 +65,21 @@ class AwardService implements AwardServiceInterface
                 );
             }
         });
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function awardExperience(User $user, int $amount): void
+    {
+        $this->userService->addExperience($user, $amount);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function awardCoins(User $user, int $amount, string $description): void
+    {
+        $this->walletService->addFunds($user, $amount, $description);
     }
 }

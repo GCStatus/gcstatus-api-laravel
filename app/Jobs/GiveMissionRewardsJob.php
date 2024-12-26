@@ -6,7 +6,7 @@ use App\Models\{User, Mission};
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use App\Contracts\Services\AwardServiceInterface;
+use App\Contracts\Services\MissionServiceInterface;
 
 class GiveMissionRewardsJob implements ShouldQueue
 {
@@ -30,9 +30,9 @@ class GiveMissionRewardsJob implements ShouldQueue
     /**
      * The award service.
      *
-     * @var \App\Contracts\Services\AwardServiceInterface
+     * @var \App\Contracts\Services\MissionServiceInterface
      */
-    private AwardServiceInterface $awardService;
+    private MissionServiceInterface $missionService;
 
     /**
      * Create a new job instance.
@@ -47,7 +47,7 @@ class GiveMissionRewardsJob implements ShouldQueue
     ) {
         $this->user = $user;
         $this->mission = $mission;
-        $this->awardService = app(AwardServiceInterface::class);
+        $this->missionService = app(MissionServiceInterface::class);
     }
 
     /**
@@ -57,6 +57,6 @@ class GiveMissionRewardsJob implements ShouldQueue
      */
     public function handle(): void
     {
-        $this->awardService->handleMissionCompletion($this->user, $this->mission);
+        $this->missionService->handleMissionCompletion($this->user, $this->mission);
     }
 }

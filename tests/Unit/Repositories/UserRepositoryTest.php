@@ -84,7 +84,6 @@ class UserRepositoryTest extends TestCase
      */
     public function test_if_can_add_experience_to_the_user(): void
     {
-        $userId = 1;
         $amount = 100;
 
         $mockUser = Mockery::mock(User::class);
@@ -95,12 +94,9 @@ class UserRepositoryTest extends TestCase
 
         $mockRepository = Mockery::mock(UserRepository::class)->makePartial();
 
-        $mockRepository->shouldReceive('findOrFail')
-            ->with($userId)
-            ->andReturn($mockUser);
-
+        /** @var \App\Models\User $mockUser */
         /** @var \App\Contracts\Repositories\UserRepositoryInterface $mockRepository */
-        $mockRepository->addExperience($userId, $amount);
+        $mockRepository->addExperience($mockUser, $amount);
 
         $this->assertEquals(1, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations meet.');
     }

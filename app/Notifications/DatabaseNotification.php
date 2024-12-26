@@ -53,12 +53,11 @@ class DatabaseNotification extends Notification implements ShouldQueue, ShouldBr
      */
     public function toArray(object $notifiable): array
     {
-        /** @var array<string, string> $data */
-        $data = $this->data;
-
-        unset($data['userId']);
-
-        return $data;
+        return [
+            'icon' => $this->data['icon'],
+            'title' => $this->data['title'],
+            'actionUrl' => $this->data['actionUrl'],
+        ];
     }
 
     /**

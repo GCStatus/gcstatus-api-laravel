@@ -5,6 +5,8 @@ namespace Tests\Unit\Repositories;
 use Mockery;
 use Tests\TestCase;
 use App\Models\Level;
+use App\Repositories\LevelRepository;
+use Illuminate\Database\Eloquent\{Builder, Collection};
 use App\Contracts\Repositories\LevelRepositoryInterface;
 
 class LevelRepositoryTest extends TestCase
@@ -39,6 +41,54 @@ class LevelRepositoryTest extends TestCase
         $levelRepository = $this->levelRepository;
 
         $this->assertInstanceOf(Level::class, $levelRepository->model());
+    }
+
+    /**
+     * Test if can find levels above given id if levels exist.
+     *
+     * @return void
+     */
+    public function test_if_can_find_a_next_level_by_id_if_level_exists(): void
+    {
+        $level = 1;
+
+        $levelMock = Mockery::mock(Level::class);
+        $builderMock = Mockery::mock(Builder::class);
+
+        $collection = Collection::make([$levelMock]);
+
+        $builderMock->shouldReceive('where')
+            ->once()
+            ->with('level', '>', $level)
+            ->andReturnSelf();
+
+        $builderMock->shouldReceive('orderBy')
+            ->once()
+            ->with('level', 'asc')
+            ->andReturnSelf();
+
+        $builderMock->shouldReceive('get')
+            ->once()
+            ->withNoArgs()
+            ->andReturn($collection);
+
+        $levelMock->shouldReceive('query')->andReturn($builderMock);
+
+        $repoMock = Mockery::mock(LevelRepository::class)
+            ->makePartial()
+            ->shouldAllowMockingProtectedMethods();
+
+        $repoMock->shouldReceive('model')
+            ->once()
+            ->andReturn($levelMock);
+
+        /** @var \App\Contracts\Repositories\LevelRepositoryInterface $repoMock */
+        $result = $repoMock->getLevelsAboveByLevel($level);
+
+        $this->assertEquals($collection, $result);
+        $this->assertInstanceOf(Collection::class, $result);
+
+        $this->assertEquals(4, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations met.');
     }
 
     /**
