@@ -4,13 +4,17 @@ namespace Tests\Unit\Services;
 
 use Mockery;
 use Tests\TestCase;
+use Mockery\MockInterface;
 use App\Services\UserTitleService;
 use App\Models\{User, Title, UserTitle};
 use App\Repositories\UserTitleRepository;
 use Illuminate\Database\Eloquent\Collection;
-use App\Contracts\Services\UserTitleServiceInterface;
 use App\Contracts\Repositories\UserTitleRepositoryInterface;
 use App\Exceptions\UserTitle\UserAlreadyHasGivenUserTitleException;
+use App\Contracts\Services\{
+    UserTitleServiceInterface,
+    TitleNotificationServiceInterface,
+};
 
 class UserTitleServiceTest extends TestCase
 {
@@ -22,6 +26,13 @@ class UserTitleServiceTest extends TestCase
     private $userTitleService;
 
     /**
+     * The title notification service.
+     *
+     * @var \Mockery\MockInterface
+     */
+    private MockInterface $titleNotificationService;
+
+    /**
      * Setup new test environments.
      *
      * @return void
@@ -29,6 +40,10 @@ class UserTitleServiceTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
+
+        $this->titleNotificationService = Mockery::mock(TitleNotificationServiceInterface::class);
+
+        $this->app->instance(TitleNotificationServiceInterface::class, $this->titleNotificationService);
 
         $this->userTitleService = app(UserTitleServiceInterface::class);
     }
@@ -105,6 +120,11 @@ class UserTitleServiceTest extends TestCase
         $user->shouldReceive('getAttribute')
             ->with('titles')
             ->andReturn(Collection::make());
+
+        $this->titleNotificationService
+            ->shouldReceive('notifyNewTitle')
+            ->once()
+            ->with($user, $title);
 
         $service->shouldReceive('repository')->andReturn($repository);
 

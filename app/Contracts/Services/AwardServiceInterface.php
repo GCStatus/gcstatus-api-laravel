@@ -2,34 +2,36 @@
 
 namespace App\Contracts\Services;
 
-use App\Models\{User, Mission};
+use App\Models\User;
+use Illuminate\Database\Eloquent\Collection;
 
 interface AwardServiceInterface
 {
     /**
-     * Award the mission rewards.
+     * Award rewards for given user.
      *
      * @param \App\Models\User $user
-     * @param \App\Models\Mission $mission
+     * @param \Illuminate\Database\Eloquent\Collection<int, \App\Models\Rewardable> $rewards
      * @return void
      */
-    public function awardRewards(User $user, Mission $mission): void;
+    public function awardRewards(User $user, Collection $rewards): void;
 
     /**
-     * Awaird mission coins and experience for user.
+     * Award user with given experience.
      *
      * @param \App\Models\User $user
-     * @param \App\Models\Mission $mission
+     * @param int $amount
      * @return void
      */
-    public function awardCoinsAndExperience(User $user, Mission $mission): void;
+    public function awardExperience(User $user, int $amount): void;
 
     /**
-     * Handle the mission completion.
+     * Award user with given coins.
      *
      * @param \App\Models\User $user
-     * @param \App\Models\Mission $mission
+     * @param int $amount
+     * @param string $description
      * @return void
      */
-    public function handleMissionCompletion(User $user, Mission $mission): void;
+    public function awardCoins(User $user, int $amount, string $description): void;
 }

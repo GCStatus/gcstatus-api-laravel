@@ -3,12 +3,22 @@
 namespace App\Services;
 
 use App\Models\{User, Title, UserTitle};
-use App\Contracts\Services\UserTitleServiceInterface;
 use App\Contracts\Repositories\UserTitleRepositoryInterface;
 use App\Exceptions\UserTitle\UserAlreadyHasGivenUserTitleException;
+use App\Contracts\Services\{
+    UserTitleServiceInterface,
+    TitleNotificationServiceInterface,
+};
 
 class UserTitleService extends AbstractService implements UserTitleServiceInterface
 {
+    /**
+     * The title notification service.
+     *
+     * @var \App\Contracts\Services\TitleNotificationServiceInterface
+     */
+    private TitleNotificationServiceInterface $titleNotificationService;
+
     /**
      * Get the repository instance.
      *
@@ -17,6 +27,16 @@ class UserTitleService extends AbstractService implements UserTitleServiceInterf
     public function repository(): UserTitleRepositoryInterface
     {
         return app(UserTitleRepositoryInterface::class);
+    }
+
+    /**
+     * Create a new class instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->titleNotificationService = app(TitleNotificationServiceInterface::class);
     }
 
     /**
@@ -41,6 +61,8 @@ class UserTitleService extends AbstractService implements UserTitleServiceInterf
 
         /** @var \App\Models\UserTitle $result */
         $result = $this->repository()->create($data);
+
+        $this->titleNotificationService->notifyNewTitle($user, $title);
 
         return $result;
     }

@@ -18,11 +18,7 @@ class UserRepository extends AbstractRepository implements UserRepositoryInterfa
     }
 
     /**
-     * Get the first user or create if doesn't exist.
-     *
-     * @param array<string, mixed> $searchable
-     * @param array<string, mixed> $creatable
-     * @return \App\Models\User
+     * @inheritDoc
      */
     public function firstOrCreate(array $searchable, array $creatable): User
     {
@@ -30,14 +26,10 @@ class UserRepository extends AbstractRepository implements UserRepositoryInterfa
     }
 
     /**
-     * Increment experience for given user.
-     *
-     * @param mixed $id
-     * @param int $amount
-     * @return void
+     * @inheritDoc
      */
-    public function addExperience(mixed $id, int $amount): void
+    public function addExperience(User $user, int $amount): void
     {
-        $this->findOrFail($id)->increment('experience', $amount);
+        $user->increment('experience', $amount);
     }
 }

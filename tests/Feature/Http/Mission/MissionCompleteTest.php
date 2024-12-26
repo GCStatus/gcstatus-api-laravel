@@ -10,8 +10,10 @@ use App\Jobs\{
 };
 use App\Models\{
     User,
+    Level,
     Status,
     Mission,
+    TransactionType,
     MissionRequirement,
 };
 use Tests\Traits\{
@@ -68,7 +70,7 @@ class MissionCompleteTest extends BaseIntegrationTesting
         ]);
 
         $this->missionRequirement = $this->createDummyMissionRequirementTo($this->mission, [
-            'goal' => fake()->numberBetween(1, 10),
+            'goal' => fake()->numberBetween(1, 5),
             'key' => MissionRequirement::TRANSACTIONS_COUNT_STRATEGY_KEY,
         ]);
     }
@@ -264,6 +266,10 @@ class MissionCompleteTest extends BaseIntegrationTesting
      */
     public function test_if_can_award_user_with_mission_coins_and_experience_on_completion(): void
     {
+        $this->mission->update([
+            'experience' => 1,
+        ]);
+
         /** @var \App\Models\Wallet $wallet */
         $wallet = $this->user->wallet;
 
@@ -353,5 +359,155 @@ class MissionCompleteTest extends BaseIntegrationTesting
         ]);
 
         $this->postJson(route('missions.complete', $this->mission))->assertOk();
+    }
+
+    /**
+     * Test if can create a transaction for the coins transfer on mission complete.
+     *
+     * @return void
+     */
+    public function test_if_can_create_a_transaction_for_the_coins_transfer_on_mission_complete(): void
+    {
+        $this->assertDatabaseEmpty('transactions');
+
+        $this->createDummyTransactions($this->missionRequirement->goal, [
+            'user_id' => $this->user->id,
+        ]);
+
+        $this->postJson(route('missions.complete', $this->mission))->assertOk();
+
+        $this->assertDatabaseHas('transactions', [
+            'user_id' => $this->user->id,
+            'amount' => $this->mission->coins,
+            'transaction_type_id' => TransactionType::ADDITION_TYPE_ID,
+            'description' => "You earned {$this->mission->coins} for completing the mission {$this->mission->mission}.",
+        ]);
+    }
+
+    /**
+     * Test if can create a notification for the created transaction.
+     *
+     * @return void
+     */
+    public function test_if_can_create_a_notification_for_the_created_transaction_on_mission_complete(): void
+    {
+        $this->assertDatabaseEmpty('notifications');
+
+        $this->createDummyTransactions($this->missionRequirement->goal, [
+            'user_id' => $this->user->id,
+        ]);
+
+        $this->postJson(route('missions.complete', $this->mission))->assertOk();
+
+        /** @var \App\Models\Transaction $transaction */
+        $transaction = $this->user->transactions->first();
+
+        $notification = [
+            'icon' => 'FaDollarSign',
+            'title' => 'You have a new transaction.',
+            'actionUrl' => "/profile/?section=transactions&id={$transaction->id}",
+        ];
+
+        $this->assertDatabaseHas('notifications', [
+            'notifiable_id' => $this->user->id,
+            'data' => json_encode($notification),
+            'notifiable_type' => $this->user::class,
+        ]);
+    }
+
+    /**
+     * Test if can level up if mission give enough experience.
+     *
+     * @return void
+     */
+    public function test_if_can_level_up_if_mission_give_enough_experience(): void
+    {
+        $this->mission->update([
+            'experience' => 100, // Enough amount to get level 2.
+        ]);
+
+        /** @var \App\Models\Level $level */
+        $level = $this->user->level;
+
+        $this->assertEquals(1, $level->level);
+
+        $this->createDummyTransactions($this->missionRequirement->goal, [
+            'user_id' => $this->user->id,
+        ]);
+
+        $this->postJson(route('missions.complete', $this->mission))->assertOk();
+
+        $this->user->refresh();
+
+        /** @var \App\Models\Level $level */
+        $level = $this->user->level;
+
+        $this->assertEquals(2, $level->level);
+    }
+
+    /**
+     * Test if can get mission and level up coins amount.
+     *
+     * @return void
+     */
+    public function test_if_can_get_mission_and_level_up_coins_amount(): void
+    {
+        /** @var \App\Models\Level $level2Amount */
+        $level2Amount = Level::where('level', 2)->firstOrFail();
+
+        $this->mission->update([
+            'coins' => 10,
+            'experience' => 100, // Enough amount to get level 2.
+        ]);
+
+        /** @var \App\Models\Wallet $wallet */
+        $wallet = $this->user->wallet;
+
+        $this->assertEquals(0, $wallet->balance);
+
+        $this->createDummyTransactions($this->missionRequirement->goal, [
+            'user_id' => $this->user->id,
+        ]);
+
+        $this->postJson(route('missions.complete', $this->mission))->assertOk();
+
+        $wallet->refresh();
+        $this->user->refresh();
+
+        $amount = $this->mission->coins + $level2Amount->coins;
+
+        $this->assertEquals($amount, $wallet->balance);
+    }
+
+    /**
+     * Test if can notify the experience earning for the user.
+     *
+     * @return void
+     */
+    public function test_if_can_notify_the_experience_earning_for_the_user(): void
+    {
+        $this->mission->update([
+            'experience' => 50,
+        ]);
+
+        $this->assertDatabaseEmpty('notifications');
+
+        $this->createDummyTransactions($this->missionRequirement->goal, [
+            'user_id' => $this->user->id,
+        ]);
+
+        $this->postJson(route('missions.complete', $this->mission))->assertOk();
+
+        $notification = [
+            'icon' => 'FaAnglesUp',
+            'title' => "You received {$this->mission->experience} experience.",
+            'actionUrl' => '/profile',
+        ];
+
+        $this->assertDatabaseHas('notifications', [
+            'notifiable_id' => $this->user->id,
+            'data' => json_encode($notification),
+            'notifiable_type' => $this->user::class,
+        ]);
     }
 }

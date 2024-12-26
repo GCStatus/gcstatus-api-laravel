@@ -4,19 +4,20 @@ namespace Tests\Unit\Jobs;
 
 use Mockery;
 use Tests\TestCase;
+use Mockery\MockInterface;
 use App\Models\{User, Mission};
 use App\Jobs\GiveMissionRewardsJob;
 use Illuminate\Support\Facades\{Bus, Queue};
-use App\Contracts\Services\AwardServiceInterface;
+use App\Contracts\Services\MissionServiceInterface;
 
 class GiveMissionRewardsJobTest extends TestCase
 {
     /**
-     * The award service.
+     * The mission service.
      *
      * @var \Mockery\MockInterface
      */
-    private $awardService;
+    private MockInterface $missionService;
 
     /**
      * Setup new test environments.
@@ -27,9 +28,9 @@ class GiveMissionRewardsJobTest extends TestCase
     {
         parent::setUp();
 
-        $this->awardService = Mockery::mock(AwardServiceInterface::class);
+        $this->missionService = Mockery::mock(MissionServiceInterface::class);
 
-        $this->app->instance(AwardServiceInterface::class, $this->awardService);
+        $this->app->instance(MissionServiceInterface::class, $this->missionService);
     }
 
     /**
@@ -104,7 +105,7 @@ class GiveMissionRewardsJobTest extends TestCase
         $user = Mockery::mock(User::class);
         $mission = Mockery::mock(Mission::class);
 
-        $this->awardService
+        $this->missionService
             ->shouldReceive('handleMissionCompletion')
             ->once()
             ->with($user, $mission);

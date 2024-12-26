@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Models\User;
+use App\Models\{TransactionType, User, Wallet};
 use App\Contracts\Services\WalletServiceInterface;
 use App\Contracts\Repositories\WalletRepositoryInterface;
 
@@ -19,32 +19,63 @@ class WalletService extends AbstractService implements WalletServiceInterface
     }
 
     /**
-     * Add funds to given user wallet.
-     *
-     * @param \App\Models\User $user
-     * @param int $amount
-     * @return void
+     * @inheritDoc
      */
-    public function addFunds(User $user, int $amount): void
+    public function addFunds(User $user, int $amount, string $description): void
     {
         /** @var \App\Models\Wallet $wallet */
         $wallet = $this->repository()->findBy('user_id', $user->id);
 
-        $this->repository()->increment($wallet->id, $amount);
+        $this->repository()->increment($wallet, $amount);
+
+        $this->createOperationTransaction(
+            $wallet,
+            $amount,
+            $description,
+            TransactionType::ADDITION_TYPE_ID,
+        );
     }
 
     /**
-     * Deduct funds from given user wallet.
-     *
-     * @param \App\Models\User $user
-     * @param int $amount
-     * @return void
+     * @inheritDoc
      */
-    public function deductFunds(User $user, int $amount): void
+    public function deductFunds(User $user, int $amount, string $description): void
     {
         /** @var \App\Models\Wallet $wallet */
         $wallet = $this->repository()->findBy('user_id', $user->id);
 
-        $this->repository()->decrement($wallet->id, $amount);
+        $this->repository()->decrement($wallet, $amount);
+
+        $this->createOperationTransaction(
+            $wallet,
+            $amount,
+            $description,
+            TransactionType::SUBTRACTION_TYPE_ID,
+        );
+    }
+
+    /**
+     * Create a transaction for a wallet change.
+     *
+     * @param \App\Models\Wallet $wallet
+     * @param int $amount
+     * @param string $description
+     * @return void
+     */
+    private function createOperationTransaction(
+        Wallet $wallet,
+        int $amount,
+        string $description,
+        int $type,
+    ): void {
+        /** @var \App\Models\User $user */
+        $user = $wallet->user;
+
+        transactionService()->create([
+            'amount' => $amount,
+            'user_id' => $user->id,
+            'description' => $description,
+            'transaction_type_id' => $type,
+        ]);
     }
 }

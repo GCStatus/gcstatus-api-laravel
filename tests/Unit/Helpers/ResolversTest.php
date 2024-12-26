@@ -4,9 +4,11 @@ namespace Tests\Unit\Helpers;
 
 use Tests\TestCase;
 use App\Contracts\Services\{
+    AwardServiceInterface,
     LogServiceInterface,
     CacheServiceInterface,
     StorageServiceInterface,
+    TransactionServiceInterface,
     ProgressCalculatorServiceInterface,
 };
 
@@ -58,5 +60,29 @@ class ResolversTest extends TestCase
         $resolvedLogService = logService();
 
         $this->assertInstanceOf(LogServiceInterface::class, $resolvedLogService);
+    }
+
+    /**
+     * Test if can get correct binded interface for transaction service.
+     *
+     * @return void
+     */
+    public function test_if_can_get_correct_binded_interface_for_transaction_service(): void
+    {
+        $resolvedTransactionService = transactionService();
+
+        $this->assertInstanceOf(TransactionServiceInterface::class, $resolvedTransactionService);
+    }
+
+    /**
+     * Test if can get correct binded interface for award service.
+     *
+     * @return void
+     */
+    public function test_if_can_get_correct_binded_interface_for_award_service(): void
+    {
+        $resolvedAwardService = awarder();
+
+        $this->assertInstanceOf(AwardServiceInterface::class, $resolvedAwardService);
     }
 }

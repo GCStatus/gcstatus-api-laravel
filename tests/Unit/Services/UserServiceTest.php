@@ -5,6 +5,7 @@ namespace Tests\Unit\Services;
 use Mockery;
 use Tests\TestCase;
 use App\Models\User;
+use Mockery\MockInterface;
 use App\Repositories\UserRepository;
 use Illuminate\Support\Facades\Hash;
 use App\Contracts\Repositories\UserRepositoryInterface;
@@ -12,7 +13,9 @@ use App\Exceptions\Password\CurrentPasswordDoesNotMatchException;
 use App\Contracts\Services\{
     UserServiceInterface,
     HashServiceInterface,
+    LevelServiceInterface,
 };
+use App\Notifications\DatabaseNotification;
 
 class UserServiceTest extends TestCase
 {
@@ -21,7 +24,21 @@ class UserServiceTest extends TestCase
      *
      * @var \App\Contracts\Services\UserServiceInterface
      */
-    private $userService;
+    private UserServiceInterface $userService;
+
+    /**
+     * The user repository.
+     *
+     * @var \Mockery\MockInterface
+     */
+    private MockInterface $userRepository;
+
+    /**
+     * The level service.
+     *
+     * @var \Mockery\MockInterface
+     */
+    private MockInterface $levelService;
 
     /**
      * Setup new test environments.
@@ -31,6 +48,12 @@ class UserServiceTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
+
+        $this->levelService = Mockery::mock(LevelServiceInterface::class);
+        $this->userRepository = Mockery::mock(UserRepositoryInterface::class);
+
+        $this->app->instance(LevelServiceInterface::class, $this->levelService);
+        $this->app->instance(UserRepositoryInterface::class, $this->userRepository);
 
         $this->userService = app(UserServiceInterface::class);
     }
@@ -42,8 +65,10 @@ class UserServiceTest extends TestCase
      */
     public function test_user_repository_uses_user_model(): void
     {
+        $this->app->instance(UserRepositoryInterface::class, new UserRepository());
+
         /** @var \App\Services\UserService $userService */
-        $userService = $this->userService;
+        $userService = app(UserServiceInterface::class);
 
         $this->assertInstanceOf(UserRepository::class, $userService->repository());
     }
@@ -240,19 +265,32 @@ class UserServiceTest extends TestCase
         $user = Mockery::mock(User::class);
 
         $user->shouldReceive('getAttribute')->with('id')->andReturn($userId);
+        $user->shouldReceive('getAttribute')->with('level_id')->andReturn(1);
+        $user->shouldReceive('getAttribute')->with('experience')->andReturn(0);
 
-        $userRepository = Mockery::mock(UserRepositoryInterface::class);
+        $user->shouldReceive('notify')
+            ->once()
+            ->with(Mockery::on(function (DatabaseNotification $notification) use ($user, $amount) {
+                /** @var \App\Models\User $user */
+                return $notification->data['userId'] === (string)$user->id &&
+                    $notification->data['actionUrl'] === '/profile' &&
+                    $notification->data['title'] === "You received $amount experience.";
+            }));
 
-        $this->app->instance(UserRepositoryInterface::class, $userRepository);
-
-        $userRepository
+        $this->userRepository
             ->shouldReceive('addExperience')
             ->once()
-            ->with($userId, $amount);
+            ->with($user, $amount);
 
-        $this->userService->addExperience($userId, $amount);
+        $this->levelService
+            ->shouldReceive('handleLevelUp')
+            ->once()
+            ->with($user);
 
-        $this->assertEquals(1, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations match.');
+        /** @var \App\Models\User $user */
+        $this->userService->addExperience($user, $amount);
+
+        $this->assertEquals(3, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations match.');
     }
 
     /**

@@ -8,10 +8,26 @@ use App\Exceptions\Password\CurrentPasswordDoesNotMatchException;
 use App\Contracts\Services\{
     UserServiceInterface,
     HashServiceInterface,
+    LevelServiceInterface,
+    LevelNotificationServiceInterface,
 };
 
 class UserService extends AbstractService implements UserServiceInterface
 {
+    /**
+     * The level service.
+     *
+     * @var \App\Contracts\Services\LevelServiceInterface
+     */
+    private LevelServiceInterface $levelService;
+
+    /**
+     * The level notification service.
+     *
+     * @var \App\Contracts\Services\LevelNotificationServiceInterface
+     */
+    private LevelNotificationServiceInterface $levelNotificationService;
+
     /**
      * Get the repository instance.
      *
@@ -23,11 +39,18 @@ class UserService extends AbstractService implements UserServiceInterface
     }
 
     /**
-     * Get the first user or create if doesn't exist.
+     * Create a new class instance.
      *
-     * @param array<string, mixed> $searchable
-     * @param array<string, mixed> $creatable
-     * @return \App\Models\User
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->levelService = app(LevelServiceInterface::class);
+        $this->levelNotificationService = app(LevelNotificationServiceInterface::class);
+    }
+
+    /**
+     * @inheritDoc
      */
     public function firstOrCreate(array $searchable, array $creatable): User
     {
@@ -35,24 +58,19 @@ class UserService extends AbstractService implements UserServiceInterface
     }
 
     /**
-     * Increment experience for given user.
-     *
-     * @param mixed $id
-     * @param int $amount
-     * @return void
+     * @inheritDoc
      */
-    public function addExperience(mixed $id, int $amount): void
+    public function addExperience(User $user, int $amount): void
     {
-        $this->repository()->addExperience($id, $amount);
+        $this->repository()->addExperience($user, $amount);
+
+        $this->levelService->handleLevelUp($user);
+
+        $this->levelNotificationService->notifyExperienceGained($user, $amount);
     }
 
     /**
-     * Update the user password.
-     *
-     * @param \App\Models\User $user
-     * @param string $old_password
-     * @param string $password
-     * @return void
+     * @inheritDoc
      */
     public function updatePassword(User $user, string $old_password, string $password): void
     {
@@ -64,11 +82,7 @@ class UserService extends AbstractService implements UserServiceInterface
     }
 
     /**
-     * Update the user sensitive data.
-     *
-     * @param \App\Models\User $user
-     * @param array<string, string> $data
-     * @return void
+     * @inheritDoc
      */
     public function updateSensitives(User $user, array $data): void
     {

@@ -7,15 +7,27 @@ use Tests\TestCase;
 use Mockery\MockInterface;
 use App\Jobs\CompleteMissionJob;
 use Illuminate\Support\Facades\Bus;
-use App\Models\{User, Mission, Status};
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Contracts\Repositories\MissionRepositoryInterface;
+use App\Models\{
+    User,
+    Title,
+    Status,
+    Mission,
+    Rewardable,
+};
+use Illuminate\Database\Eloquent\{
+    Collection,
+    ModelNotFoundException,
+};
 use App\Contracts\Services\{
     AuthServiceInterface,
+    AwardServiceInterface,
     MissionServiceInterface,
     ProgressCalculatorServiceInterface,
+    UserMissionServiceInterface,
+    UserServiceInterface,
+    WalletServiceInterface,
 };
 use App\Exceptions\Mission\{
     MissionIsNotAvailableException,
@@ -40,11 +52,39 @@ class MissionServiceTest extends TestCase
     private MockInterface $authService;
 
     /**
+     * The user service.
+     *
+     * @var \Mockery\MockInterface
+     */
+    private MockInterface $userService;
+
+    /**
+     * The wallet service.
+     *
+     * @var \Mockery\MockInterface
+     */
+    private MockInterface $walletService;
+
+    /**
+     * The award service.
+     *
+     * @var \Mockery\MockInterface
+     */
+    private MockInterface $awardService;
+
+    /**
      * The progress calculator.
      *
      * @var \Mockery\MockInterface
      */
     private MockInterface $progressCalculator;
+
+    /**
+     * The user mission service.
+     *
+     * @var \Mockery\MockInterface
+     */
+    private MockInterface $userMissionService;
 
     /**
      * The mission service.
@@ -63,11 +103,19 @@ class MissionServiceTest extends TestCase
         parent::setUp();
 
         $this->authService = Mockery::mock(AuthServiceInterface::class);
+        $this->userService = Mockery::mock(UserServiceInterface::class);
+        $this->awardService = Mockery::mock(AwardServiceInterface::class);
+        $this->walletService = Mockery::mock(WalletServiceInterface::class);
         $this->missionRepository = Mockery::mock(MissionRepositoryInterface::class);
+        $this->userMissionService = Mockery::mock(UserMissionServiceInterface::class);
         $this->progressCalculator = Mockery::mock(ProgressCalculatorServiceInterface::class);
 
         $this->app->instance(AuthServiceInterface::class, $this->authService);
+        $this->app->instance(UserServiceInterface::class, $this->userService);
+        $this->app->instance(AwardServiceInterface::class, $this->awardService);
+        $this->app->instance(WalletServiceInterface::class, $this->walletService);
         $this->app->instance(MissionRepositoryInterface::class, $this->missionRepository);
+        $this->app->instance(UserMissionServiceInterface::class, $this->userMissionService);
         $this->app->instance(ProgressCalculatorServiceInterface::class, $this->progressCalculator);
 
         $this->missionService = app(MissionServiceInterface::class);
@@ -398,6 +446,140 @@ class MissionServiceTest extends TestCase
         $this->missionService->complete($missionId);
 
         $this->assertEquals(4, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations met.');
+    }
+
+    /**
+     * Test if can award coins and experience for the user.
+     *
+     * @return void
+     */
+    public function test_if_can_award_coins_and_experience_for_the_user(): void
+    {
+        $description = fake()->text();
+
+        $user = Mockery::mock(User::class);
+        $mission = Mockery::mock(Mission::class);
+
+        $user->shouldReceive('getAttribute')->with('id')->andReturn(1);
+        $mission->shouldReceive('getAttribute')->with('coins')->andReturn(50);
+        $mission->shouldReceive('getAttribute')->with('experience')->andReturn(100);
+        $mission->shouldReceive('getAttribute')->with('mission')->andReturn($description);
+
+        /** @var \App\Models\Mission $mission */
+        $this->awardService
+            ->shouldReceive('awardCoins')
+            ->once()
+            ->with(
+                $user,
+                $mission->coins,
+                "You earned {$mission->coins} for completing the mission {$mission->mission}.",
+            );
+
+        $this->awardService
+            ->shouldReceive('awardExperience')
+            ->once()
+            ->with($user, $mission->experience);
+
+        /** @var \App\Models\User $user */
+        $this->missionService->awardCoinsAndExperience($user, $mission);
+
+        $this->assertEquals(2, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations meet.');
+    }
+
+    /**
+     * Test if can handle mission completion when not completed yet.
+     *
+     * @return void
+     */
+    public function test_if_can_handle_mission_completion_when_not_completed_yet(): void
+    {
+        $description = fake()->text();
+
+        $user = Mockery::mock(User::class);
+        $title = Mockery::mock(Title::class);
+        $mission = Mockery::mock(Mission::class);
+        $rewardable = Mockery::mock(Rewardable::class);
+
+        $user->shouldReceive('getAttribute')->with('id')->andReturn(1);
+        $mission->shouldReceive('getAttribute')->with('coins')->andReturn(50);
+        $mission->shouldReceive('getAttribute')->with('experience')->andReturn(100);
+        $mission->shouldReceive('getAttribute')->with('mission')->andReturn($description);
+        $rewardable->shouldReceive('getAttribute')->with('rewardable')->andReturn($title);
+        $mission->shouldReceive('getAttribute')->with('rewards')->andReturn(Collection::make([$rewardable]));
+
+        $mission->shouldReceive('load')
+            ->with('rewards.rewardable')
+            ->andReturnSelf();
+
+        /** @var \App\Models\User $user */
+        /** @var \App\Models\Mission $mission */
+        $this->userMissionService
+            ->shouldReceive('userAlreadyCompletedMission')
+            ->once()
+            ->with($user, $mission)
+            ->andReturnFalse();
+
+        $this->awardService
+            ->shouldReceive('awardCoins')
+            ->once()
+            ->with(
+                $user,
+                $mission->coins,
+                "You earned {$mission->coins} for completing the mission {$mission->mission}.",
+            );
+
+        $this->awardService
+            ->shouldReceive('awardExperience')
+            ->once()
+            ->with($user, $mission->experience);
+
+        /** @var \Illuminate\Database\Eloquent\Collection<int, \App\Models\Rewardable> $rewards */
+        $rewards = $mission->rewards;
+
+        $this->awardService
+            ->shouldReceive('awardRewards')
+            ->once()
+            ->with($user, $rewards);
+
+        $this->userMissionService
+            ->shouldReceive('markMissionComplete')
+            ->once()
+            ->with($user, $mission);
+
+        $this->missionService->handleMissionCompletion($user, $mission);
+
+        $this->assertEquals(5, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations meet.');
+    }
+
+    /**
+     * Test if can handle mission completion when already completed.
+     *
+     * @return void
+     */
+    public function test_if_can_handle_mission_completion_when_already_completed(): void
+    {
+        $user = Mockery::mock(User::class);
+        $mission = Mockery::mock(Mission::class);
+
+        $user->shouldReceive('getAttribute')->with('id')->andReturn(1);
+        $mission->shouldReceive('getAttribute')->with('coins')->andReturn(50);
+        $mission->shouldReceive('getAttribute')->with('experience')->andReturn(100);
+
+        /** @var \App\Models\User $user */
+        /** @var \App\Models\Mission $mission */
+        $this->userMissionService
+            ->shouldReceive('userAlreadyCompletedMission')
+            ->once()
+            ->with($user, $mission)
+            ->andReturnTrue();
+
+        $this->walletService->shouldNotReceive('addFunds');
+        $this->userService->shouldNotReceive('addExperience');
+        $this->userMissionService->shouldNotReceive('markMissionComplete');
+
+        $this->missionService->handleMissionCompletion($user, $mission);
+
+        $this->assertEquals(4, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations meet.');
     }
 
     /**

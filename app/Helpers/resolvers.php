@@ -1,9 +1,11 @@
 <?php
 
 use App\Contracts\Services\{
-    CacheServiceInterface,
     LogServiceInterface,
+    AwardServiceInterface,
+    CacheServiceInterface,
     StorageServiceInterface,
+    TransactionServiceInterface,
     ProgressCalculatorServiceInterface,
 };
 
@@ -52,5 +54,29 @@ if (!function_exists('logService')) {
     function logService(): LogServiceInterface
     {
         return resolve(LogServiceInterface::class);
+    }
+}
+
+if (!function_exists('transactionService')) {
+    /**
+     * Bind the instance of transaction service to helper function.
+     *
+     * @return \App\Contracts\Services\TransactionServiceInterface
+     */
+    function transactionService(): TransactionServiceInterface
+    {
+        return resolve(TransactionServiceInterface::class);
+    }
+}
+
+if (!function_exists('awarder')) {
+    /**
+     * Bind the instance of award service to a helper function.
+     *
+     * @return \App\Contracts\Services\AwardServiceInterface
+     */
+    function awarder(): AwardServiceInterface
+    {
+        return resolve(AwardServiceInterface::class);
     }
 }

@@ -5,8 +5,8 @@ namespace Tests\Unit\Models;
 use App\Models\Level;
 use Tests\Contracts\Models\BaseModelTesting;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\{HasMany, MorphMany};
 use Tests\Contracts\Models\{
     ShouldTestCasts,
     ShouldTestTraits,
@@ -85,6 +85,7 @@ class LevelTest extends BaseModelTesting implements
     {
         $relations = [
             'users' => HasMany::class,
+            'rewards' => MorphMany::class,
         ];
 
         $this->assertHasRelations($relations);
