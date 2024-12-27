@@ -1,7 +1,172 @@
--   [ ] Refactor the repositories and services to correct CRUD data structure (not all will be created on this API);
--   [ ] Review entire application types;
--   [ ] Create cron jobs to reset mission with frequency - daily at midnight;
--   [x] Update arward method to deliver user titles on mission complete if applicable;
--   [ ] Create documentation - Swagger/OpenAPI;
--   [ ] Create database transactions;
--   [ ] Create remaining notifications (notify about earning experience, earning coins, leveling up etc);
+# 📝 TODO List
+
+## 🚀 Project Roadmap
+
+### MVP (Minimum Viable Product)
+
+- [ ] Deployment
+  - [ ] Set up custom domain and SSL certificate with certbot
+  - [ ] Set up nginx server
+- [ ] Review the entire error throwing of platform to user-friendly
+- [ ] Email verification
+  - [ ] Block user access if email is not verified
+  - [ ] If user change email, set verified_at to null and block access again
+- [ ] Abstract all use cases and rules to services
+- [ ] Integrate with Kibana for logs
+- [ ] Create jobs to run some sevices async
+  - [ ] Email send
+  - [ ] Create secondary records, such as transactions or notifications
+- [ ] Review all exceptions thrown
+- [ ] Missions and titles
+  - [ ] Review the action keys for missions and titles
+  - [ ] Planning all missions and titles type
+  - [ ] Planning all daily/weekly/monthly missions
+- [ ] Create viewable structure
+  - [ ] Add game views count
+  - [ ] Add post views count
+- [ ] Create heartable structure
+  - [ ] Add game hearts count
+  - [ ] Add post hearts count
+  - [ ] Add comment hearts count
+- [ ] Create method to receive comments, with parent id if reply
+- [ ] AWS
+  - [ ] Integrate EC2
+  - [ ] Integrate RDS
+  - [ ] Integrate SES
+  - [ ] Integrate SQS
+  - [ ] Integrate ElastiCache with Redis OSS
+  - [ ] SQS
+  - [ ] Change notifications and transactions generation to SQS
+  - [ ] Create async processes
+- [ ] Create categories table
+- [ ] Create tags table
+- [ ] Create genres table
+- [ ] Create platforms table
+- [ ] Create languages table
+- [ ] Adding outline for games
+  - [ ] Associating games with platforms
+  - [ ] Associating games with categories
+  - [ ] Associating games with tags
+  - [ ] Associating games with genres
+  - [ ] Associating games with languages
+- [ ] Create association for games or DLCs
+  - [ ] Create torrent websites (such as firgitl, skidrow etc)
+  - [ ] Create the kind of protections (such as Denuvo, Steam, GOG etc)
+  - [ ] Create game developers (such as Game Science)
+  - [ ] Create game publishers (such as Game Science)
+  - [ ] Create requirement types
+    - [ ] A requirement type should have a potential column, that should be enum, with minimum, maximum or recommended
+    - [ ] A requirement type should have a type column, that should be enum, with windows, mac or linux
+  - [ ] Create requirements and associate with requirement types
+- [ ] Create game outline system
+  - [ ] Add game DLCs
+  - [ ] Add game critics
+  - [ ] Add game torrents
+  - [ ] Add game crack
+  - [ ] Add game reviews
+  - [ ] Add game galleries
+  - [ ] Add game publishers
+  - [ ] Add game developers
+  - [ ] Add game requirements
+  - [ ] Add game comments (for torrents section)
+  - [ ] Add game support
+  - [ ] Add game hearts
+  - [ ] Add game views
+  - [ ] Add game stores
+- [ ] User heart on games
+- [ ] User heart on comments or replies
+- [ ] Create a method to receive all main data from API for HOME
+  - [ ] Method should return home banners
+  - [ ] Method should return 9 popular games
+  - [ ] Method should return the next most awaited release (and should stay for one week as released)
+  - [ ] Method should return 9 hot games
+  - [ ] Method should return 9 most liked games
+  - [ ] Method should return 9 upcoming games
+- [ ] Create the search method for games
+- [ ] Create search by classifications
+  - [ ] Search by developers
+  - [ ] Search by publishers
+  - [ ] Search by crackers
+  - [ ] Search by cracks
+  - [ ] Search by tags
+  - [ ] Search by categories
+  - [ ] Search by platforms
+  - [ ] Search by genres
+  - [ ] Search by protections
+- [ ] Create cron jobs to reset mission with frequency - daily at midnight;
+- [ ] Create database transactions;
+- [ ] Create remaining notifications (notify about earning experience, earning coins, leveling up etc)
+
+### Post-MVP
+
+- [ ] Testing & QA
+  - [ ] Write unit tests for all packages
+  - [ ] Set up end-to-end testing with Cypress or Playwright
+- [ ] Documentation
+  - [ ] Document API endpoints
+  - [ ] Create an issue template
+- [ ] Filters for users
+  - [ ] Create a helper to clean bad words
+    - [ ] Implement on user nickname
+    - [ ] Implement on user name
+    - [ ] Implement on user email
+- [ ] Filters for posts, comments or messages
+  - [ ] Posts
+  - [ ] Comments
+  - [ ] Messages (?)
+- [ ] Refresh token
+- [ ] MFA - 2FA
+- [ ] Refactor the repositories and services to correct CRUD data structure (not all will be created on this API);
+- [ ] Review entire application types
+- [ ] Review entire endpoints with Laravel Ray to improve queries and scalability
+
+### Future Ideas
+
+- [ ] Integration with external APIs
+  - [ ] Pull in live data from gaming APIs like Twitch or Steam
+  - [ ] Display trending streams or game stats
+- [ ] Add some games on the website
+- [ ] Quiz & polls: about the most exciting game release on future or something else
+- [ ] Integrate with social medias
+- [ ] Coin system
+  - [ ] Create a system to reward user to do something on platform, like comment in a game
+    - [ ] Block user to earn coins for commenting the same game (or reduce the amount for each task doing)
+  - [ ] Add possibility to buy coins
+  - [ ] Some quizzez can reward with coins
+- [ ] Title system
+  - [ ] Some titles could be earned by hitting a percentage of a quiz
+- [ ] Orders
+  - [ ] Make an order system to purchase coins
+- [ ] Create another user profiles page
+  - [ ] Create a page with another user details
+  - [ ] Create a sysmtem to follow another user
+  - [ ] Create a system of notifications to follow user posts
+- [ ] Think about some leaderboard
+  - [ ] Mark a game as played, make some integration to get hours played (if exists)
+  - [ ] Leaderboard for GCStatus missions, titles, coins and level
+- [ ] Create a ticket for support
+  - [ ] The ticket can be used to get support
+  - [ ] The ticket can be used to report some suspicious activity
+- [ ] Create a staging API with github environments
+- [ ] AWS
+  - [ ] SNS
+  - [ ] Lambda
+- [ ] Make user friend requests
+- [ ] Create a chat between users
+  - [ ] User can be able to chat another users
+  - [ ] User can be able to create a group and chat them
+  - [ ] User can be able to change the group name and avatar
+  - [ ] User can be able to add and remove members (creator or admin)
+  - [ ] User can be able to add admins on groups (owner only)
+  - [ ] Chat should use realtime
+  - [ ] User can chat only friends - check if possibility will be only to that ones that accepts the friend request
+- [ ] Create quizz that could reward with some coins and experience, maybe titles
+- [ ] Award with coins and experience on comment, heart a game, or something else
+  - [ ] Heart a game;
+  - [ ] Make a comment on game details
+  - [ ] Make a comment on blogs
+  - [ ] Check how to prevent spam (award only once for each awardable)
+- [ ] Coupons for coins purchase
+- [ ] Create method to store game sales automatically integrating with external stores
+- [ ] Create the best price for games, when applicable, search for the best on stores
+- [ ] Send email on wallet operations?

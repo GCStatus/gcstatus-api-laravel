@@ -38,7 +38,7 @@ Route::middleware(['registration.should.complete'])->group(function () {
     Route::put('profiles/picture/update', PictureController::class)->name('profiles.picture.update');
     Route::put('profiles/password/update', ResetPasswordController::class)->name('profiles.password.update');
     Route::get('levels', LevelController::class)->name('levels.index');
-    Route::get('titles', TitleController::class)->name('titles.index');
+    Route::apiResource('titles', TitleController::class)->only('index');
     Route::apiResource('transactions', TransactionController::class)->only('index', 'destroy');
     Route::apiResource('notifications', NotificationController::class)->only('index', 'destroy');
     Route::apiResource('missions', MissionController::class)->only('index');
@@ -57,4 +57,6 @@ Route::middleware(['registration.should.complete'])->group(function () {
         Route::put('users/basics/update', 'updateBasics')->name('users.basics.update');
         Route::put('users/sensitives/update', 'updateSensitives')->name('users.sensitives.update');
     });
+
+    Route::post('titles/{id}/buy', [TitleController::class, 'buy'])->name('titles.buy');
 });

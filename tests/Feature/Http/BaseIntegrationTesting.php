@@ -8,6 +8,7 @@ use App\Contracts\Services\AuthServiceInterface;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Database\Seeders\{
     LevelSeeder,
+    StatusSeeder,
     TransactionTypeSeeder,
 };
 
@@ -34,6 +35,7 @@ abstract class BaseIntegrationTesting extends TestCase
 
         $this->seed([
             LevelSeeder::class,
+            StatusSeeder::class,
             TransactionTypeSeeder::class,
         ]);
 

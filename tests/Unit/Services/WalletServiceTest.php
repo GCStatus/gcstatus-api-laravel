@@ -9,6 +9,7 @@ use App\Models\{TransactionType, User, Wallet};
 use App\Contracts\Services\WalletServiceInterface;
 use App\Contracts\Repositories\WalletRepositoryInterface;
 use App\Contracts\Services\TransactionServiceInterface;
+use App\Exceptions\Wallet\WalletHasntBalanceEnoughException;
 
 class WalletServiceTest extends TestCase
 {
@@ -81,19 +82,14 @@ class WalletServiceTest extends TestCase
         $wallet->shouldReceive('getAttribute')->with('id')->andReturn(1);
 
         $wallet->shouldReceive('getAttribute')->with('user')->andReturn($user);
-
-        /** @var \App\Models\User $user */
-        $this->walletRepository
-            ->shouldReceive('findBy')
-            ->once()
-            ->with('user_id', $user->id)
-            ->andReturn($wallet);
+        $user->shouldReceive('getAttribute')->with('wallet')->andReturn($wallet);
 
         $this->walletRepository
             ->shouldReceive('increment')
             ->once()
             ->with($wallet, $amount);
 
+        /** @var \App\Models\User $user */
         $this->transactionService
             ->shouldReceive('create')
             ->once()
@@ -106,7 +102,7 @@ class WalletServiceTest extends TestCase
 
         $this->walletService->addFunds($user, $amount, $description);
 
-        $this->assertEquals(3, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations meet.');
+        $this->assertEquals(2, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations meet.');
     }
 
     /**
@@ -126,19 +122,18 @@ class WalletServiceTest extends TestCase
         $wallet->shouldReceive('getAttribute')->with('id')->andReturn(1);
 
         $wallet->shouldReceive('getAttribute')->with('user')->andReturn($user);
+        $user->shouldReceive('getAttribute')->with('wallet')->andReturn($wallet);
 
-        /** @var \App\Models\User $user */
-        $this->walletRepository
-            ->shouldReceive('findBy')
-            ->once()
-            ->with('user_id', $user->id)
-            ->andReturn($wallet);
+        $wallet->shouldReceive('refresh')->once()->withNoArgs()->andReturnNull();
+
+        $wallet->shouldReceive('getAttribute')->with('balance')->andReturn($amount);
 
         $this->walletRepository
             ->shouldReceive('decrement')
             ->once()
             ->with($wallet, $amount);
 
+        /** @var \App\Models\User $user */
         $this->transactionService
             ->shouldReceive('create')
             ->once()
@@ -149,6 +144,42 @@ class WalletServiceTest extends TestCase
                 'transaction_type_id' => TransactionType::SUBTRACTION_TYPE_ID,
             ]);
 
+        $this->walletService->deductFunds($user, $amount, $description);
+
+        $this->assertEquals(3, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations meet.');
+    }
+
+    /**
+     * Test if can't decrement from the wallet balance amount if balance isn't enough.
+     *
+     * @return void
+     */
+    public function test_if_cant_decrement_from_the_wallet_balance_amount_if_balance_isnt_enough(): void
+    {
+        $amount = 100;
+        $description = fake()->text();
+
+        $user = Mockery::mock(User::class);
+        $wallet = Mockery::mock(Wallet::class);
+
+        $user->shouldReceive('getAttribute')->with('id')->andReturn(1);
+        $wallet->shouldReceive('getAttribute')->with('id')->andReturn(1);
+
+        $wallet->shouldReceive('getAttribute')->with('user')->andReturn($user);
+        $user->shouldReceive('getAttribute')->with('wallet')->andReturn($wallet);
+
+        $wallet->shouldReceive('refresh')->once()->withNoArgs()->andReturnNull();
+
+        $wallet->shouldReceive('getAttribute')->with('balance')->andReturn(0);
+
+        $this->walletRepository->shouldNotReceive('decrement');
+
+        $this->transactionService->shouldNotReceive('create');
+
+        $this->expectException(WalletHasntBalanceEnoughException::class);
+        $this->expectExceptionMessage('Your wallet has no balance enough for this operation!');
+
+        /** @var \App\Models\User $user */
         $this->walletService->deductFunds($user, $amount, $description);
 
         $this->assertEquals(3, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations meet.');

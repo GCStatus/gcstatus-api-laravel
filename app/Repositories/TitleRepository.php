@@ -15,4 +15,15 @@ class TitleRepository implements TitleRepositoryInterface
     {
         return Title::all();
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function findOrFail(mixed $id): Title
+    {
+        /** @var \App\Models\Title $title */
+        $title = Title::findOrFail($id);
+
+        return $title;
+    }
 }
