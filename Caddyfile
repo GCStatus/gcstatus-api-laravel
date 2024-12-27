@@ -1,0 +1,17 @@
+{
+    admin 0.0.0.0:2019
+    local_certs
+    auto_https off
+}
+
+https://localhost {
+    root * /var/www/public
+    php_fastcgi unix//var/run/php/php-fpm.sock
+    encode gzip
+    file_server
+    tls internal
+}
+
+http://localhost {
+    redir https://localhost{uri}
+}
