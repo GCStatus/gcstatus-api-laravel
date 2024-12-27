@@ -2,8 +2,14 @@
 
 namespace Tests\Feature\Http\Title;
 
-use App\Models\{Status, User, Title, TransactionType};
+use PHPUnit\Framework\Attributes\Group;
 use Tests\Feature\Http\BaseIntegrationTesting;
+use App\Models\{
+    User,
+    Title,
+    Status,
+    TransactionType,
+};
 use Tests\Traits\{
     HasDummyTitle,
     HasDummyUserTitle,
@@ -318,6 +324,7 @@ class TitleBuyTest extends BaseIntegrationTesting
      *
      * @return void
      */
+    #[Group('no-parallel')]
     public function test_if_can_respond_with_valid_json_data(): void
     {
         /** @var \App\Models\Wallet $wallet */
