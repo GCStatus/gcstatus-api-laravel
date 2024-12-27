@@ -12,7 +12,8 @@ RUN apt update && apt install -y supervisor \
     unixodbc-dev \
     util-linux \
     git \
-    zsh
+    zsh \
+    procps
 
 # Extensions
 RUN install-php-extensions \
@@ -51,6 +52,9 @@ RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master
 # Set work directory and copy project files
 WORKDIR /var/www
 COPY . .
+
+# Install composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 # Configure supervisord
 COPY ./docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
