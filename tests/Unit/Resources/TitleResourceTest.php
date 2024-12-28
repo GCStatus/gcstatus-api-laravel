@@ -42,8 +42,7 @@ class TitleResourceTest extends BaseResourceTesting
             ->shouldReceive('isOwnedByCurrentUser')
             ->andReturnTrue();
 
-        /** @var \App\Contracts\Services\TitleOwnershipServiceInterface $ownershipServiceMock */
-        TitleResource::setTitleOwnershipService($ownershipServiceMock);
+        $this->app->instance(TitleOwnershipServiceInterface::class, $ownershipServiceMock);
     }
 
     /**

@@ -64,6 +64,31 @@ class TitleServiceTest extends TestCase
     }
 
     /**
+     * Test if can find title on find or fail.
+     *
+     * @return void
+     */
+    public function test_if_can_find_title_on_find_or_fail(): void
+    {
+        $id = 1;
+
+        $title = Mockery::mock(Title::class);
+
+        $this->titleRepository
+            ->shouldReceive('findOrFail')
+            ->once()
+            ->with($id)
+            ->andReturn($title);
+
+        $result = $this->titleService->findOrFail($id);
+
+        $this->assertEquals($title, $result);
+        $this->assertInstanceOf(Title::class, $result);
+
+        $this->assertEquals(1, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations met.');
+    }
+
+    /**
      * Tear down test environment.
      *
      * @return void

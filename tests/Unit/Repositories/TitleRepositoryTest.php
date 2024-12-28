@@ -8,6 +8,7 @@ use App\Models\Title;
 use Illuminate\Database\Eloquent\Collection;
 use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 use App\Contracts\Repositories\TitleRepositoryInterface;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class TitleRepositoryTest extends TestCase
 {
@@ -51,6 +52,51 @@ class TitleRepositoryTest extends TestCase
         $result = $this->titleRepository->allForUser();
 
         $this->assertSame($titlesCollection, $result);
+    }
+
+    /**
+     * Test if can find title on find or fail.
+     *
+     * @return void
+     */
+    #[RunInSeparateProcess]
+    public function test_if_can_find_title_on_find_or_fail(): void
+    {
+        $titleId = 1;
+
+        $title = Mockery::mock('overload:' . Title::class);
+
+        $title->shouldReceive('getAttribute')->with('id')->andReturn($titleId);
+
+        $title->shouldReceive('findOrFail')->once()->with($titleId)->andReturnSelf();
+
+        $result = $this->titleRepository->findOrFail($titleId);
+
+        $this->assertEquals($title, $result);
+        $this->assertInstanceOf(Title::class, $result);
+
+        $this->assertEquals(1, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations met.');
+    }
+
+    /**
+     * Test if can fail if title doesn't exist on find or fail.
+     *
+     * @return void
+     */
+    #[RunInSeparateProcess]
+    public function test_if_can_fail_if_title_doesnt_exist_on_find_or_fail(): void
+    {
+        $title = Mockery::mock('overload:' . Title::class);
+
+        $title->shouldReceive('getAttribute')->with('id')->andReturn(2);
+
+        $title->shouldReceive('findOrFail')->once()->with(1)->andThrow(ModelNotFoundException::class);
+
+        $this->expectException(ModelNotFoundException::class);
+
+        $this->titleRepository->findOrFail(1);
+
+        $this->assertEquals(1, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations met.');
     }
 
     /**

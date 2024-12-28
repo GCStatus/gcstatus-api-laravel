@@ -9,29 +9,11 @@ use App\Contracts\Services\TitleOwnershipServiceInterface;
 class TitleResource extends JsonResource
 {
     /**
-     * The title ownership service.
-     *
-     * @var \App\Contracts\Services\TitleOwnershipServiceInterface
-     */
-    private static ?TitleOwnershipServiceInterface $titleOwnershipService = null;
-
-    /**
      * Cached ownership data.
      *
-     * @var \Illuminate\Support\Collection<int, int>|null
+     * @var \Illuminate\Support\Collection<(int|string), mixed>|null
      */
     private static ?\Illuminate\Support\Collection $ownershipCache = null;
-
-    /**
-     * Set the title ownership service.
-     *
-     * @param \App\Contracts\Services\TitleOwnershipServiceInterface $service
-     * @return void
-     */
-    public static function setTitleOwnershipService(TitleOwnershipServiceInterface $service): void
-    {
-        self::$titleOwnershipService = $service;
-    }
 
     /**
      * Preload ownership data for the given titles.
@@ -44,12 +26,9 @@ class TitleResource extends JsonResource
         /** @var array<int, int> $titleIds */
         $titleIds = collect($titles)->pluck('id')->toArray();
 
-        if (self::$titleOwnershipService) {
-            /** @var \App\Contracts\Services\TitleOwnershipServiceInterface $titleOwnershipService */
-            $titleOwnershipService = self::$titleOwnershipService;
+        $titleOwnershipService = app(TitleOwnershipServiceInterface::class);
 
-            self::$ownershipCache = $titleOwnershipService->areOwnedByCurrentUser($titleIds);
-        }
+        self::$ownershipCache = $titleOwnershipService->areOwnedByCurrentUser($titleIds);
     }
 
     /**
@@ -62,8 +41,7 @@ class TitleResource extends JsonResource
         /** @var \App\Models\Title $title */
         $title = $this->resource;
 
-        /** @var \App\Contracts\Services\TitleOwnershipServiceInterface $titleOwnershipService */
-        $titleOwnershipService = self::$titleOwnershipService;
+        $titleOwnershipService = app(TitleOwnershipServiceInterface::class);
 
         $own = self::$ownershipCache
             ? self::$ownershipCache->contains($title->id)

@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\{TransactionType, User, Wallet};
 use App\Contracts\Services\WalletServiceInterface;
 use App\Contracts\Repositories\WalletRepositoryInterface;
+use App\Exceptions\Wallet\WalletHasntBalanceEnoughException;
 
 class WalletService extends AbstractService implements WalletServiceInterface
 {
@@ -24,7 +25,7 @@ class WalletService extends AbstractService implements WalletServiceInterface
     public function addFunds(User $user, int $amount, string $description): void
     {
         /** @var \App\Models\Wallet $wallet */
-        $wallet = $this->repository()->findBy('user_id', $user->id);
+        $wallet = $user->wallet;
 
         $this->repository()->increment($wallet, $amount);
 
@@ -42,7 +43,9 @@ class WalletService extends AbstractService implements WalletServiceInterface
     public function deductFunds(User $user, int $amount, string $description): void
     {
         /** @var \App\Models\Wallet $wallet */
-        $wallet = $this->repository()->findBy('user_id', $user->id);
+        $wallet = $user->wallet;
+
+        $this->assertCanDeduct($wallet, $amount);
 
         $this->repository()->decrement($wallet, $amount);
 
@@ -77,5 +80,22 @@ class WalletService extends AbstractService implements WalletServiceInterface
             'description' => $description,
             'transaction_type_id' => $type,
         ]);
+    }
+
+    /**
+     * Assert can deduct funds.
+     *
+     * @param \App\Models\Wallet $wallet
+     * @param int $amount
+     * @throws \App\Exceptions\Wallet\WalletHasntBalanceEnoughException
+     * @return void
+     */
+    private function assertCanDeduct(Wallet $wallet, int $amount): void
+    {
+        $wallet->refresh();
+
+        if ($amount > $wallet->balance) {
+            throw new WalletHasntBalanceEnoughException();
+        }
     }
 }

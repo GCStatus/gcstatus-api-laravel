@@ -6,7 +6,7 @@ use App\Http\Resources\TitleResource;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use App\Contracts\Services\{
     TitleServiceInterface,
-    TitleOwnershipServiceInterface,
+    UserTitleServiceInterface,
 };
 
 class TitleController extends Controller
@@ -19,38 +19,54 @@ class TitleController extends Controller
     private TitleServiceInterface $titleService;
 
     /**
-     * The title ownership service.
+     * The user title service.
      *
-     * @var \App\Contracts\Services\TitleOwnershipServiceInterface
+     * @var \App\Contracts\Services\UserTitleServiceInterface
      */
-    private TitleOwnershipServiceInterface $titleOwnershipService;
+    private UserTitleServiceInterface $userTitleService;
 
     /**
      * Create a new class instance.
      *
      * @param \App\Contracts\Services\TitleServiceInterface $titleService
+     * @param \App\Contracts\Services\UserTitleServiceInterface $userTitleService
      * @return void
      */
     public function __construct(
         TitleServiceInterface $titleService,
-        TitleOwnershipServiceInterface $titleOwnershipService
+        UserTitleServiceInterface $userTitleService,
     ) {
         $this->titleService = $titleService;
-        $this->titleOwnershipService = $titleOwnershipService;
+        $this->userTitleService = $userTitleService;
     }
 
     /**
-     * Handle the incoming request.
+     * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
      */
-    public function __invoke(): AnonymousResourceCollection
+    public function index(): AnonymousResourceCollection
     {
         $titles = $this->titleService->allForUser();
 
-        TitleResource::setTitleOwnershipService($this->titleOwnershipService);
         TitleResource::preloadOwnership($titles->toArray());
 
         return TitleResource::collection($titles);
+    }
+
+    /**
+     * Buy a given title.
+     *
+     * @param mixed $id
+     * @return \App\Http\Resources\TitleResource
+     */
+    public function buy(mixed $id): TitleResource
+    {
+        $userTitle = $this->userTitleService->buyTitle($id);
+
+        /** @var \App\Models\Title $title */
+        $title = $userTitle->title;
+
+        return TitleResource::make($title);
     }
 }

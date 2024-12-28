@@ -14,4 +14,12 @@ interface UserTitleServiceInterface extends AbstractServiceInterface
      * @return \App\Models\UserTitle
      */
     public function assignTitleToUser(User $user, Title $title): UserTitle;
+
+    /**
+     * Buy a given title by id.
+     *
+     * @param mixed $id
+     * @return \App\Models\UserTitle
+     */
+    public function buyTitle(mixed $id): UserTitle;
 }

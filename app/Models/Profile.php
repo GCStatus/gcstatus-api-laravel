@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use App\Observers\ProfileObserver;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\{Model, SoftDeletes};
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 
+#[ObservedBy(ProfileObserver::class)]
 class Profile extends Model
 {
     /** @use HasFactory<\Database\Factories\ProfileFactory> */

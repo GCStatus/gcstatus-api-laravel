@@ -22,7 +22,7 @@ class TitleFactory extends Factory
             'purchasable' => fake()->boolean(),
             'description' => fake()->realText(),
             'cost' => fake()->numberBetween(10, 99999),
-            'status_id' => Status::factory()->create(),
+            'status_id' => Status::AVAILABLE_STATUS_ID,
         ];
     }
 }

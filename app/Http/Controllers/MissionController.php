@@ -2,15 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\MissionResource;
+use App\Contracts\Services\MissionServiceInterface;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use App\Http\Resources\{
-    TitleResource,
-    MissionResource,
-};
-use App\Contracts\Services\{
-    MissionServiceInterface,
-    TitleOwnershipServiceInterface,
-};
 
 class MissionController extends Controller
 {
@@ -22,25 +16,14 @@ class MissionController extends Controller
     private MissionServiceInterface $missionService;
 
     /**
-     * The title ownership service.
-     *
-     * @var \App\Contracts\Services\TitleOwnershipServiceInterface
-     */
-    private TitleOwnershipServiceInterface $titleOwnershipService;
-
-    /**
      * Create a new class instance.
      *
      * @param \App\Contracts\Services\MissionServiceInterface $missionService
-     * @param \App\Contracts\Services\TitleOwnershipServiceInterface $titleOwnershipService
      * @return void
      */
-    public function __construct(
-        MissionServiceInterface $missionService,
-        TitleOwnershipServiceInterface $titleOwnershipService,
-    ) {
+    public function __construct(MissionServiceInterface $missionService)
+    {
         $this->missionService = $missionService;
-        $this->titleOwnershipService = $titleOwnershipService;
     }
 
     /**
@@ -50,8 +33,6 @@ class MissionController extends Controller
      */
     public function index(): AnonymousResourceCollection
     {
-        TitleResource::setTitleOwnershipService($this->titleOwnershipService);
-
         return MissionResource::collection(
             $this->missionService->allForUser(),
         );

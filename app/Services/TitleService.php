@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Title;
 use Illuminate\Database\Eloquent\Collection;
 use App\Contracts\Services\TitleServiceInterface;
 use App\Contracts\Repositories\TitleRepositoryInterface;
@@ -31,5 +32,13 @@ class TitleService implements TitleServiceInterface
     public function allForUser(): Collection
     {
         return $this->titleRepository->allForUser();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function findOrFail(mixed $id): Title
+    {
+        return $this->titleRepository->findOrFail($id);
     }
 }
