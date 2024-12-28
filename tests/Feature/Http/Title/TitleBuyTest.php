@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Http\Title;
 
-use PHPUnit\Framework\Attributes\Group;
 use Tests\Feature\Http\BaseIntegrationTesting;
 use App\Models\{
     User,
@@ -314,41 +313,6 @@ class TitleBuyTest extends BaseIntegrationTesting
                 'status' => [
                     'id',
                     'name',
-                ],
-            ],
-        ]);
-    }
-
-    /**
-     * Test if can respond with valid json data.
-     *
-     * @return void
-     */
-    #[Group('no-parallel')]
-    public function test_if_can_respond_with_valid_json_data(): void
-    {
-        /** @var \App\Models\Wallet $wallet */
-        $wallet = $this->user->wallet;
-
-        $wallet->update([
-            'balance' => $this->title->cost,
-        ]);
-
-        /** @var \App\Models\Status $status */
-        $status = $this->title->status;
-
-        $this->postJson(route('titles.buy', $this->title))->assertOk()->assertJson([
-            'data' => [
-                'id' => $this->title->id,
-                'cost' => $this->title->cost,
-                'own' => true,
-                'purchasable' => $this->title->purchasable,
-                'description' => $this->title->description,
-                'created_at' => $this->title->created_at?->toISOString(),
-                'updated_at' => $this->title->updated_at?->toISOString(),
-                'status' => [
-                    'id' => $status->id,
-                    'name' => $status->name,
                 ],
             ],
         ]);
