@@ -69,4 +69,15 @@ class TitleController extends Controller
 
         return TitleResource::make($title);
     }
+
+    /**
+     * Enable or disable a given title.
+     *
+     * @param mixed $id
+     * @return void
+     */
+    public function toggle(mixed $id): void
+    {
+        $this->userTitleService->toggle($id);
+    }
 }

@@ -22,4 +22,12 @@ interface UserTitleServiceInterface extends AbstractServiceInterface
      * @return \App\Models\UserTitle
      */
     public function buyTitle(mixed $id): UserTitle;
+
+    /**
+     * Toggle the title enable for user.
+     *
+     * @param mixed $id
+     * @return void
+     */
+    public function toggle(mixed $id): void;
 }

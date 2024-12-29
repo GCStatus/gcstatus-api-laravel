@@ -130,8 +130,11 @@ class JwtCookieAuth
         $key = "auth.user.{$sub}";
 
         if ($this->cacheService->has($key)) {
+            /** @var non-empty-string $userData */
+            $userData = $this->cacheService->get($key);
+
             /** @var \Illuminate\Contracts\Auth\Authenticatable $user */
-            $user = $this->cacheService->get($key);
+            $user = unserialize(base64_decode($userData));
 
             $this->authService->setUser($user);
         } else {

@@ -58,5 +58,8 @@ Route::middleware(['registration.should.complete'])->group(function () {
         Route::put('users/sensitives/update', 'updateSensitives')->name('users.sensitives.update');
     });
 
-    Route::post('titles/{id}/buy', [TitleController::class, 'buy'])->name('titles.buy');
+    Route::controller(TitleController::class)->group(function () {
+        Route::post('titles/{id}/buy', 'buy')->name('titles.buy');
+        Route::put('titles/{id}/toggle', 'toggle')->name('titles.toggle');
+    });
 });

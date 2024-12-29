@@ -42,25 +42,33 @@ class CachedAuthUserProvider extends EloquentUserProvider
         /** @var string $identifier */
         $key = "auth.user.$identifier";
 
-        /** @var ?\App\Models\User $user */
-        $user = $this->cacheService->get($key);
+        /** @var ?non-empty-string $cachedUser */
+        $cachedUser = $this->cacheService->get($key);
 
-        if (!$user) {
-            /** @var ?\App\Models\User $user */
-            $user = parent::retrieveById($identifier);
+        if ($cachedUser) {
+            /**
+             * Unserialize and decode the cached user.
+             * If the unserialization fails, fall back to retrieving from the database.
+             */
+            $user = @unserialize(base64_decode($cachedUser));
 
-            if ($user) {
-                $user->load('profile', 'level', 'wallet');
-
-                /** @var int $jwtTtl */
-                $jwtTtl = config('jwt.ttl');
-
-                $this->cacheService->put(
-                    $key,
-                    $user,
-                    $jwtTtl * 60,
-                );
+            if ($user instanceof Authenticatable) {
+                return $user;
             }
+        }
+
+        /** @var ?\App\Models\User $user */
+        $user = parent::retrieveById($identifier);
+
+        if ($user) {
+            /** @var int $jwtTtl */
+            $jwtTtl = config('jwt.ttl');
+
+            $this->cacheService->put(
+                $key,
+                base64_encode(serialize($user)),
+                $jwtTtl * 60,
+            );
         }
 
         return $user;

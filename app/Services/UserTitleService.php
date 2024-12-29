@@ -121,6 +121,21 @@ class UserTitleService extends AbstractService implements UserTitleServiceInterf
     }
 
     /**
+     * @inheritDoc
+     */
+    public function toggle(mixed $id): void
+    {
+        /** @var int $userId */
+        $userId = $this->authService->getAuthId();
+
+        DB::transaction(function () use ($userId, $id) {
+            $this->repository()->toggleTitle($userId, $id);
+        });
+
+        $this->removeUserCache($userId);
+    }
+
+    /**
      * Assert can assign title to user.
      *
      * @param \App\Models\User $user
@@ -154,5 +169,18 @@ class UserTitleService extends AbstractService implements UserTitleServiceInterf
         if (!$title->purchasable || (!$title->cost || $title->cost <= 0)) {
             throw new TitleIsntPurchasableException();
         }
+    }
+
+    /**
+     * Remove user cache after toggle title.
+     *
+     * @param int $userId
+     * @return void
+     */
+    private function removeUserCache(int $userId): void
+    {
+        $key = "auth.user.{$userId}";
+
+        cacher()->forget($key);
     }
 }
