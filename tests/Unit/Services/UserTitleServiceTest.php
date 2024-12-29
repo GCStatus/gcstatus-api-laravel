@@ -17,6 +17,7 @@ use App\Exceptions\{
 };
 use App\Contracts\Services\{
     AuthServiceInterface,
+    CacheServiceInterface,
     TitleServiceInterface,
     WalletServiceInterface,
     UserTitleServiceInterface,
@@ -38,6 +39,13 @@ class UserTitleServiceTest extends TestCase
      * @var \Mockery\MockInterface
      */
     private MockInterface $titleService;
+
+    /**
+     * The cache service.
+     *
+     * @var \Mockery\MockInterface
+     */
+    private MockInterface $cacheService;
 
     /**
      * The wallet service.
@@ -71,11 +79,13 @@ class UserTitleServiceTest extends TestCase
 
         $this->authService = Mockery::mock(AuthServiceInterface::class);
         $this->titleService = Mockery::mock(TitleServiceInterface::class);
+        $this->cacheService = Mockery::mock(CacheServiceInterface::class);
         $this->walletService = Mockery::mock(WalletServiceInterface::class);
         $this->titleNotificationService = Mockery::mock(TitleNotificationServiceInterface::class);
 
         $this->app->instance(AuthServiceInterface::class, $this->authService);
         $this->app->instance(TitleServiceInterface::class, $this->titleService);
+        $this->app->instance(CacheServiceInterface::class, $this->cacheService);
         $this->app->instance(WalletServiceInterface::class, $this->walletService);
         $this->app->instance(TitleNotificationServiceInterface::class, $this->titleNotificationService);
 
@@ -480,6 +490,45 @@ class UserTitleServiceTest extends TestCase
         $service->buyTitle($titleId);
 
         $this->assertEquals(5, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations met.');
+    }
+
+    /**
+     * Test if can toggle title for user.
+     *
+     * @return void
+     */
+    public function test_if_can_toggle_title_for_user(): void
+    {
+        $userId = 1;
+        $titleId = 1;
+
+        $repository = Mockery::mock(UserTitleRepositoryInterface::class);
+        $service = Mockery::mock(UserTitleService::class, [])->makePartial();
+
+        $service->shouldReceive('repository')->andReturn($repository);
+
+        $this->authService
+            ->shouldReceive('getAuthId')
+            ->once()
+            ->withNoArgs()
+            ->andReturn($userId);
+
+        $repository
+            ->shouldReceive('toggleTitle')
+            ->once()
+            ->with($userId, $titleId);
+
+        $key = "auth.user.$userId";
+
+        $this->cacheService
+            ->shouldReceive('forget')
+            ->once()
+            ->with($key);
+
+        /** @var \App\Contracts\Services\UserTitleServiceInterface $service */
+        $service->toggle($titleId);
+
+        $this->assertEquals(3, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations met.');
     }
 
     /**

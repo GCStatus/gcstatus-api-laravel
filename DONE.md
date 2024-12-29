@@ -85,5 +85,9 @@
   - [x] Chargeback user amount on wallet if has ocurred any error with process to give title to user (transaction)
   - [x] Create a transaction for this operation
   - [x] Create notification for that operation and transaction
+- [x] Create endpoint to toggle enabled title for auth user
+  - [x] Disable all other enabled title if given title is different
+  - [x] Disable all titles if given title is already enabled
+  - [x] Removes user cache on title toggle
 
 ### Post MVP

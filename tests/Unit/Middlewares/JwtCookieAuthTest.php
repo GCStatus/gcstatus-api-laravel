@@ -5,7 +5,6 @@ namespace Tests\Unit\Middlewares;
 use Mockery;
 use Mockery\MockInterface;
 use App\Http\Middleware\JwtCookieAuth;
-use Illuminate\Contracts\Auth\Authenticatable;
 use App\Exceptions\Auth\InvalidSessionException;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Tests\Contracts\Middlewares\BaseMiddlewareTesting;
@@ -17,6 +16,7 @@ use App\Contracts\Services\{
     CacheServiceInterface,
     CookieServiceInterface,
 };
+use App\Models\User;
 
 class JwtCookieAuthTest extends BaseMiddlewareTesting
 {
@@ -125,7 +125,8 @@ class JwtCookieAuthTest extends BaseMiddlewareTesting
         $encryptedToken = 'encrypted_token';
         $token = 'valid_token';
         $sub = 1;
-        $user = Mockery::mock(Authenticatable::class);
+        $user = new User();
+        $user->id = $sub;
 
         $cacheUserKey = "auth.user.{$sub}";
 
@@ -159,12 +160,14 @@ class JwtCookieAuthTest extends BaseMiddlewareTesting
             ->shouldReceive('get')
             ->once()
             ->with($cacheUserKey)
-            ->andReturn($user);
+            ->andReturn(base64_encode(serialize($user)));
 
         $this->authService
             ->shouldReceive('setUser')
             ->once()
-            ->with($user);
+            ->with(Mockery::on(function (User $user) use ($sub) {
+                return $user->id === $sub;
+            }));
 
         /** @var \App\Http\Middleware\JwtCookieAuth $middleware */
         $middleware = $this->middleware;
