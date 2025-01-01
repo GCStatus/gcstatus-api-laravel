@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Models;
 
+use App\Traits\HasSlug;
 use App\Models\Platform;
 use Tests\Contracts\Models\BaseModelTesting;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -39,6 +40,7 @@ class PlatformTest extends BaseModelTesting implements
     {
         $fillable = [
             'name',
+            'slug',
         ];
 
         $this->assertHasFillables($fillable);
@@ -67,6 +69,7 @@ class PlatformTest extends BaseModelTesting implements
     public function test_traits_attributes(): void
     {
         $traits = [
+            HasSlug::class,
             HasFactory::class,
             SoftDeletes::class,
         ];

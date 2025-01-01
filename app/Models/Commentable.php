@@ -30,6 +30,15 @@ class Commentable extends Model
     ];
 
     /**
+     * The attributes that should load with count.
+     *
+     * @var list<string>
+     */
+    protected $withCount = [
+        'hearts',
+    ];
+
+    /**
      * Get the commentable for the Commntable.
      *
      * @return \Illuminate\Database\Eloquent\Relations\MorphTo<Model, $this>

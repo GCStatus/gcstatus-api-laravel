@@ -169,3 +169,4 @@
 - [ ] Create method to store game sales automatically integrating with external stores
 - [ ] Create the best price for games, when applicable, search for the best on stores
 - [ ] Send email on wallet operations?
+- [ ] Implement logs on system changes - models - spatie log activity?

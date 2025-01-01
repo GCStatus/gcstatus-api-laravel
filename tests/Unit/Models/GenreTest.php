@@ -3,6 +3,7 @@
 namespace Tests\Unit\Models;
 
 use App\Models\Genre;
+use App\Traits\HasSlug;
 use Tests\Contracts\Models\BaseModelTesting;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -39,6 +40,7 @@ class GenreTest extends BaseModelTesting implements
     {
         $fillable = [
             'name',
+            'slug',
         ];
 
         $this->assertHasFillables($fillable);
@@ -67,6 +69,7 @@ class GenreTest extends BaseModelTesting implements
     public function test_traits_attributes(): void
     {
         $traits = [
+            HasSlug::class,
             HasFactory::class,
             SoftDeletes::class,
         ];
