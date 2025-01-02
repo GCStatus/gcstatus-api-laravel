@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\{MorphTo, BelongsTo};
 
 class Platformable extends Model
 {
+    /** @use HasFactory<\Database\Factories\PlatformableFactory> */
     use HasFactory;
 
     /**

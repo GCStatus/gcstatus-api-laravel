@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\{MorphTo, BelongsTo};
 
 class Storeable extends Model
 {
+    /** @use HasFactory<\Database\Factories\StoreableFactory> */
     use HasFactory;
 
     /**
@@ -37,7 +38,7 @@ class Storeable extends Model
     /**
      * Get the store that owns the Storeable
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Store, $this>
      */
     public function store(): BelongsTo
     {

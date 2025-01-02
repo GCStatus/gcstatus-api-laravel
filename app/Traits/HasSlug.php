@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * Automatically generates a slug for an Eloquent model based on the specified attribute.
  *
+ * @method void generateSlug()
  * @package App\Traits
  */
 trait HasSlug
@@ -21,6 +22,7 @@ trait HasSlug
     protected static function bootHasSlug(): void
     {
         static::creating(function (Model $model) {
+            /** @var static $model */
             $model->generateSlug();
         });
     }
@@ -33,7 +35,7 @@ trait HasSlug
      */
     protected function generateSlug(): void
     {
-        if (!property_exists($this, 'sluggable') || empty($this->sluggable)) {
+        if (empty($this->sluggable)) {
             throw new RuntimeException('The sluggable property must be defined in the model.');
         }
 

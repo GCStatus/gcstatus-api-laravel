@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Torrent extends Model
 {
+    /** @use HasFactory<\Database\Factories\TorrentFactory> */
     use HasFactory;
 
     /**
@@ -37,7 +38,7 @@ class Torrent extends Model
     /**
      * Get the game that owns the Torrent
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Game, $this>
      */
     public function game(): BelongsTo
     {
@@ -47,7 +48,7 @@ class Torrent extends Model
     /**
      * Get the provider that owns the Torrent
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<TorrentProvider, $this>
      */
     public function provider(): BelongsTo
     {

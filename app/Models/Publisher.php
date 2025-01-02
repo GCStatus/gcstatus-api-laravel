@@ -8,8 +8,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Publisher extends Model
 {
-    use HasSlug;
+    /** @use HasFactory<\Database\Factories\PublisherFactory> */
     use HasFactory;
+
+    use HasSlug;
     use SoftDeletes;
 
     /**

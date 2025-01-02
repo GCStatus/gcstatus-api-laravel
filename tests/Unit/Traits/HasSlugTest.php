@@ -23,6 +23,7 @@ class HasSlugTest extends TestCase
         $model = Mockery::mock(Store::class)->makePartial();
         $model->shouldReceive('getAttribute')->with('name')->andReturn(fake()->word());
 
+        /** @phpstan-ignore-next-line */
         $expectedSlug = Str::slug($model->name);
 
         $builder->shouldReceive('where')
@@ -54,6 +55,7 @@ class HasSlugTest extends TestCase
         $model = Mockery::mock(Store::class)->makePartial();
         $model->shouldReceive('getAttribute')->with('name')->andReturn(fake()->word());
 
+        /** @phpstan-ignore-next-line */
         $expectedSlug = Str::slug($model->name);
 
         $builder->shouldReceive('where')
@@ -95,7 +97,7 @@ class HasSlugTest extends TestCase
             /**
              * The sluggable attribute.
              *
-             * @var ?string
+             * @var string
              */
             protected $sluggable = null;
         };

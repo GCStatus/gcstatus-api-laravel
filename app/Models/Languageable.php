@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\{MorphTo, BelongsTo};
 
 class Languageable extends Model
 {
+    /** @use HasFactory<\Database\Factories\LanguageableFactory> */
     use HasFactory;
 
     /**

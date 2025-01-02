@@ -9,8 +9,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Platform extends Model
 {
-    use HasSlug;
+    /** @use HasFactory<\Database\Factories\PlatformFactory> */
     use HasFactory;
+
+    use HasSlug;
     use SoftDeletes;
 
     /**

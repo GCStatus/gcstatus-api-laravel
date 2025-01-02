@@ -9,8 +9,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Tag extends Model
 {
-    use HasSlug;
+    /** @use HasFactory<\Database\Factories\TagFactory> */
     use HasFactory;
+
+    use HasSlug;
     use SoftDeletes;
 
     /**

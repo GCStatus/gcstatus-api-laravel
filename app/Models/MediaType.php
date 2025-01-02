@@ -9,7 +9,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class MediaType extends Model
 {
+    /** @use HasFactory<\Database\Factories\MediaTypeFactory> */
     use HasFactory;
+
     use SoftDeletes;
     use CacheQueryBuilder;
 
@@ -39,7 +41,7 @@ class MediaType extends Model
     /**
      * Get all of the galleries for the MediaType
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<Galleriable, $this>
      */
     public function galleries(): HasMany
     {

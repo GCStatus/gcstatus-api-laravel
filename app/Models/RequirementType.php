@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class RequirementType extends Model
 {
+    /** @use HasFactory<\Database\Factories\RequirementTypeFactory> */
     use HasFactory;
     use CacheQueryBuilder;
 
@@ -67,7 +68,7 @@ class RequirementType extends Model
     /**
      * Get all of the requirementables for the RequirementType
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<Requirementable, $this>
      */
     public function requirementables(): HasMany
     {

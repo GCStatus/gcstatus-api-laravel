@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\{MorphTo, BelongsTo};
 
 class Publisherable extends Model
 {
+    /** @use HasFactory<\Database\Factories\PublisherableFactory> */
     use HasFactory;
 
     /**

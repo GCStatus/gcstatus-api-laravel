@@ -8,8 +8,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class TorrentProvider extends Model
 {
-    use HasSlug;
+    /** @use HasFactory<\Database\Factories\TorrentProviderFactory> */
     use HasFactory;
+
+    use HasSlug;
     use SoftDeletes;
 
     /**

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\{MorphTo, BelongsTo};
 
 class Heartable extends Model
 {
+    /** @use HasFactory<\Database\Factories\HeartableFactory> */
     use HasFactory;
 
     /**

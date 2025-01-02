@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\{MorphTo, BelongsTo};
 
 class Taggable extends Model
 {
+    /** @use HasFactory<\Database\Factories\TaggableFactory> */
     use HasFactory;
 
     /**
@@ -34,10 +35,10 @@ class Taggable extends Model
     /**
      * Get the tag that owns the Taggable
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<tag, $this>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Tag, $this>
      */
     public function tag(): BelongsTo
     {
-        return $this->belongsTo(tag::class);
+        return $this->belongsTo(Tag::class);
     }
 }

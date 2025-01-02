@@ -8,8 +8,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Protection extends Model
 {
-    use HasSlug;
+    /** @use HasFactory<\Database\Factories\ProtectionFactory> */
     use HasFactory;
+
+    use HasSlug;
     use SoftDeletes;
 
     /**

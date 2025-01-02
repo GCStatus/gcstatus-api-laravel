@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\{BelongsTo, MorphTo};
 
 class Reviewable extends Model
 {
+    /** @use HasFactory<\Database\Factories\ReviewableFactory> */
     use HasFactory;
     use SoftDeletes;
 
@@ -50,7 +51,7 @@ class Reviewable extends Model
     /**
      * Get the user that owns the Reviewable
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<User, $this>
      */
     public function user(): BelongsTo
     {

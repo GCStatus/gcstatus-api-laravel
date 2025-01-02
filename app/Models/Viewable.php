@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\{MorphTo, BelongsTo};
 
 class Viewable extends Model
 {
+    /** @use HasFactory<\Database\Factories\ViewableFactory> */
     use HasFactory;
 
     /**

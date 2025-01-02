@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\{MorphTo, BelongsTo};
 
 class Genreable extends Model
 {
+    /** @use HasFactory<\Database\Factories\GenreableFactory> */
     use HasFactory;
 
     /**

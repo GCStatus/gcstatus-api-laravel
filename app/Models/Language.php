@@ -9,8 +9,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Language extends Model
 {
-    use HasSlug;
+    /** @use HasFactory<\Database\Factories\LanguageFactory> */
     use HasFactory;
+
+    use HasSlug;
     use SoftDeletes;
 
     /**
@@ -34,7 +36,7 @@ class Language extends Model
     /**
      * Get all of the languageables for the Language
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<Language, $this>
      */
     public function languageables(): HasMany
     {

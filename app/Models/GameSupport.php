@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class GameSupport extends Model
 {
+    /** @use HasFactory<\Database\Factories\GameSupportFactory> */
     use HasFactory;
 
     /**
@@ -25,7 +26,7 @@ class GameSupport extends Model
     /**
      * Get the game that owns the GameSupport
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Game, $this>
      */
     public function game(): BelongsTo
     {

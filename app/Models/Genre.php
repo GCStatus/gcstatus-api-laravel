@@ -9,8 +9,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Genre extends Model
 {
-    use HasSlug;
+    /** @use HasFactory<\Database\Factories\GenreFactory> */
     use HasFactory;
+
+    use HasSlug;
     use SoftDeletes;
 
     /**

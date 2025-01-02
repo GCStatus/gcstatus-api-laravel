@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\{MorphTo, BelongsTo};
 
 class Categoriable extends Model
 {
+    /** @use HasFactory<\Database\Factories\CategoriableFactory> */
     use HasFactory;
 
     /**

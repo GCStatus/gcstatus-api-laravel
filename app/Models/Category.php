@@ -9,8 +9,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Category extends Model
 {
-    use HasSlug;
+    /** @use HasFactory<\Database\Factories\CategoryFactory> */
     use HasFactory;
+
+    use HasSlug;
     use SoftDeletes;
 
     /**

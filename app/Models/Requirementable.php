@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\{BelongsTo, MorphTo};
 
 class Requirementable extends Model
 {
+    /** @use HasFactory<\Database\Factories\RequirementableFactory> */
     use HasFactory;
 
     /**
@@ -42,7 +43,7 @@ class Requirementable extends Model
     /**
      * Get the requirementType that owns the Requirementable
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<RequirementType, $this>
      */
     public function requirementType(): BelongsTo
     {
