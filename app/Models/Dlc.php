@@ -9,8 +9,10 @@ use Illuminate\Database\Eloquent\Relations\{BelongsTo, MorphMany};
 
 class Dlc extends Model
 {
-    use HasSlug;
+    /** @use HasFactory<\Database\Factories\DlcFactory> */
     use HasFactory;
+
+    use HasSlug;
     use SoftDeletes;
 
     /**
@@ -47,7 +49,7 @@ class Dlc extends Model
     /**
      * Get the game that owns the Dlc
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Game, $this>
      */
     public function game(): BelongsTo
     {

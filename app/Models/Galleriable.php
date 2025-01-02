@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\{MorphTo, BelongsTo};
 
 class Galleriable extends Model
 {
+    /** @use HasFactory<\Database\Factories\GalleriableFactory> */
     use HasFactory;
 
     /**

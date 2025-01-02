@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\{MorphTo, BelongsTo};
 
 class Criticable extends Model
 {
+    /** @use HasFactory<\Database\Factories\CriticableFactory> */
     use HasFactory;
 
     /**
@@ -49,7 +50,7 @@ class Criticable extends Model
     /**
      * Get the critic that owns the Criticable
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Critic, $this>
      */
     public function critic(): BelongsTo
     {

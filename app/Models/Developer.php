@@ -8,8 +8,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Developer extends Model
 {
-    use HasSlug;
+    /** @use HasFactory<\Database\Factories\DeveloperFactory> */
     use HasFactory;
+
+    use HasSlug;
     use SoftDeletes;
 
     /**

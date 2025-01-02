@@ -9,8 +9,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Critic extends Model
 {
-    use HasSlug;
+    /** @use HasFactory<\Database\Factories\CriticFactory> */
     use HasFactory;
+
+    use HasSlug;
     use SoftDeletes;
 
     /**
@@ -47,7 +49,7 @@ class Critic extends Model
     /**
      * Get all of the criticables for the Critic
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<Criticable, $this>
      */
     public function criticables(): HasMany
     {

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Crack extends Model
 {
+    /** @use HasFactory<\Database\Factories\CrackFactory> */
     use HasFactory;
 
     /**
@@ -25,7 +26,7 @@ class Crack extends Model
     /**
      * The attributes that should be casts.
      *
-     * @var array<string, string>
+     * @return array<string, string>
      */
     public function casts(): array
     {
@@ -37,7 +38,7 @@ class Crack extends Model
     /**
      * Get the game that owns the Crack
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Game, $this>
      */
     public function game(): BelongsTo
     {
@@ -47,7 +48,7 @@ class Crack extends Model
     /**
      * Get the status that owns the Crack
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Status, $this>
      */
     public function status(): BelongsTo
     {
@@ -57,7 +58,7 @@ class Crack extends Model
     /**
      * Get the protection that owns the Crack
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Protection, $this>
      */
     public function protection(): BelongsTo
     {

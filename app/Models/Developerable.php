@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\{MorphTo, BelongsTo};
 
 class Developerable extends Model
 {
+    /** @use HasFactory<\Database\Factories\DeveloperableFactory> */
     use HasFactory;
 
     /**

@@ -13,8 +13,10 @@ use Illuminate\Database\Eloquent\Relations\{
 
 class Game extends Model
 {
-    use HasSlug;
+    /** @use HasFactory<\Database\Factories\GameFactory> */
     use HasFactory;
+
+    use HasSlug;
     use SoftDeletes;
 
     /**
@@ -182,7 +184,7 @@ class Game extends Model
     /**
      * Get all of the publishers for the Game
      *
-     * @return \Illuminate\Database\Eloquent\Relations\MorphMany<Commentable, $this>
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany<Publisherable, $this>
      */
     public function publishers(): MorphMany
     {
@@ -222,7 +224,7 @@ class Game extends Model
     /**
      * Get the crack associated with the Game
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne<Crack, $this>
      */
     public function crack(): HasOne
     {
@@ -232,7 +234,7 @@ class Game extends Model
     /**
      * Get the support associated with the Game
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne<GameSupport, $this>
      */
     public function support(): HasOne
     {
@@ -242,7 +244,7 @@ class Game extends Model
     /**
      * Get all of the torrents for the Game
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<Torrent, $this>
      */
     public function torrents(): HasMany
     {
@@ -252,7 +254,7 @@ class Game extends Model
     /**
      * Get all of the dlcs for the Game
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<Dlc, $this>
      */
     public function dlcs(): HasMany
     {

@@ -13,7 +13,9 @@ use Illuminate\Database\Eloquent\Relations\{
 
 class Commentable extends Model
 {
+    /** @use HasFactory<\Database\Factories\CommentableFactory> */
     use HasFactory;
+
     use SoftDeletes;
 
     /**
@@ -81,7 +83,7 @@ class Commentable extends Model
     /**
      * Get the child comments for this Comment.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<Commentable>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<Commentable, $this>
      */
     public function children(): HasMany
     {

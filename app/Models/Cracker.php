@@ -8,8 +8,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Cracker extends Model
 {
-    use HasSlug;
+    /** @use HasFactory<\Database\Factories\CrackerFactory> */
     use HasFactory;
+
+    use HasSlug;
 
     /**
      * The attributes that are mass assignable.
