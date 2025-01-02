@@ -11,7 +11,6 @@
 - [ ] Email verification
   - [ ] Block user access if email is not verified
   - [ ] If user change email, set verified_at to null and block access again
-- [ ] Abstract all use cases and rules to services
 - [ ] Integrate with Kibana for logs
 - [ ] Create jobs to run some sevices async
   - [ ] Email send
@@ -170,3 +169,4 @@
 - [ ] Create method to store game sales automatically integrating with external stores
 - [ ] Create the best price for games, when applicable, search for the best on stores
 - [ ] Send email on wallet operations?
+- [ ] Implement logs on system changes - models - spatie log activity?

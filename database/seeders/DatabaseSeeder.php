@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             TransactionTypeSeeder::class,
             StatusSeeder::class,
+            MediaTypeSeeder::class,
         ]);
     }
 }
