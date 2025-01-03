@@ -95,6 +95,10 @@
 - [ ] Create cron jobs to reset mission with frequency - daily at midnight;
 - [ ] Create database transactions;
 - [ ] Create remaining notifications (notify about earning experience, earning coins, leveling up etc)
+- [ ] Setup game and related resources
+- [ ] Add steam integration to add games to platform
+  - [ ] Check about queues for this integration
+  - [ ] Add game dlcs
 
 ### Post-MVP
 
@@ -170,3 +174,5 @@
 - [ ] Create the best price for games, when applicable, search for the best on stores
 - [ ] Send email on wallet operations?
 - [ ] Implement logs on system changes - models - spatie log activity?
+- [ ] Add cron jobs to reset missions with frequency
+  - [ ] Reset user progresses - check about best way to reset user progresses, considering for all missions

@@ -8,6 +8,7 @@ use App\Http\Controllers\{
     Password\ResetController,
     Password\ForgotController,
 };
+use App\Jobs\Steam\CreateSteamAppByIdJob;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,4 +28,8 @@ Route::post('password/reset/notify', ForgotController::class)->name('password.no
 Route::controller(SocialiteController::class)->prefix('oauth/{provider}')->group(function () {
     Route::get('redirect', 'redirect')->name('auth.socialite.redirect');
     Route::get('callback', 'callback')->name('auth.socialite.callback');
+});
+
+Route::get('test', function () {
+    CreateSteamAppByIdJob::dispatchSync('1790600');
 });
