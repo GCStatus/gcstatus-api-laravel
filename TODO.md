@@ -95,6 +95,24 @@
 - [ ] Create cron jobs to reset mission with frequency - daily at midnight;
 - [ ] Create database transactions;
 - [ ] Create remaining notifications (notify about earning experience, earning coins, leveling up etc)
+- [ ] Social
+  - [ ] See another user profiles
+  - [ ] Send friend request
+    - [ ] Generate notification
+    - [ ] Accept or refuse friend request
+    - [ ] I can be your friend, but you need to accept me to be my friend
+    - [ ] Get my social data
+      - [ ] My followers/friends
+      - [ ] See who I'm following
+      - [ ] Another user followers/friends
+      - [ ] See who another user is following
+    - [ ] See user basic data
+      - [ ] User title
+      - [ ] User level
+      - [ ] Member since
+      - [ ] Birthdate?
+      - [ ] Name, nickname (email?)
+      - [ ] Experience
 
 ### Post-MVP
 
@@ -143,9 +161,6 @@
 - [ ] Think about some leaderboard
   - [ ] Mark a game as played, make some integration to get hours played (if exists)
   - [ ] Leaderboard for GCStatus missions, titles, coins and level
-- [ ] Create a ticket for support
-  - [ ] The ticket can be used to get support
-  - [ ] The ticket can be used to report some suspicious activity
 - [ ] Create a staging API with github environments
 - [ ] AWS
   - [ ] SNS
@@ -170,3 +185,67 @@
 - [ ] Create the best price for games, when applicable, search for the best on stores
 - [ ] Send email on wallet operations?
 - [ ] Implement logs on system changes - models - spatie log activity?
+- [ ] Create a ticket/report for support - microservice
+  - [ ] The support ticket can be used to get support
+  - [ ] The report can be used to report some suspicious activity
+  - [ ] Business rules
+    - [ ] Admin: can manage all tickets and reports - also block users
+    - [ ] Support agent: can view, respond to and solve assigned tickets
+      - [ ] Assign tickets for support agent or leave the ticket free to any agent solve it?
+    - [ ] Customer/User: can create, track and update their own tickets
+  - [ ] Ticket lifecycle
+    - [ ] Open: Ticket is created and awaits processing
+    - [ ] In Progress: A support agent is actively working on the ticket
+    - [ ] Pending: Awaiting user response or external action
+    - [ ] Resolved: The issue is fixed but not yet confirmed by the user
+    - [ ] Closed: User confirms resolution or ticket is auto-closed after a set time
+    - [ ] Reopened: User can reopen a ticket if the issue persists
+  - [ ] Notifications and alerts
+    - [ ] Email or SMS alerts for ticket updates, assignments, and nearing SLAs (Service Level Agreements)
+    - [ ] In-app notifications for agents and admins
+  - [ ] SLA
+    - [ ] Define response and resolution time based on ticket priority (High, Medium, Low)
+    - [ ] Automatic escalation if SLA is breached  
+  - [ ] Ticket Categorization:
+    - [ ] Categories (Technical, Billing, General Inquiry)
+    - [ ] Subcategories for detailed classification
+    - [ ] Tags and priority levels
+  - [ ] Audit logs
+  - [ ] Ticket Creation
+    - [ ] User (Customer/Employee) creates a ticket through a web form, email, or API
+    - [ ] Ticket is categorized (category, priority, description)
+    - [ ] System generates a unique ticket ID and sends a confirmation to the user
+    - [ ] Ticket is automatically assigned (round-robin or by expertise)
+  - [ ] Ticket Management
+    - [ ] Support Agent receives notification and reviews the ticket
+    - [ ] Agent can
+    - [ ] Request more information (moving ticket to Pending)
+    - [ ] Assign to another agent if outside their expertise
+    - [ ] Escalate to admin if needed
+    - [ ] Agent updates the ticket with progress notes and solutions
+  - [ ] Resolution and Closure
+    - [ ] Once resolved, the ticket status is updated to Resolved
+    - [ ] User is notified and can
+    - [ ] Confirm resolution (ticket closes)
+    - [ ] Reopen the ticket if the issue persists
+    - [ ] After a set period of inactivity, unresolved tickets are automatically closed
+  - [ ] Real time chatting
+    - [ ] Create a initial chatbot conversation and transfer chat to an agent
+    - [ ] Use realtime with Reverb
+- [ ] Payment microservice
+  - [ ] Define the gateway
+- [ ] Email microservice
+  - [ ] Integrate with SES
+  - [ ] Create security system to services communication
+    - [ ] Use signature
+    - [ ] Use basic authentication
+- [ ] Social
+  - [ ] Create a real time chat between users
+  - [ ] Create groups between users
+    - [ ] Owner has special settings to manage
+    - [ ] Groups can have name and avatar editted
+    - [ ] Owner or admin with given permissions can add or remove members
+    - [ ] Group can have members endpoint
+    - [ ] Create group permissions system (owner can manage, and admin if he's allowed to)
+    - [ ] Create a pivot table for group name - Think about a name for each member, in case the chat is one o' one
+    - [ ] Think about displaying all members profile pic - Is S3 friendly on most data request? - Is valid to think about member profile pic caching?
