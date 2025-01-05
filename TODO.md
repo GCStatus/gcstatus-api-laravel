@@ -249,3 +249,4 @@
     - [ ] Create group permissions system (owner can manage, and admin if he's allowed to)
     - [ ] Create a pivot table for group name - Think about a name for each member, in case the chat is one o' one
     - [ ] Think about displaying all members profile pic - Is S3 friendly on most data request? - Is valid to think about member profile pic caching?
+- [ ] Use CloudFront with S3 to cache image with CDN
