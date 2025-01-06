@@ -56,17 +56,20 @@ class FriendRequestService extends AbstractService implements FriendRequestServi
 
         $this->assertCanSend($userId, $addresseeId);
 
-        $this->repository()->create([
+        $repository = $this->repository();
+
+        $repository->create([
+            'requester_id' => $userId,
             'addressee_id' => $addresseeId,
-            'requester_id' => $this->authService->getAuthId(),
         ]);
+
+        if ($repository->reciprocalRequestExists($userId, $addresseeId)) {
+            $this->createMutualFriendship($userId, $addresseeId);
+        }
     }
 
     /**
-     * Accept a friend request.
-     *
-     * @param mixed $id
-     * @return void
+     * @inheritDoc
      */
     public function accept(mixed $id): void
     {
@@ -77,22 +80,13 @@ class FriendRequestService extends AbstractService implements FriendRequestServi
 
         $this->assertCanAct($userId, $friendRequest);
 
-        $this->friendshipService->create([
-            'user_id' => $userId,
-            'friend_id' => '',
-        ]);
+        $this->createMutualFriendship($userId, $friendRequest->requester_id);
 
-        $this->friendshipService->create([
-            'user_id' => '',
-            'friend_id' => $userId,
-        ]);
+        $friendRequest->delete();
     }
 
     /**
-     * Decline a friend request.
-     *
-     * @param mixed $id
-     * @return void
+     * @inheritDoc
      */
     public function decline(mixed $id): void
     {
@@ -109,6 +103,30 @@ class FriendRequestService extends AbstractService implements FriendRequestServi
     }
 
     /**
+     * Create the mutual friendship.
+     *
+     * @param mixed $userId
+     * @param mixed $friendId
+     * @return void
+     */
+    private function createMutualFriendship(mixed $userId, mixed $friendId): void
+    {
+        if (!$this->friendshipService->exists($userId, $friendId)) {
+            $this->friendshipService->create([
+                'user_id' => $userId,
+                'friend_id' => $friendId,
+            ]);
+
+            $this->friendshipService->create([
+                'user_id' => $friendId,
+                'friend_id' => $userId,
+            ]);
+        }
+
+        $this->repository()->deleteReciprocalRequests($userId, $friendId);
+    }
+
+    /**
      * Assert can send a friend request.
      *
      * @param mixed $userId
@@ -117,6 +135,10 @@ class FriendRequestService extends AbstractService implements FriendRequestServi
      */
     private function assertCanSend(mixed $userId, mixed $addresseeId): void
     {
+        if ($userId === $addresseeId) {
+            throw new \Exception('');
+        }
+
         if ($this->repository()->exists($userId, $addresseeId)) {
             throw new \Exception('');
         }

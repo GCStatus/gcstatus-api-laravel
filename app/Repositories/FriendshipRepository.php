@@ -16,4 +16,15 @@ class FriendshipRepository extends AbstractRepository implements FriendshipRepos
     {
         return new Friendship();
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function friendshipExists(mixed $userId, mixed $friendId): bool
+    {
+        return $this->model()
+            ->where('user_id', $userId)
+            ->where('friend_id', $friendId)
+            ->exists();
+    }
 }
