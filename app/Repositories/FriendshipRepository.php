@@ -23,6 +23,7 @@ class FriendshipRepository extends AbstractRepository implements FriendshipRepos
     public function friendshipExists(mixed $userId, mixed $friendId): bool
     {
         return $this->model()
+            ->query()
             ->where('user_id', $userId)
             ->where('friend_id', $friendId)
             ->exists();

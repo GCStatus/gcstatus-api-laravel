@@ -9,6 +9,11 @@ use App\Contracts\Services\{
     FriendshipServiceInterface,
     FriendRequestServiceInterface,
 };
+use App\Exceptions\FriendRequest\{
+    NotFriendRequestReceiverException,
+    FriendRequestAlreadyExistsException,
+    FriendRequestCantBeSentToYouException,
+};
 
 class FriendRequestService extends AbstractService implements FriendRequestServiceInterface
 {
@@ -81,8 +86,6 @@ class FriendRequestService extends AbstractService implements FriendRequestServi
         $this->assertCanAct($userId, $friendRequest);
 
         $this->createMutualFriendship($userId, $friendRequest->requester_id);
-
-        $friendRequest->delete();
     }
 
     /**
@@ -136,11 +139,11 @@ class FriendRequestService extends AbstractService implements FriendRequestServi
     private function assertCanSend(mixed $userId, mixed $addresseeId): void
     {
         if ($userId === $addresseeId) {
-            throw new \Exception('');
+            throw new FriendRequestCantBeSentToYouException();
         }
 
         if ($this->repository()->exists($userId, $addresseeId)) {
-            throw new \Exception('');
+            throw new FriendRequestAlreadyExistsException();
         }
     }
 
@@ -154,7 +157,7 @@ class FriendRequestService extends AbstractService implements FriendRequestServi
     private function assertCanAct(mixed $userId, FriendRequest $friendRequest): void
     {
         if ($friendRequest->addressee_id != $userId) {
-            throw new \Exception('');
+            throw new NotFriendRequestReceiverException();
         }
     }
 }

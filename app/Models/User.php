@@ -219,7 +219,7 @@ class User extends Authenticatable implements
     /**
      * The friends that belong to the User
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<$this, $this>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<User, $this>
      */
     public function friends(): BelongsToMany
     {
