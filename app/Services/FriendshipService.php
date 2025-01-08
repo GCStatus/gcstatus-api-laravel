@@ -2,20 +2,21 @@
 
 namespace App\Services;
 
+use App\Models\Friendship;
 use App\Contracts\Repositories\FriendshipRepositoryInterface;
 use App\Contracts\Services\{
-    AuthServiceInterface,
     FriendshipServiceInterface,
+    FriendshipNotificationServiceInterface,
 };
 
 class FriendshipService extends AbstractService implements FriendshipServiceInterface
 {
     /**
-     * The auth service.
+     * The friendship notification service.
      *
-     * @var \App\Contracts\Services\AuthServiceInterface
+     * @var \App\Contracts\Services\FriendshipNotificationServiceInterface
      */
-    private AuthServiceInterface $authService;
+    private FriendshipNotificationServiceInterface $friendshipNotificationService;
 
     /**
      * Create a new class instance.
@@ -24,7 +25,7 @@ class FriendshipService extends AbstractService implements FriendshipServiceInte
      */
     public function __construct()
     {
-        $this->authService = app(AuthServiceInterface::class);
+        $this->friendshipNotificationService = app(FriendshipNotificationServiceInterface::class);
     }
 
     /**
@@ -40,10 +41,21 @@ class FriendshipService extends AbstractService implements FriendshipServiceInte
     /**
      * @inheritDoc
      */
-    public function exists(mixed $friendId): bool
+    public function exists(mixed $userId, mixed $friendId): bool
     {
-        $userId = $this->authService->getAuthId();
-
         return $this->repository()->friendshipExists($userId, $friendId);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function create(array $data): Friendship
+    {
+        /** @var \App\Models\Friendship $friendship */
+        $friendship = $this->repository()->create($data);
+
+        $this->friendshipNotificationService->notifyNewFriendship($friendship);
+
+        return $friendship;
     }
 }

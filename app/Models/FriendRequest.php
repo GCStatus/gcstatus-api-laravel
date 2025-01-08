@@ -24,7 +24,7 @@ class FriendRequest extends Model
     /**
      * Get the requester that owns the FriendRequest
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<User, $this>
      */
     public function requester(): BelongsTo
     {
@@ -34,7 +34,7 @@ class FriendRequest extends Model
     /**
      * Get the addressee that owns the FriendRequest
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<User, $this>
      */
     public function addressee(): BelongsTo
     {

@@ -3,16 +3,18 @@
 namespace App\Services;
 
 use App\Models\FriendRequest;
+use App\Exceptions\Friendship\FriendshipAlreadyExistsException;
 use App\Contracts\Repositories\FriendRequestRepositoryInterface;
-use App\Contracts\Services\{
-    AuthServiceInterface,
-    FriendshipServiceInterface,
-    FriendRequestServiceInterface,
-};
 use App\Exceptions\FriendRequest\{
     NotFriendRequestReceiverException,
     FriendRequestAlreadyExistsException,
     FriendRequestCantBeSentToYouException,
+};
+use App\Contracts\Services\{
+    AuthServiceInterface,
+    FriendshipServiceInterface,
+    FriendRequestServiceInterface,
+    FriendRequestNotificationServiceInterface,
 };
 
 class FriendRequestService extends AbstractService implements FriendRequestServiceInterface
@@ -32,6 +34,13 @@ class FriendRequestService extends AbstractService implements FriendRequestServi
     private FriendshipServiceInterface $friendshipService;
 
     /**
+     * The friend request notification service.
+     *
+     * @var \App\Contracts\Services\FriendRequestNotificationServiceInterface
+     */
+    private FriendRequestNotificationServiceInterface $friendRequestNotificationService;
+
+    /**
      * Create a new class instance.
      *
      * @return void
@@ -40,6 +49,7 @@ class FriendRequestService extends AbstractService implements FriendRequestServi
     {
         $this->authService = app(AuthServiceInterface::class);
         $this->friendshipService = app(FriendshipServiceInterface::class);
+        $this->friendRequestNotificationService = app(FriendRequestNotificationServiceInterface::class);
     }
 
     /**
@@ -63,14 +73,18 @@ class FriendRequestService extends AbstractService implements FriendRequestServi
 
         $repository = $this->repository();
 
-        $repository->create([
+        /** @var \App\Models\FriendRequest $friendRequest */
+        $friendRequest = $repository->create([
             'requester_id' => $userId,
             'addressee_id' => $addresseeId,
         ]);
 
         if ($repository->reciprocalRequestExists($userId, $addresseeId)) {
             $this->createMutualFriendship($userId, $addresseeId);
+            return;
         }
+
+        $this->friendRequestNotificationService->notifyNewFriendRequest($friendRequest);
     }
 
     /**
@@ -119,7 +133,9 @@ class FriendRequestService extends AbstractService implements FriendRequestServi
                 'user_id' => $userId,
                 'friend_id' => $friendId,
             ]);
+        }
 
+        if (!$this->friendshipService->exists($friendId, $userId)) {
             $this->friendshipService->create([
                 'user_id' => $friendId,
                 'friend_id' => $userId,
@@ -144,6 +160,10 @@ class FriendRequestService extends AbstractService implements FriendRequestServi
 
         if ($this->repository()->exists($userId, $addresseeId)) {
             throw new FriendRequestAlreadyExistsException();
+        }
+
+        if ($this->friendshipService->exists($userId, $addresseeId)) {
+            throw new FriendshipAlreadyExistsException();
         }
     }
 

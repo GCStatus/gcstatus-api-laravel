@@ -6,17 +6,19 @@ use Mockery;
 use Tests\TestCase;
 use Mockery\MockInterface;
 use App\Models\FriendRequest;
-use App\Contracts\Services\{
-    AuthServiceInterface,
-    FriendshipServiceInterface,
-    FriendRequestServiceInterface,
-};
 use App\Contracts\Repositories\FriendRequestRepositoryInterface;
 use App\Exceptions\FriendRequest\{
     NotFriendRequestReceiverException,
     FriendRequestAlreadyExistsException,
     FriendRequestCantBeSentToYouException,
 };
+use App\Contracts\Services\{
+    AuthServiceInterface,
+    FriendshipServiceInterface,
+    FriendRequestServiceInterface,
+    FriendRequestNotificationServiceInterface,
+};
+use App\Exceptions\Friendship\FriendshipAlreadyExistsException;
 
 class FriendRequestServiceTest extends TestCase
 {
@@ -42,6 +44,13 @@ class FriendRequestServiceTest extends TestCase
     private MockInterface $friendshipService;
 
     /**
+     * The friend request notification service.
+     *
+     * @var \Mockery\MockInterface
+     */
+    private MockInterface $friendRequestNotificationService;
+
+    /**
      * The friend request service.
      *
      * @var \App\Contracts\Services\FriendRequestServiceInterface
@@ -60,10 +69,12 @@ class FriendRequestServiceTest extends TestCase
         $this->authService = Mockery::mock(AuthServiceInterface::class);
         $this->friendshipService = Mockery::mock(FriendshipServiceInterface::class);
         $this->friendRequestRepository = Mockery::mock(FriendRequestRepositoryInterface::class);
+        $this->friendRequestNotificationService = Mockery::mock(FriendRequestNotificationServiceInterface::class);
 
         $this->app->instance(AuthServiceInterface::class, $this->authService);
         $this->app->instance(FriendshipServiceInterface::class, $this->friendshipService);
         $this->app->instance(FriendRequestRepositoryInterface::class, $this->friendRequestRepository);
+        $this->app->instance(FriendRequestNotificationServiceInterface::class, $this->friendRequestNotificationService);
 
         $this->friendRequestService = app(FriendRequestServiceInterface::class);
     }
@@ -78,6 +89,8 @@ class FriendRequestServiceTest extends TestCase
         $userId = 1;
         $friendId = 2;
 
+        $friendRequest = Mockery::mock(FriendRequest::class);
+
         $this->authService
             ->shouldReceive('getAuthId')
             ->once()
@@ -96,10 +109,22 @@ class FriendRequestServiceTest extends TestCase
             ->with([
                 'requester_id' => $userId,
                 'addressee_id' => $friendId,
-            ]);
+            ])->andReturn($friendRequest);
+
+        $this->friendRequestNotificationService
+            ->shouldReceive('notifyNewFriendRequest')
+            ->once()
+            ->with($friendRequest)
+            ->andReturnNull();
 
         $this->friendRequestRepository
             ->shouldReceive('reciprocalRequestExists')
+            ->once()
+            ->with($userId, $friendId)
+            ->andReturnFalse();
+
+        $this->friendshipService
+            ->shouldReceive('exists')
             ->once()
             ->with($userId, $friendId)
             ->andReturnFalse();
@@ -108,7 +133,7 @@ class FriendRequestServiceTest extends TestCase
 
         $this->friendRequestService->send($friendId);
 
-        $this->assertEquals(5, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations met.');
+        $this->assertEquals(7, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations met.');
     }
 
     /**
@@ -121,6 +146,8 @@ class FriendRequestServiceTest extends TestCase
         $userId = 1;
         $friendId = 2;
 
+        $friendRequest = Mockery::mock(FriendRequest::class);
+
         $this->authService
             ->shouldReceive('getAuthId')
             ->once()
@@ -139,7 +166,7 @@ class FriendRequestServiceTest extends TestCase
             ->with([
                 'requester_id' => $userId,
                 'addressee_id' => $friendId,
-            ]);
+            ])->andReturn($friendRequest);
 
         $this->friendRequestRepository
             ->shouldReceive('reciprocalRequestExists')
@@ -149,7 +176,7 @@ class FriendRequestServiceTest extends TestCase
 
         $this->friendshipService
             ->shouldReceive('exists')
-            ->once()
+            ->twice()
             ->with($userId, $friendId)
             ->andReturnFalse();
 
@@ -160,6 +187,12 @@ class FriendRequestServiceTest extends TestCase
                 'user_id' => $userId,
                 'friend_id' => $friendId,
             ]);
+
+        $this->friendshipService
+            ->shouldReceive('exists')
+            ->once()
+            ->with($friendId, $userId)
+            ->andReturnFalse();
 
         $this->friendshipService
             ->shouldReceive('create')
@@ -175,9 +208,12 @@ class FriendRequestServiceTest extends TestCase
             ->with($userId, $friendId)
             ->andReturnNull();
 
+        // For mutual, the friend request notification is not necessary
+        $this->friendRequestNotificationService->shouldNotReceive('notifyNewFriendRequest');
+
         $this->friendRequestService->send($friendId);
 
-        $this->assertEquals(8, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations met.');
+        $this->assertEquals(10, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations met.');
     }
 
     /**
@@ -231,6 +267,40 @@ class FriendRequestServiceTest extends TestCase
     }
 
     /**
+     * Test if can't send a friend request if friendship already exists.
+     *
+     * @return void
+     */
+    public function test_if_cant_send_a_friend_request_if_friendship_already_exists(): void
+    {
+        $userId = 1;
+        $friendId = 2;
+
+        $this->authService
+            ->shouldReceive('getAuthId')
+            ->once()
+            ->withNoArgs()
+            ->andReturn($userId);
+
+        $this->friendRequestRepository
+            ->shouldReceive('exists')
+            ->once()
+            ->with($userId, $friendId)
+            ->andReturnFalse();
+
+        $this->friendshipService
+            ->shouldReceive('exists')
+            ->once()
+            ->with($userId, $friendId)
+            ->andReturnTrue();
+
+        $this->expectException(FriendshipAlreadyExistsException::class);
+        $this->expectExceptionMessage('You are already friend of the given user!');
+
+        $this->friendRequestService->send($friendId);
+    }
+
+    /**
      * Test if can accept a friend request.
      *
      * @return void
@@ -274,6 +344,12 @@ class FriendRequestServiceTest extends TestCase
             ]);
 
         $this->friendshipService
+            ->shouldReceive('exists')
+            ->once()
+            ->with($friendId, $userId)
+            ->andReturnFalse();
+
+        $this->friendshipService
             ->shouldReceive('create')
             ->once()
             ->with([
@@ -289,7 +365,7 @@ class FriendRequestServiceTest extends TestCase
 
         $this->friendRequestService->accept($id);
 
-        $this->assertEquals(6, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations met.');
+        $this->assertEquals(7, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations met.');
     }
 
     /**

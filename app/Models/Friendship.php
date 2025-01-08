@@ -24,7 +24,7 @@ class Friendship extends Model
     /**
      * Get the user that owns the Friendship
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<User, $this>
      */
     public function user(): BelongsTo
     {
@@ -34,7 +34,7 @@ class Friendship extends Model
     /**
      * Get the friend that owns the Friendship
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<User, $this>
      */
     public function friend(): BelongsTo
     {

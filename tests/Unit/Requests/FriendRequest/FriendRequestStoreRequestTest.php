@@ -81,7 +81,7 @@ class FriendRequestStoreRequestTest extends BaseRequestTesting
     /**
      * Data provider for invalid validation cases.
      *
-     * @return array<int, array{data: array{share: mixed, phone: mixed, twitch: mixed, github: mixed, twitter: mixed, youtube: mixed, facebook: mixed, instagram: mixed}, expectedErrors: array<string, string>}>
+     * @return array<int, array{data: array{addressee_id: mixed}, expectedErrors: array<string, string>}>
      */
     public static function invalidDataProvider(): array
     {
