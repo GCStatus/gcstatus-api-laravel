@@ -16,7 +16,7 @@ class LevelRepositoryTest extends TestCase
      *
      * @var \App\Contracts\Repositories\LevelRepositoryInterface
      */
-    private $levelRepository;
+    private LevelRepositoryInterface $levelRepository;
 
     /**
      * Setup new test environments.

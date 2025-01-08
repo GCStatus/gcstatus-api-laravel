@@ -9,6 +9,7 @@ use App\Http\Controllers\{
     Auth\LogoutController,
     TransactionController,
     NotificationController,
+    FriendRequestController,
     Profile\SocialController,
     Profile\PictureController,
     EmailVerify\NotifyController,
@@ -61,5 +62,11 @@ Route::middleware(['registration.should.complete'])->group(function () {
     Route::controller(TitleController::class)->group(function () {
         Route::post('titles/{id}/buy', 'buy')->name('titles.buy');
         Route::put('titles/{id}/toggle', 'toggle')->name('titles.toggle');
+    });
+
+    Route::controller(FriendRequestController::class)->group(function () {
+        Route::post('friends/request/send', 'send')->name('friends.request.send');
+        Route::post('friends/request/{id}/accept', 'accept')->name('friends.request.accept');
+        Route::post('friends/request/{id}/decline', 'decline')->name('friends.request.decline');
     });
 });
