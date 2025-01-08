@@ -187,6 +187,46 @@ class User extends Authenticatable implements
     }
 
     /**
+     * Get all of the sent friend requests for the User
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<FriendRequest, $this>
+     */
+    public function sentRequests(): HasMany
+    {
+        return $this->hasMany(FriendRequest::class, 'requester_id');
+    }
+
+    /**
+     * Get all of the received friend requests for the User
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<FriendRequest, $this>
+     */
+    public function receivedRequests(): HasMany
+    {
+        return $this->hasMany(FriendRequest::class, 'addressee_id');
+    }
+
+    /**
+     * Get all of the friendships for the User
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<Friendship, $this>
+     */
+    public function friendships(): HasMany
+    {
+        return $this->hasMany(Friendship::class, 'user_id');
+    }
+
+    /**
+     * The friends that belong to the User
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<User, $this>
+     */
+    public function friends(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'friendships', 'user_id', 'friend_id');
+    }
+
+    /**
      * Get the title associated with the User
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne<UserTitle, $this>
