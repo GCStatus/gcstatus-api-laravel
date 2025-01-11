@@ -71,6 +71,7 @@ EXPOSE 443
 EXPOSE 443/udp
 EXPOSE 2019
 EXPOSE 8080
+EXPOSE 3306
 
 # Define the entrypoint to run
 ENTRYPOINT ["./docker/entrypoint.sh"]

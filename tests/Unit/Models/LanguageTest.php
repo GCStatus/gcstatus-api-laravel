@@ -39,7 +39,6 @@ class LanguageTest extends BaseModelTesting implements
     public function test_fillable_attributes(): void
     {
         $fillable = [
-            'iso',
             'name',
             'slug',
         ];

@@ -13,6 +13,9 @@ return new class () extends Migration {
         Schema::create('languageables', function (Blueprint $table) {
             $table->id();
             $table->morphs('languageable');
+            $table->boolean('menu')->default(true);
+            $table->boolean('dubs')->default(false);
+            $table->boolean('subtitles')->default(true);
             $table->foreignId('language_id')->constrained();
             $table->timestamps();
         });
