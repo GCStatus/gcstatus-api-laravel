@@ -35,6 +35,9 @@ class LanguageableTest extends BaseModelTesting implements
     public function test_fillable_attributes(): void
     {
         $fillable = [
+            'menu',
+            'dubs',
+            'subtitles',
             'language_id',
             'languageable_id',
             'languageable_type',

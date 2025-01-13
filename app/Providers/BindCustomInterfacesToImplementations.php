@@ -4,8 +4,8 @@ namespace App\Providers;
 
 use InvalidArgumentException;
 use Illuminate\Contracts\Foundation\Application;
-use App\Services\Validation\{EmailValidator, NicknameValidator, SteamResponseValidator};
-use App\Contracts\Services\Validation\{IdentifierValidatorInterface, SteamResponseValidatorInterface};
+use App\Services\Validation\{EmailValidator, NicknameValidator};
+use App\Contracts\Services\Validation\{IdentifierValidatorInterface};
 
 class BindCustomInterfacesToImplementations extends BaseInterfaceBindServiceProvider
 {
@@ -28,7 +28,6 @@ class BindCustomInterfacesToImplementations extends BaseInterfaceBindServiceProv
                 default => throw new InvalidArgumentException("Invalid identifier type: $identifierType", 400),
             };
         });
-        $this->app->bind(SteamResponseValidatorInterface::class, SteamResponseValidator::class);
     }
 
     /**
