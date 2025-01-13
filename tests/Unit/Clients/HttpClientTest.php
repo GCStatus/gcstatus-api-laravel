@@ -79,6 +79,40 @@ class HttpClientTest extends TestCase
     }
 
     /**
+     * Test if it handles successful put request.
+     *
+     * @return void
+     */
+    public function test_if_it_handles_successful_put_request(): void
+    {
+        Http::fake([
+            'https://example.com' => Http::response('Updated', Response::HTTP_OK),
+        ]);
+
+        $response = $this->httpClient->put('https://example.com', ['key' => 'value']);
+
+        $this->assertEquals('Updated', $response->body());
+        $this->assertEquals(Response::HTTP_OK, $response->status());
+    }
+
+    /**
+     * Test if it handles successful delete request.
+     *
+     * @return void
+     */
+    public function test_if_it_handles_successful_delete_request(): void
+    {
+        Http::fake([
+            'https://example.com' => Http::response('Deleted', Response::HTTP_OK),
+        ]);
+
+        $response = $this->httpClient->delete('https://example.com');
+
+        $this->assertEquals('Deleted', $response->body());
+        $this->assertEquals(Response::HTTP_OK, $response->status());
+    }
+
+    /**
      * Test if it handles failed http response.
      *
      * @return void
