@@ -5,7 +5,7 @@ namespace App\Providers;
 use InvalidArgumentException;
 use Illuminate\Contracts\Foundation\Application;
 use App\Services\Validation\{EmailValidator, NicknameValidator};
-use App\Contracts\Services\Validation\IdentifierValidatorInterface;
+use App\Contracts\Services\Validation\{IdentifierValidatorInterface};
 
 class BindCustomInterfacesToImplementations extends BaseInterfaceBindServiceProvider
 {
@@ -16,6 +16,7 @@ class BindCustomInterfacesToImplementations extends BaseInterfaceBindServiceProv
      */
     public function register(): void
     {
+        $this->bindClientInterfacesToImplementations();
         $this->bindResponseInterfacesToImplementations();
 
         $this->app->bind(IdentifierValidatorInterface::class, function (Application $app, array $params) {
@@ -40,6 +41,20 @@ class BindCustomInterfacesToImplementations extends BaseInterfaceBindServiceProv
             'Contracts/Responses',
             'App\\Contracts\\Responses',
             'App\\Responses',
+        );
+    }
+
+    /**
+     * Bind the client interfaces.
+     *
+     * @return void
+     */
+    private function bindClientInterfacesToImplementations(): void
+    {
+        $this->bindInterfacesToImplementations(
+            'Contracts/Clients',
+            'App\\Contracts\\Clients',
+            'App\\Clients',
         );
     }
 }

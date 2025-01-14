@@ -21,17 +21,24 @@ class Dlc extends Model
      * @var list<string>
      */
     protected $fillable = [
-        'name',
         'slug',
         'free',
         'cover',
         'about',
         'legal',
+        'title',
         'game_id',
         'description',
         'release_date',
         'short_description',
     ];
+
+    /**
+     * The sluggable attribute for the dlc.
+     *
+     * @var string
+     */
+    protected $sluggable = 'title';
 
     /**
      * The attributes that should be casts.

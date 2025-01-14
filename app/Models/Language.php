@@ -21,7 +21,6 @@ class Language extends Model
      * @var list<string>
      */
     protected $fillable = [
-        'iso',
         'name',
         'slug',
     ];

@@ -17,6 +17,9 @@ class Languageable extends Model
      * @var list<string>
      */
     protected $fillable = [
+        'menu',
+        'dubs',
+        'subtitles',
         'language_id',
         'languageable_id',
         'languageable_type',

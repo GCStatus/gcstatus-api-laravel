@@ -13,7 +13,7 @@ return new class () extends Migration {
         Schema::create('games', function (Blueprint $table) {
             $table->id();
             $table->string('title');
-            $table->string('slug');
+            $table->string('slug')->unique()->index();
             $table->string('cover');
             $table->text('about');
             $table->text('description');
@@ -21,7 +21,7 @@ return new class () extends Migration {
             $table->integer('age');
             $table->boolean('free')->default(false);
             $table->boolean('great_release')->default(false);
-            $table->string('legal')->nullable();
+            $table->text('legal')->nullable();
             $table->string('website')->nullable();
             $table->date('release_date');
             $table->enum('condition', ['hot', 'sale', 'popular', 'commom'])->default('commom');

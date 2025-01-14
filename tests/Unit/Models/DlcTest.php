@@ -39,12 +39,12 @@ class DlcTest extends BaseModelTesting implements
     public function test_fillable_attributes(): void
     {
         $fillable = [
-            'name',
             'slug',
             'free',
             'cover',
             'about',
             'legal',
+            'title',
             'game_id',
             'description',
             'release_date',

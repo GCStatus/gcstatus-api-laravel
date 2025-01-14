@@ -185,6 +185,8 @@
 - [ ] Create the best price for games, when applicable, search for the best on stores
 - [ ] Send email on wallet operations?
 - [ ] Implement logs on system changes - models - spatie log activity?
+- [ ] Add cron jobs to reset missions with frequency
+  - [ ] Reset user progresses - check about best way to reset user progresses, considering for all missions
 - [ ] Create a ticket/report for support - microservice
   - [ ] The support ticket can be used to get support
   - [ ] The report can be used to report some suspicious activity

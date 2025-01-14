@@ -13,11 +13,11 @@ return new class () extends Migration {
         Schema::create('dlcs', function (Blueprint $table) {
             $table->id();
             $table->text('about');
-            $table->string('name');
+            $table->string('title');
             $table->string('cover');
             $table->text('description');
             $table->text('short_Description');
-            $table->string('legal')->nullable();
+            $table->text('legal')->nullable();
             $table->date('release_date');
             $table->boolean('free')->default(false);
             $table->string('slug')->unique()->index();
