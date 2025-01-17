@@ -16,7 +16,7 @@ return new class () extends Migration {
             $table->string('title');
             $table->string('cover');
             $table->text('description');
-            $table->text('short_Description');
+            $table->text('short_description');
             $table->text('legal')->nullable();
             $table->date('release_date');
             $table->boolean('free')->default(false);

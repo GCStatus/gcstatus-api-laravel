@@ -3,7 +3,8 @@
 namespace Tests\Unit\Models;
 
 use App\Models\Game;
-use App\Traits\HasSlug;
+use App\Traits\{HasSlug, HasHeart};
+use App\Contracts\HasHeartInterface;
 use Tests\Contracts\Models\BaseModelTesting;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -11,19 +12,24 @@ use Illuminate\Database\Eloquent\Relations\{
     HasOne,
     HasMany,
     MorphMany,
+    MorphToMany,
 };
 use Tests\Contracts\Models\{
     ShouldTestCasts,
+    ShouldTestConstants,
     ShouldTestTraits,
     ShouldTestFillables,
     ShouldTestRelations,
+    ShouldTestInterfaces,
 };
 
 class GameTest extends BaseModelTesting implements
     ShouldTestCasts,
     ShouldTestTraits,
     ShouldTestFillables,
-    ShouldTestRelations
+    ShouldTestRelations,
+    ShouldTestConstants,
+    ShouldTestInterfaces
 {
     /**
      * The testable model string class.
@@ -88,6 +94,7 @@ class GameTest extends BaseModelTesting implements
     {
         $traits = [
             HasSlug::class,
+            HasHeart::class,
             HasFactory::class,
             SoftDeletes::class,
         ];
@@ -106,24 +113,56 @@ class GameTest extends BaseModelTesting implements
             'dlcs' => HasMany::class,
             'crack' => HasOne::class,
             'support' => HasOne::class,
-            'tags' => MorphMany::class,
             'views' => MorphMany::class,
+            'tags' => MorphToMany::class,
             'hearts' => MorphMany::class,
-            'genres' => MorphMany::class,
             'torrents' => HasMany::class,
             'stores' => MorphMany::class,
             'reviews' => MorphMany::class,
             'critics' => MorphMany::class,
+            'genres' => MorphToMany::class,
             'comments' => MorphMany::class,
-            'platforms' => MorphMany::class,
             'galleries' => MorphMany::class,
             'languages' => MorphMany::class,
-            'categories' => MorphMany::class,
-            'publishers' => MorphMany::class,
-            'developers' => MorphMany::class,
+            'platforms' => MorphToMany::class,
+            'publishers' => MorphToMany::class,
+            'developers' => MorphToMany::class,
+            'categories' => MorphToMany::class,
             'requirements' => MorphMany::class,
         ];
 
         $this->assertHasRelations($relations);
+    }
+
+    /**
+     * The contract constant attributes that should be tested.
+     *
+     * @return void
+     */
+    public function test_constant_attributes(): void
+    {
+        $expectedConstants = [
+            'HOT_CONDITION' => 'hot',
+            'SALE_CONDITION' => 'sale',
+            'POPULAR_CONDITION' => 'popular',
+            'CREATED_AT' => 'created_at',
+            'UPDATED_AT' => 'updated_at',
+        ];
+
+        $this->assertHasConstants($expectedConstants);
+    }
+
+    /**
+     * The contract interfaces attributes that should be tested.
+     *
+     * @return void
+     */
+    public function test_interfaces_attributes(): void
+    {
+        $interfaces = [
+            HasHeartInterface::class,
+        ];
+
+        $this->assertUsesInterfaces($interfaces);
     }
 }

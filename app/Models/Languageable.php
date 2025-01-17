@@ -26,6 +26,20 @@ class Languageable extends Model
     ];
 
     /**
+     * The attributes that should be casts.
+     *
+     * @return array<string, string>
+     */
+    public function casts(): array
+    {
+        return [
+            'menu' => 'bool',
+            'dubs' => 'bool',
+            'subtitles' => 'bool',
+        ];
+    }
+
+    /**
      * Get the languageable for the Languageable.
      *
      * @return \Illuminate\Database\Eloquent\Relations\MorphTo<Model, $this>

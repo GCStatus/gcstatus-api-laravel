@@ -114,11 +114,18 @@ class LevelIndexTest extends BaseIntegrationTesting
 
         $expectedQuery = 'select * from "levels" where "levels"."deleted_at" is null order by "created_at" desc';
 
+        $expectedQueryRewards = 'select * from "rewardables" where "rewardables"."sourceable_id" in (1, 2, 3, 4, 5) and "rewardables"."sourceable_type" = ? and "rewardables"."deleted_at" is null'; // 5 levels
+
         $queryLog = DB::getQueryLog();
 
         $this->assertTrue(
             collect($queryLog)->contains(fn (array $query) => $query['query'] === $expectedQuery),
-            'The expected query was not executed, but it should be on first request.'
+            'The expected query for level was not executed, but it should be on first request.',
+        );
+
+        $this->assertTrue(
+            collect($queryLog)->contains(fn (array $query) => $query['query'] === $expectedQueryRewards),
+            'The expected query for rewards was not executed, but it should be on first request.',
         );
     }
 

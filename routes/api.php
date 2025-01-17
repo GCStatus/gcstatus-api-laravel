@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\{
+    HomeController,
     Auth\LoginController,
     Auth\RegisterController,
     Auth\SocialiteController,
@@ -27,4 +28,8 @@ Route::post('password/reset/notify', ForgotController::class)->name('password.no
 Route::controller(SocialiteController::class)->prefix('oauth/{provider}')->group(function () {
     Route::get('redirect', 'redirect')->name('auth.socialite.redirect');
     Route::get('callback', 'callback')->name('auth.socialite.callback');
+});
+
+Route::middleware('api.mid.auth')->group(function () {
+    Route::get('home', HomeController::class)->name('home');
 });

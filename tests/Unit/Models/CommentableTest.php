@@ -2,7 +2,9 @@
 
 namespace Tests\Unit\Models;
 
+use App\Traits\HasHeart;
 use App\Models\Commentable;
+use App\Contracts\HasHeartInterface;
 use Tests\Contracts\Models\BaseModelTesting;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -17,13 +19,15 @@ use Tests\Contracts\Models\{
     ShouldTestTraits,
     ShouldTestFillables,
     ShouldTestRelations,
+    ShouldTestInterfaces,
 };
 
 class CommentableTest extends BaseModelTesting implements
     ShouldTestCasts,
     ShouldTestTraits,
     ShouldTestFillables,
-    ShouldTestRelations
+    ShouldTestRelations,
+    ShouldTestInterfaces
 {
     /**
      * The testable model string class.
@@ -61,6 +65,7 @@ class CommentableTest extends BaseModelTesting implements
     public function test_traits_attributes(): void
     {
         $traits = [
+            HasHeart::class,
             HasFactory::class,
             SoftDeletes::class,
         ];
@@ -99,5 +104,19 @@ class CommentableTest extends BaseModelTesting implements
         ];
 
         $this->assertHasRelations($relations);
+    }
+
+    /**
+     * The contract interfaces attributes that should be tested.
+     *
+     * @return void
+     */
+    public function test_interfaces_attributes(): void
+    {
+        $interfaces = [
+            HasHeartInterface::class,
+        ];
+
+        $this->assertUsesInterfaces($interfaces);
     }
 }

@@ -62,6 +62,7 @@ class ProfileTest extends BaseModelTesting implements
     {
         $casts = [
             'id' => 'int',
+            'share' => 'bool',
             'deleted_at' => 'datetime',
         ];
 

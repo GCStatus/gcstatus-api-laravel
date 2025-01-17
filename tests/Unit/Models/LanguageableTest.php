@@ -7,12 +7,14 @@ use Tests\Contracts\Models\BaseModelTesting;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\{BelongsTo, MorphTo};
 use Tests\Contracts\Models\{
+    ShouldTestCasts,
     ShouldTestTraits,
     ShouldTestFillables,
     ShouldTestRelations,
 };
 
 class LanguageableTest extends BaseModelTesting implements
+    ShouldTestCasts,
     ShouldTestTraits,
     ShouldTestFillables,
     ShouldTestRelations
@@ -58,6 +60,23 @@ class LanguageableTest extends BaseModelTesting implements
         ];
 
         $this->assertUsesTraits($traits);
+    }
+
+    /**
+     * The casts tests.
+     *
+     * @return void
+     */
+    public function test_casts_attributes(): void
+    {
+        $casts = [
+            'id' => 'int',
+            'menu' => 'bool',
+            'dubs' => 'bool',
+            'subtitles' => 'bool',
+        ];
+
+        $this->assertHasCasts($casts);
     }
 
     /**

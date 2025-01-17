@@ -23,6 +23,7 @@ class LevelResource extends JsonResource
             'coins' => $level->coins,
             'experience' => $level->experience,
             'users' => UserResource::collection($this->whenLoaded('users')),
+            'rewards' => RewardableResource::collection($this->whenLoaded('rewards')),
         ];
     }
 }

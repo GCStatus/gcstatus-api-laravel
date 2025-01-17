@@ -7,7 +7,7 @@ use App\Traits\HasSlug;
 use Tests\Contracts\Models\BaseModelTesting;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\{BelongsTo, MorphMany};
+use Illuminate\Database\Eloquent\Relations\{BelongsTo, MorphMany, MorphToMany};
 use Tests\Contracts\Models\{
     ShouldTestCasts,
     ShouldTestTraits,
@@ -96,14 +96,14 @@ class DlcTest extends BaseModelTesting implements
     {
         $relations = [
             'game' => BelongsTo::class,
-            'tags' => MorphMany::class,
-            'genres' => MorphMany::class,
+            'tags' => MorphToMany::class,
             'stores' => MorphMany::class,
-            'platforms' => MorphMany::class,
+            'genres' => MorphToMany::class,
             'galleries' => MorphMany::class,
-            'categories' => MorphMany::class,
-            'publishers' => MorphMany::class,
-            'developers' => MorphMany::class,
+            'platforms' => MorphToMany::class,
+            'publishers' => MorphToMany::class,
+            'developers' => MorphToMany::class,
+            'categories' => MorphToMany::class,
         ];
 
         $this->assertHasRelations($relations);

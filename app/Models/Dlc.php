@@ -5,7 +5,7 @@ namespace App\Models;
 use App\Traits\HasSlug;
 use Illuminate\Database\Eloquent\{Model, SoftDeletes};
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\{BelongsTo, MorphMany};
+use Illuminate\Database\Eloquent\Relations\{BelongsTo, MorphMany, MorphToMany};
 
 class Dlc extends Model
 {
@@ -66,41 +66,41 @@ class Dlc extends Model
     /**
      * Get all of the categories for the DLC
      *
-     * @return \Illuminate\Database\Eloquent\Relations\MorphMany<Categoriable, $this>
+     * @return \Illuminate\Database\Eloquent\Relations\MorphToMany<Category, $this>
      */
-    public function categories(): MorphMany
+    public function categories(): MorphToMany
     {
-        return $this->morphMany(Categoriable::class, 'categoriable');
+        return $this->morphToMany(Category::class, 'categoriable');
     }
 
     /**
      * Get all of the platforms for the DLC
      *
-     * @return \Illuminate\Database\Eloquent\Relations\MorphMany<Platformable, $this>
+     * @return \Illuminate\Database\Eloquent\Relations\MorphToMany<Platform, $this>
      */
-    public function platforms(): MorphMany
+    public function platforms(): MorphToMany
     {
-        return $this->morphMany(Platformable::class, 'platformable');
+        return $this->morphToMany(Platform::class, 'platformable');
     }
 
     /**
      * Get all of the tags for the DLC
      *
-     * @return \Illuminate\Database\Eloquent\Relations\MorphMany<Taggable, $this>
+     * @return \Illuminate\Database\Eloquent\Relations\MorphToMany<Tag, $this>
      */
-    public function tags(): MorphMany
+    public function tags(): MorphToMany
     {
-        return $this->morphMany(Taggable::class, 'taggable');
+        return $this->morphToMany(Tag::class, 'taggable');
     }
 
     /**
      * Get all of the genres for the DLC
      *
-     * @return \Illuminate\Database\Eloquent\Relations\MorphMany<Genreable, $this>
+     * @return \Illuminate\Database\Eloquent\Relations\MorphToMany<Genre, $this>
      */
-    public function genres(): MorphMany
+    public function genres(): MorphToMany
     {
-        return $this->morphMany(Genreable::class, 'genreable');
+        return $this->morphToMany(Genre::class, 'genreable');
     }
 
     /**
@@ -126,20 +126,20 @@ class Dlc extends Model
     /**
      * Get all of the developers for the DLC
      *
-     * @return \Illuminate\Database\Eloquent\Relations\MorphMany<Developerable, $this>
+     * @return \Illuminate\Database\Eloquent\Relations\MorphToMany<Developer, $this>
      */
-    public function developers(): MorphMany
+    public function developers(): MorphToMany
     {
-        return $this->morphMany(Developerable::class, 'developerable');
+        return $this->morphToMany(Developer::class, 'developerable');
     }
 
     /**
      * Get all of the publishers for the DLC
      *
-     * @return \Illuminate\Database\Eloquent\Relations\MorphMany<Publisherable, $this>
+     * @return \Illuminate\Database\Eloquent\Relations\MorphToMany<Publisher, $this>
      */
-    public function publishers(): MorphMany
+    public function publishers(): MorphToMany
     {
-        return $this->morphMany(Publisherable::class, 'publisherable');
+        return $this->morphToMany(Publisher::class, 'publisherable');
     }
 }

@@ -26,6 +26,18 @@ class Storeable extends Model
     ];
 
     /**
+     * The attributes that should be casts.
+     *
+     * @return array<string, string>
+     */
+    public function casts(): array
+    {
+        return [
+            'price' => 'int',
+        ];
+    }
+
+    /**
      * Get the storeable for the Storeable.
      *
      * @return \Illuminate\Database\Eloquent\Relations\MorphTo<Model, $this>

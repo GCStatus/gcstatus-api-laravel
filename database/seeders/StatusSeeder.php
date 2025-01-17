@@ -20,5 +20,14 @@ class StatusSeeder extends Seeder
         Status::create([
             'name' => 'unavailable',
         ]);
+        Status::create([
+            'name' => 'cracked',
+        ]);
+        Status::create([
+            'name' => 'uncracked',
+        ]);
+        Status::create([
+            'name' => 'cracked-oneday',
+        ]);
     }
 }

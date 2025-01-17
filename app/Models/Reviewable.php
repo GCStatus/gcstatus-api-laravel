@@ -34,6 +34,7 @@ class Reviewable extends Model
     public function casts(): array
     {
         return [
+            'rate' => 'int',
             'consumed' => 'bool',
         ];
     }
