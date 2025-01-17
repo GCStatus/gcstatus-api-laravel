@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\NormalizeMorphAdmin;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\{MorphTo, BelongsTo};
@@ -10,6 +11,7 @@ class Heartable extends Model
 {
     /** @use HasFactory<\Database\Factories\HeartableFactory> */
     use HasFactory;
+    use NormalizeMorphAdmin;
 
     /**
      * The attributes that are mass assignable.
@@ -21,6 +23,13 @@ class Heartable extends Model
         'heartable_id',
         'heartable_type',
     ];
+
+    /**
+     * The morphable attribute.
+     *
+     * @var string
+     */
+    protected $morphableAttribute = 'heartable_type';
 
     /**
      * Get the heartable for the Heartable.

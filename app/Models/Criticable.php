@@ -33,6 +33,7 @@ class Criticable extends Model
     public function casts(): array
     {
         return [
+            'rate' => 'float',
             'posted_at' => 'datetime',
         ];
     }

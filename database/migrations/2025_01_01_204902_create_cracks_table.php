@@ -15,6 +15,7 @@ return new class () extends Migration {
             $table->date('cracked_at')->nullable();
             $table->foreignId('game_id')->constrained();
             $table->foreignId('status_id')->constrained();
+            $table->foreignId('cracker_id')->constrained();
             $table->foreignId('protection_id')->constrained();
             $table->timestamps();
         });

@@ -20,7 +20,19 @@ class Crack extends Model
         'game_id',
         'status_id',
         'cracked_at',
+        'cracker_id',
         'protection_id',
+    ];
+
+    /**
+     * The relationships that should always be loaded.
+     *
+     * @var list<string>
+     */
+    protected $with = [
+        'status',
+        'cracker',
+        'protection',
     ];
 
     /**
@@ -53,6 +65,16 @@ class Crack extends Model
     public function status(): BelongsTo
     {
         return $this->belongsTo(Status::class);
+    }
+
+    /**
+     * Get the cracker that owns the Crack
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Cracker, $this>
+     */
+    public function cracker(): BelongsTo
+    {
+        return $this->belongsTo(Cracker::class);
     }
 
     /**

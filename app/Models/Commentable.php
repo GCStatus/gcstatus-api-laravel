@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Traits\HasHeart;
+use App\Contracts\HasHeartInterface;
 use Illuminate\Database\Eloquent\{Model, SoftDeletes};
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\{
@@ -11,11 +13,15 @@ use Illuminate\Database\Eloquent\Relations\{
     MorphMany,
 };
 
-class Commentable extends Model
+/**
+ * @implements HasHeartInterface<Commentable>
+ */
+class Commentable extends Model implements HasHeartInterface
 {
     /** @use HasFactory<\Database\Factories\CommentableFactory> */
     use HasFactory;
 
+    use HasHeart;
     use SoftDeletes;
 
     /**
@@ -63,10 +69,11 @@ class Commentable extends Model
     /**
      * Get all of the hearts for the Commentable
      *
-     * @return \Illuminate\Database\Eloquent\Relations\MorphMany<Heartable, $this>
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany<Heartable, Commentable>
      */
     public function hearts(): MorphMany
     {
+        /** @var \Illuminate\Database\Eloquent\Relations\MorphMany<Heartable, Commentable> */
         return $this->morphMany(Heartable::class, 'heartable');
     }
 

@@ -4,7 +4,12 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Foundation\Configuration\{Exceptions, Middleware};
-use App\Http\Middleware\{JwtCookieAuth, ForceJsonAccept, ShouldCompleteRegistration};
+use App\Http\Middleware\{
+    JwtCookieAuth,
+    ForceJsonAccept,
+    MidJwtCookieAuth,
+    ShouldCompleteRegistration,
+};
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -22,6 +27,7 @@ return Application::configure(basePath: dirname(__DIR__))
             AddQueuedCookiesToResponse::class,
         ])->alias([
             'api.auth' => JwtCookieAuth::class,
+            'api.mid.auth' => MidJwtCookieAuth::class,
             'registration.should.complete' => ShouldCompleteRegistration::class,
         ])->trustProxies(at: '*');
     })->withExceptions(function (Exceptions $exceptions) {

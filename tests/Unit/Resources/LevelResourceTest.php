@@ -5,6 +5,7 @@ namespace Tests\Unit\Resources;
 use Mockery;
 use App\Models\{User, Level};
 use App\Http\Resources\LevelResource;
+use Illuminate\Database\Eloquent\Collection;
 use Tests\Contracts\Resources\BaseResourceTesting;
 
 class LevelResourceTest extends BaseResourceTesting
@@ -20,6 +21,7 @@ class LevelResourceTest extends BaseResourceTesting
         'coins' => 'int',
         'experience' => 'int',
         'users' => 'resourceCollection',
+        'rewards' => 'resourceCollection',
     ];
 
     /**
@@ -39,6 +41,8 @@ class LevelResourceTest extends BaseResourceTesting
      */
     public function modelInstance(): Level
     {
+        $rewards = Mockery::mock(Collection::class);
+
         $userMock = Mockery::mock(User::class)->makePartial();
         $userMock->shouldAllowMockingMethod('getAttribute');
         $userMock->shouldReceive('getAttribute')->with('id')->andReturn(1);
@@ -62,6 +66,8 @@ class LevelResourceTest extends BaseResourceTesting
         $levelMock->shouldReceive('getAttribute')
             ->with('users')
             ->andReturn([$userMock]);
+
+        $levelMock->shouldReceive('getAttribute')->with('rewards')->andReturn($rewards);
 
         /** @var \App\Models\Level $levelMock */
         return $levelMock;

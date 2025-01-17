@@ -21,6 +21,21 @@ class LevelRepository extends AbstractRepository implements LevelRepositoryInter
     /**
      * @inheritDoc
      */
+    public function all(): Collection
+    {
+        /** @var \Illuminate\Database\Eloquent\Collection<int, \Illuminate\Database\Eloquent\Model> $levels */
+        $levels = $this->model()
+            ->query()
+            ->with('rewards.rewardable', 'rewards.sourceable')
+            ->orderByDesc('created_at')
+            ->get();
+
+        return $levels;
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function getLevelsAboveByLevel(int $currentLevel): Collection
     {
         return $this->model()

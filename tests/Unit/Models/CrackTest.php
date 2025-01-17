@@ -40,6 +40,7 @@ class CrackTest extends BaseModelTesting implements
             'game_id',
             'status_id',
             'cracked_at',
+            'cracker_id',
             'protection_id',
         ];
 
@@ -85,6 +86,7 @@ class CrackTest extends BaseModelTesting implements
         $relations = [
             'game' => BelongsTo::class,
             'status' => BelongsTo::class,
+            'cracker' => BelongsTo::class,
             'protection' => BelongsTo::class,
         ];
 

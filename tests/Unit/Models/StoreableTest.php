@@ -57,6 +57,7 @@ class StoreableTest extends BaseModelTesting implements
     {
         $casts = [
             'id' => 'int',
+            'price' => 'int',
         ];
 
         $this->assertHasCasts($casts);

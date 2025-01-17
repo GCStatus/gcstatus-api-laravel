@@ -44,6 +44,54 @@ class LevelRepositoryTest extends TestCase
     }
 
     /**
+     * Test the all method.
+     *
+     * @return void
+     */
+    public function test_the_all_method(): void
+    {
+        $level = 1;
+
+        $levelMock = Mockery::mock(Level::class);
+        $builderMock = Mockery::mock(Builder::class);
+
+        $collection = Collection::make([$levelMock]);
+
+        $builderMock->shouldReceive('with')
+            ->once()
+            ->with('rewards.rewardable', 'rewards.sourceable')
+            ->andReturnSelf();
+
+        $builderMock->shouldReceive('orderByDesc')
+            ->once()
+            ->with('created_at')
+            ->andReturnSelf();
+
+        $builderMock->shouldReceive('get')
+            ->once()
+            ->withNoArgs()
+            ->andReturn($collection);
+
+        $levelMock->shouldReceive('query')->andReturn($builderMock);
+
+        $repoMock = Mockery::mock(LevelRepository::class)
+            ->makePartial()
+            ->shouldAllowMockingProtectedMethods();
+
+        $repoMock->shouldReceive('model')
+            ->once()
+            ->andReturn($levelMock);
+
+        /** @var \App\Contracts\Repositories\LevelRepositoryInterface $repoMock */
+        $result = $repoMock->all();
+
+        $this->assertEquals($collection, $result);
+        $this->assertInstanceOf(Collection::class, $result);
+
+        $this->assertEquals(4, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations met.');
+    }
+
+    /**
      * Test if can find levels above given id if levels exist.
      *
      * @return void

@@ -74,6 +74,7 @@ class CriticableTest extends BaseModelTesting implements
     {
         $casts = [
             'id' => 'int',
+            'rate' => 'float',
             'posted_at' => 'datetime',
         ];
 

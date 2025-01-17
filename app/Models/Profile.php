@@ -34,6 +34,18 @@ class Profile extends Model
     ];
 
     /**
+     * The attributes that should be casts.
+     *
+     * @return array<string, string>
+     */
+    public function casts(): array
+    {
+        return [
+            'share' => 'bool',
+        ];
+    }
+
+    /**
      * Get the user that owns the Profile
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<User, $this>

@@ -58,6 +58,7 @@ class ReviewableTest extends BaseModelTesting implements
     {
         $casts = [
             'id' => 'int',
+            'rate' => 'int',
             'consumed' => 'bool',
             'deleted_at' => 'datetime',
         ];

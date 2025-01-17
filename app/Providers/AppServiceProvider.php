@@ -40,6 +40,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        $this->configureCommands();
+
+        Relation::morphMap([
+            'App\Models\GCStatus\Dlc' => \App\Models\Dlc::class,
+            'App\Models\GCStatus\Game' => \App\Models\Game::class,
+        ]);
+
         Auth::provider('cached-user', function (Application $app) {
             return new CachedAuthUserProvider(
                 $app->make(Hasher::class),
@@ -86,5 +93,17 @@ class AppServiceProvider extends ServiceProvider
 
             return $relationships;
         });
+    }
+
+    /**
+     * Configure the application's commands.
+     *
+     * @return void
+     */
+    public function configureCommands(): void
+    {
+        DB::prohibitDestructiveCommands(
+            (bool)$this->app->environment('production'),
+        );
     }
 }

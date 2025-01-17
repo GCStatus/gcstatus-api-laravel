@@ -2,21 +2,27 @@
 
 namespace App\Models;
 
-use App\Traits\HasSlug;
+use App\Traits\{HasSlug, HasHeart};
+use App\Contracts\HasHeartInterface;
 use Illuminate\Database\Eloquent\{Model, SoftDeletes};
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\{
     HasOne,
     HasMany,
     MorphMany,
+    MorphToMany,
 };
 
-class Game extends Model
+/**
+ * @implements HasHeartInterface<Game>
+ */
+class Game extends Model implements HasHeartInterface
 {
     /** @use HasFactory<\Database\Factories\GameFactory> */
     use HasFactory;
 
     use HasSlug;
+    use HasHeart;
     use SoftDeletes;
 
     /**
@@ -51,11 +57,45 @@ class Game extends Model
     ];
 
     /**
+     * The relationships that should always be loaded.
+     *
+     * @var list<string>
+     */
+    protected $with = [
+        'tags',
+        'crack',
+        'genres',
+        'platforms',
+        'categories',
+    ];
+
+    /**
      * The sluggable attribute for the game.
      *
      * @var string
      */
     protected $sluggable = 'title';
+
+    /**
+     * The game hot condition.
+     *
+     * @var string
+     */
+    public const HOT_CONDITION = 'hot';
+
+    /**
+     * The game sale condition.
+     *
+     * @var string
+     */
+    public const SALE_CONDITION = 'sale';
+
+    /**
+     * The game popular condition.
+     *
+     * @var string
+     */
+    public const POPULAR_CONDITION = 'popular';
 
     /**
      * The attributes that should be casts.
@@ -84,51 +124,52 @@ class Game extends Model
     /**
      * Get all of the hearts for the Game
      *
-     * @return \Illuminate\Database\Eloquent\Relations\MorphMany<Heartable, $this>
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany<Heartable, Game>
      */
     public function hearts(): MorphMany
     {
+        /** @var \Illuminate\Database\Eloquent\Relations\MorphMany<Heartable, Game> */
         return $this->morphMany(Heartable::class, 'heartable');
     }
 
     /**
-     * Get all of the categories for the Game
+     * Get all categories for the Game.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\MorphMany<Categoriable, $this>
+     * @return \Illuminate\Database\Eloquent\Relations\MorphToMany<Category, $this>
      */
-    public function categories(): MorphMany
+    public function categories(): MorphToMany
     {
-        return $this->morphMany(Categoriable::class, 'categoriable');
+        return $this->morphToMany(Category::class, 'categoriable');
     }
 
     /**
-     * Get all of the platforms for the Game
+     * Get all platforms for the Game.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\MorphMany<Platformable, $this>
+     * @return \Illuminate\Database\Eloquent\Relations\MorphToMany<Platform, $this>
      */
-    public function platforms(): MorphMany
+    public function platforms(): MorphToMany
     {
-        return $this->morphMany(Platformable::class, 'platformable');
+        return $this->morphToMany(Platform::class, 'platformable');
     }
 
     /**
      * Get all of the tags for the Game
      *
-     * @return \Illuminate\Database\Eloquent\Relations\MorphMany<Taggable, $this>
+     * @return \Illuminate\Database\Eloquent\Relations\MorphToMany<Tag, $this>
      */
-    public function tags(): MorphMany
+    public function tags(): MorphToMany
     {
-        return $this->morphMany(Taggable::class, 'taggable');
+        return $this->morphToMany(Tag::class, 'taggable');
     }
 
     /**
      * Get all of the genres for the Game
      *
-     * @return \Illuminate\Database\Eloquent\Relations\MorphMany<Genreable, $this>
+     * @return \Illuminate\Database\Eloquent\Relations\MorphToMany<Genre, $this>
      */
-    public function genres(): MorphMany
+    public function genres(): MorphToMany
     {
-        return $this->morphMany(Genreable::class, 'genreable');
+        return $this->morphToMany(Genre::class, 'genreable');
     }
 
     /**
@@ -162,33 +203,33 @@ class Game extends Model
     }
 
     /**
-     * Get all of the comments for the Game
+     * Get all of the top-level comments for the Game
      *
      * @return \Illuminate\Database\Eloquent\Relations\MorphMany<Commentable, $this>
      */
     public function comments(): MorphMany
     {
-        return $this->morphMany(Commentable::class, 'commentable');
+        return $this->morphMany(Commentable::class, 'commentable')->whereNull('parent_id');
     }
 
     /**
      * Get all of the developers for the Game
      *
-     * @return \Illuminate\Database\Eloquent\Relations\MorphMany<Developerable, $this>
+     * @return \Illuminate\Database\Eloquent\Relations\MorphToMany<Developer, $this>
      */
-    public function developers(): MorphMany
+    public function developers(): MorphToMany
     {
-        return $this->morphMany(Developerable::class, 'developerable');
+        return $this->morphToMany(Developer::class, 'developerable');
     }
 
     /**
      * Get all of the publishers for the Game
      *
-     * @return \Illuminate\Database\Eloquent\Relations\MorphMany<Publisherable, $this>
+     * @return \Illuminate\Database\Eloquent\Relations\MorphToMany<Publisher, $this>
      */
-    public function publishers(): MorphMany
+    public function publishers(): MorphToMany
     {
-        return $this->morphMany(Publisherable::class, 'publisherable');
+        return $this->morphToMany(Publisher::class, 'publisherable');
     }
 
     /**
