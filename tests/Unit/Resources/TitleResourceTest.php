@@ -19,6 +19,7 @@ class TitleResourceTest extends BaseResourceTesting
         'id' => 'int',
         'cost' => 'int',
         'own' => 'bool',
+        'title' => 'string',
         'status' => 'object',
         'purchasable' => 'bool',
         'rewardable' => 'object',

@@ -2,6 +2,7 @@
 
 namespace Tests\Contracts\Resources;
 
+use DateTime;
 use Tests\TestCase;
 use Illuminate\Support\Facades\App;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -87,6 +88,7 @@ abstract class BaseResourceTesting extends TestCase implements ShouldTestResourc
             'float' => $this->assertIsFloat($value),
             'null' => $this->assertNull($value),
             'object' => $this->assertIsObject($value),
+            'date' => $this->assertInstanceOf(DateTime::class, $value),
             'resourceCollection' => $this->assertInstanceOf(AnonymousResourceCollection::class, $value),
             default => $this->fail("Unknown type: $type")
         };

@@ -31,6 +31,7 @@ class Mission extends Model
         'frequency',
         'status_id',
         'experience',
+        'reset_time',
         'description',
     ];
 
@@ -53,6 +54,7 @@ class Mission extends Model
         return [
             'for_all' => 'bool',
             'status_id' => 'int',
+            'reset_time' => 'datetime',
         ];
     }
 

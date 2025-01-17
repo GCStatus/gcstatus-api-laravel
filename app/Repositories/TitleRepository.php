@@ -13,7 +13,9 @@ class TitleRepository implements TitleRepositoryInterface
      */
     public function allForUser(): Collection
     {
-        return Title::all();
+        return Title::query()
+            ->with('rewardable.sourceable.requirements.userProgress')
+            ->get();
     }
 
     /**
