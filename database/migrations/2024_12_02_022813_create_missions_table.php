@@ -17,6 +17,7 @@ return new class () extends Migration {
             $table->integer('experience');
             $table->mediumText('description');
             $table->boolean('for_all')->default(true);
+            $table->timestamp('reset_time')->nullable();
             $table->enum('frequency', ['one_time', 'daily', 'weekly', 'monthly', 'yearly'])->default('one_time');
             $table->foreignId('status_id')->constrained();
             $table->softDeletes();

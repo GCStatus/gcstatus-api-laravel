@@ -21,8 +21,11 @@ class MissionResourceTest extends BaseResourceTesting
         'status' => 'object',
         'mission' => 'string',
         'experience' => 'int',
+        'reset_time' => 'date',
         'frequency' => 'string',
         'description' => 'string',
+        'created_at' => 'date',
+        'updated_at' => 'date',
         'progress' => 'object',
         'rewards' => 'resourceCollection',
         'requirements' => 'resourceCollection',
@@ -55,6 +58,9 @@ class MissionResourceTest extends BaseResourceTesting
         $missionMock->shouldReceive('getAttribute')->with('coins')->andReturn(fake()->numberBetween(1, 9999));
         $missionMock->shouldReceive('getAttribute')->with('experience')->andReturn(fake()->numberBetween(1, 9999));
         $missionMock->shouldReceive('getAttribute')->with('frequency')->andReturn(fake()->randomElement(['one_time', 'daily', 'weekly', 'monthly', 'yearly']));
+        $missionMock->shouldReceive('getAttribute')->with('reset_time')->andReturn(fake()->dateTime());
+        $missionMock->shouldReceive('getAttribute')->with('created_at')->andReturn(fake()->dateTime());
+        $missionMock->shouldReceive('getAttribute')->with('updated_at')->andReturn(fake()->dateTime());
 
         /** @var \App\Models\Mission $missionMock */
         return $missionMock;

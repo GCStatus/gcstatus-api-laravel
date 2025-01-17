@@ -51,6 +51,7 @@ class MissionTest extends BaseModelTesting implements
             'frequency',
             'status_id',
             'experience',
+            'reset_time',
             'description',
         ];
 
@@ -68,6 +69,7 @@ class MissionTest extends BaseModelTesting implements
             'id' => 'int',
             'for_all' => 'bool',
             'status_id' => 'int',
+            'reset_time' => 'datetime',
             'deleted_at' => 'datetime',
         ];
 

@@ -5,10 +5,9 @@ namespace Tests\Unit\Repositories;
 use Mockery;
 use Tests\TestCase;
 use App\Models\Title;
-use Illuminate\Database\Eloquent\Collection;
 use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 use App\Contracts\Repositories\TitleRepositoryInterface;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\Eloquent\{Builder, Collection, ModelNotFoundException};
 
 class TitleRepositoryTest extends TestCase
 {
@@ -39,15 +38,24 @@ class TitleRepositoryTest extends TestCase
     #[RunInSeparateProcess]
     public function test_if_can_get_all_titles_for_auth_user(): void
     {
+        $builderMock = Mockery::mock(Builder::class);
         $titleMock = Mockery::mock('overload:' . Title::class);
 
         $titlesCollection = Collection::make([$titleMock]);
 
-        $titleMock
-            ->shouldReceive('all')
+        $builderMock
+            ->shouldReceive('with')
+            ->once()
+            ->with('rewardable.sourceable.requirements.userProgress')
+            ->andReturnSelf();
+
+        $builderMock
+            ->shouldReceive('get')
             ->once()
             ->withNoArgs()
             ->andReturn($titlesCollection);
+
+        $titleMock->shouldReceive('query')->once()->withNoArgs()->andReturn($builderMock);
 
         $result = $this->titleRepository->allForUser();
 

@@ -51,6 +51,7 @@ class TitleResource extends JsonResource
             'id' => $title->id,
             'cost' => $title->cost,
             'own' => $own,
+            'title' => $title->title,
             'purchasable' => $title->purchasable,
             'description' => $title->description,
             'created_at' => $title->created_at,
