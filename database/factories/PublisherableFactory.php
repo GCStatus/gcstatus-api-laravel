@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Publisher;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +18,7 @@ class PublisherableFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'publisher_id' => Publisher::factory()->create(),
         ];
     }
 }

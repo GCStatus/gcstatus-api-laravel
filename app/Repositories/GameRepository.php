@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Models\Game;
 use Illuminate\Database\Eloquent\Collection;
 use App\Contracts\Repositories\GameRepositoryInterface;
+use Illuminate\Database\Eloquent\Relations\{HasMany, MorphMany};
 
 class GameRepository extends AbstractRepository implements GameRepositoryInterface
 {
@@ -16,6 +17,43 @@ class GameRepository extends AbstractRepository implements GameRepositoryInterfa
     public function model(): Game
     {
         return new Game();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function details(string $slug): Game
+    {
+        return $this->model()
+            ->query()
+            ->withIsHearted()
+            ->with([
+                'support',
+                'reviews',
+                'dlcs.tags',
+                'developers',
+                'publishers',
+                'dlcs.genres',
+                'stores.store',
+                'critics.critic',
+                'dlcs.platforms',
+                'dlcs.categories',
+                'dlcs.developers',
+                'dlcs.publishers',
+                'dlcs.stores.store',
+                'torrents.provider',
+                'languages.language',
+                'galleries.mediaType',
+                'dlcs.galleries.mediaType',
+                'requirements.requirementType',
+                'comments' => function (MorphMany $query) {
+                    $query->withIsHearted()->with([
+                        'children' => function (HasMany $query) {
+                            $query->withIsHearted();
+                        }
+                    ]);
+                },
+            ])->where('slug', $slug)->firstOrFail();
     }
 
     /**

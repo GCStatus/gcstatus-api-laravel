@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +18,10 @@ class StoreFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'url' => fake()->url(),
+            'name' => $name = fake()->name(),
+            'slug' => Str::slug($name),
+            'logo' => fake()->imageUrl(),
         ];
     }
 }

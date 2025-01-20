@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\MediaType;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +18,9 @@ class GalleriableFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            's3' => false,
+            'path' => fake()->imageUrl(),
+            'media_type_id' => fake()->randomElement([MediaType::PHOTO_CONST_ID, MediaType::VIDEO_CONST_ID]),
         ];
     }
 }

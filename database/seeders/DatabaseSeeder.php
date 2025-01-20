@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             StatusSeeder::class,
             MediaTypeSeeder::class,
             StoreSeeder::class,
+            RequirementTypeSeeder::class,
         ]);
     }
 }

@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\{
     HomeController,
+    GameController,
     Auth\LoginController,
     Auth\RegisterController,
     Auth\SocialiteController,
@@ -31,5 +32,6 @@ Route::controller(SocialiteController::class)->prefix('oauth/{provider}')->group
 });
 
 Route::middleware('api.mid.auth')->group(function () {
+    Route::apiResource('games', GameController::class);
     Route::get('home', HomeController::class)->name('home');
 });

@@ -8,6 +8,14 @@ use Illuminate\Database\Eloquent\Collection;
 interface GameServiceInterface extends AbstractServiceInterface
 {
     /**
+     * Get a game details with relations.
+     *
+     * @param string $slug
+     * @return \App\Models\Game
+     */
+    public function details(string $slug): Game;
+
+    /**
      * Get games by condition.
      *
      * @param string $condition

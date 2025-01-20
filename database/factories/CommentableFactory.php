@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +18,8 @@ class CommentableFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'comment' => fake()->realText(),
+            'user_id' => User::factory()->create(),
         ];
     }
 }

@@ -5,8 +5,8 @@ namespace Tests\Unit\Repositories;
 use Mockery;
 use Tests\TestCase;
 use App\Models\Game;
-use Illuminate\Support\Carbon;
 use App\Repositories\GameRepository;
+use Illuminate\Support\{Str, Carbon};
 use Illuminate\Database\Eloquent\{Builder, Collection};
 use App\Contracts\Repositories\GameRepositoryInterface;
 
@@ -42,6 +42,85 @@ class GameRepositoryTest extends TestCase
         $gameRepository = $this->gameRepository;
 
         $this->assertInstanceOf(Game::class, $gameRepository->model());
+    }
+
+    /**
+     * Test if can get a game details.
+     *
+     * @return void
+     */
+    public function test_if_can_get_a_game_details(): void
+    {
+        $title = fake()->word();
+        $slug = Str::slug($title);
+
+        $game = Mockery::mock(Game::class);
+        $builder = Mockery::mock(Builder::class);
+
+        $game->shouldReceive('getAttribute')->with('title')->andReturn($title);
+        $game->shouldReceive('getAttribute')->with('slug')->andReturn($slug);
+
+        $builder
+            ->shouldReceive('withIsHearted')
+            ->once()
+            ->andReturnSelf();
+
+        $builder
+            ->shouldReceive('with')
+            ->once()
+            ->with(
+                'support',
+                'reviews',
+                'comments',
+                'dlcs.tags',
+                'developers',
+                'publishers',
+                'dlcs.genres',
+                'stores.store',
+                'critics.critic',
+                'dlcs.platforms',
+                'dlcs.categories',
+                'dlcs.developers',
+                'dlcs.publishers',
+                'dlcs.stores.store',
+                'comments.children',
+                'torrents.provider',
+                'languages.language',
+                'galleries.mediaType',
+                'dlcs.galleries.mediaType',
+                'requirements.requirementType',
+            )->andReturnSelf();
+
+        $builder
+            ->shouldReceive('where')
+            ->once()
+            ->with('slug', $slug)
+            ->andReturnSelf();
+
+        $builder
+            ->shouldReceive('firstOrFail')
+            ->once()
+            ->withNoArgs()
+            ->andReturn($game);
+
+        $game->shouldReceive('query')->once()->withNoArgs()->andReturn($builder);
+
+        $repoMock = Mockery::mock(GameRepository::class)
+            ->makePartial()
+            ->shouldAllowMockingProtectedMethods();
+
+        $repoMock->shouldReceive('model')
+            ->once()
+            ->withNoArgs()
+            ->andReturn($game);
+
+        /** @var \App\Contracts\Repositories\GameRepositoryInterface $repoMock */
+        $result = $repoMock->details($slug);
+
+        $this->assertEquals($game, $result);
+        $this->assertInstanceOf(Game::class, $result);
+
+        $this->assertEquals(6, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations met.');
     }
 
     /**
