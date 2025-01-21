@@ -23,7 +23,8 @@ class ReviewableResource extends JsonResource
             'review' => $reviewable->review,
             'consumed' => $reviewable->consumed,
             'created_at' => $reviewable->created_at,
-            'user' => UserResource::make($this->whenLoaded('user')),
+            'updated_at' => $reviewable->updated_at,
+            'by' => SocialUserResource::make($this->whenLoaded('user')),
         ];
     }
 }

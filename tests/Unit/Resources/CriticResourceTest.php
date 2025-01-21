@@ -18,6 +18,7 @@ class CriticResourceTest extends BaseResourceTesting
         'id' => 'int',
         'url' => 'string',
         'name' => 'string',
+        'logo' => 'string',
         'slug' => 'string',
         'acting' => 'bool',
     ];
@@ -46,6 +47,7 @@ class CriticResourceTest extends BaseResourceTesting
         $CriticMock->shouldReceive('getAttribute')->with('url')->andReturn(fake()->url());
         $CriticMock->shouldReceive('getAttribute')->with('name')->andReturn(fake()->name());
         $CriticMock->shouldReceive('getAttribute')->with('slug')->andReturn(fake()->name());
+        $CriticMock->shouldReceive('getAttribute')->with('logo')->andReturn(fake()->imageUrl());
         $CriticMock->shouldReceive('getAttribute')->with('acting')->andReturn(fake()->boolean());
 
         /** @var \App\Models\Critic $CriticMock */

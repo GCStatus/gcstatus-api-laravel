@@ -21,6 +21,7 @@ class CriticResource extends JsonResource
             'id' => $critic->id,
             'url' => $critic->url,
             'name' => $critic->name,
+            'logo' => $critic->logo,
             'slug' => $critic->slug,
             'acting' => $critic->acting,
         ];

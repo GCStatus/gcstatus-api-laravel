@@ -47,6 +47,8 @@ class AppServiceProvider extends ServiceProvider
             'App\Models\GCStatus\Game' => \App\Models\Game::class,
             'App\Models\GCStatus\Heartable' => \App\Models\Heartable::class,
             'App\Models\GCStatus\Storeable' => \App\Models\Storeable::class,
+            'App\Models\GCStatus\Criticable' => \App\Models\Criticable::class,
+            'App\Models\GCStatus\Reviewable' => \App\Models\Reviewable::class,
             'App\Models\GCStatus\Galleriable' => \App\Models\Galleriable::class,
             'App\Models\GCStatus\Commentable' => \App\Models\Commentable::class,
             'App\Models\GCStatus\Languageable' => \App\Models\Languageable::class,

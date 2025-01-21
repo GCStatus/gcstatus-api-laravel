@@ -68,28 +68,36 @@ class GameRepositoryTest extends TestCase
         $builder
             ->shouldReceive('with')
             ->once()
-            ->with(
-                'support',
-                'reviews',
-                'comments',
-                'dlcs.tags',
-                'developers',
-                'publishers',
-                'dlcs.genres',
-                'stores.store',
-                'critics.critic',
-                'dlcs.platforms',
-                'dlcs.categories',
-                'dlcs.developers',
-                'dlcs.publishers',
-                'dlcs.stores.store',
-                'comments.children',
-                'torrents.provider',
-                'languages.language',
-                'galleries.mediaType',
-                'dlcs.galleries.mediaType',
-                'requirements.requirementType',
-            )->andReturnSelf();
+            ->with(Mockery::on(function ($relationships) {
+                $expectedRelationships = [
+                    'support',
+                    'dlcs.tags',
+                    'developers',
+                    'publishers',
+                    'dlcs.genres',
+                    'reviews.user',
+                    'stores.store',
+                    'critics.critic',
+                    'dlcs.platforms',
+                    'dlcs.categories',
+                    'dlcs.developers',
+                    'dlcs.publishers',
+                    'dlcs.stores.store',
+                    'torrents.provider',
+                    'languages.language',
+                    'galleries.mediaType',
+                    'dlcs.galleries.mediaType',
+                    'requirements.requirementType',
+                ];
+
+                foreach ($expectedRelationships as $relationship) {
+                    if (!in_array($relationship, $relationships, true)) {
+                        return false;
+                    }
+                }
+
+                return isset($relationships['comments']) && is_callable($relationships['comments']);
+            }))->andReturnSelf();
 
         $builder
             ->shouldReceive('where')

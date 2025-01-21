@@ -34,6 +34,7 @@ class Game extends Model implements HasHeartInterface
         'age',
         'slug',
         'free',
+        'views',
         'title',
         'cover',
         'about',
@@ -52,7 +53,6 @@ class Game extends Model implements HasHeartInterface
      * @var list<string>
      */
     protected $withCount = [
-        'views',
         'hearts',
     ];
 
@@ -109,16 +109,6 @@ class Game extends Model implements HasHeartInterface
             'release_date' => 'date',
             'great_release' => 'bool',
         ];
-    }
-
-    /**
-     * Get all of the views for the Game
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\MorphMany<Viewable, $this>
-     */
-    public function views(): MorphMany
-    {
-        return $this->morphMany(Viewable::class, 'viewable');
     }
 
     /**

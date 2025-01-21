@@ -27,13 +27,13 @@ class GameRepository extends AbstractRepository implements GameRepositoryInterfa
         return $this->model()
             ->query()
             ->withIsHearted()
-            ->with([
+            ->with([ // @phpstan-ignore-line
                 'support',
-                'reviews',
                 'dlcs.tags',
                 'developers',
                 'publishers',
                 'dlcs.genres',
+                'reviews.user',
                 'stores.store',
                 'critics.critic',
                 'dlcs.platforms',
@@ -47,9 +47,10 @@ class GameRepository extends AbstractRepository implements GameRepositoryInterfa
                 'dlcs.galleries.mediaType',
                 'requirements.requirementType',
                 'comments' => function (MorphMany $query) {
-                    $query->withIsHearted()->with([
+                    $query->withIsHearted()->with([ // @phpstan-ignore-line
+                        'user',
                         'children' => function (HasMany $query) {
-                            $query->withIsHearted();
+                            $query->withIsHearted()->with('user'); // @phpstan-ignore-line
                         }
                     ]);
                 },

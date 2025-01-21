@@ -70,6 +70,7 @@ class GameServiceTest extends TestCase
         $slug = Str::slug($title);
 
         $game = Mockery::mock(Game::class);
+        $game->shouldAllowMockingProtectedMethods();
 
         $this->gameRepository
             ->shouldReceive('details')
@@ -77,12 +78,18 @@ class GameServiceTest extends TestCase
             ->with($slug)
             ->andReturn($game);
 
+        $game
+            ->shouldReceive('increment')
+            ->once()
+            ->with('views')
+            ->andReturnTrue();
+
         $result = $this->gameService->details($slug);
 
         $this->assertEquals($game, $result);
         $this->assertInstanceOf(Game::class, $result);
 
-        $this->assertEquals(1, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations met.');
+        $this->assertEquals(2, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations met.');
     }
 
     /**

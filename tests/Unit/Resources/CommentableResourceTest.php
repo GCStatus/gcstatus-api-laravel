@@ -20,7 +20,9 @@ class CommentableResourceTest extends BaseResourceTesting
         'comment' => 'string',
         'is_hearted' => 'bool',
         'hearts_count' => 'int',
-        'user' => 'object',
+        'created_at' => 'string',
+        'updated_at' => 'string',
+        'by' => 'object',
         'replies' => 'resourceCollection',
     ];
 
@@ -49,6 +51,8 @@ class CommentableResourceTest extends BaseResourceTesting
 
         $commentableMock->shouldReceive('getAttribute')->with('id')->andReturn(1);
         $commentableMock->shouldReceive('getAttribute')->with('comment')->andReturn(fake()->text());
+        $commentableMock->shouldReceive('getAttribute')->with('created_at')->andReturn(fake()->date());
+        $commentableMock->shouldReceive('getAttribute')->with('updated_at')->andReturn(fake()->date());
         $commentableMock->shouldReceive('getAttribute')->with('is_hearted')->andReturn(fake()->boolean());
         $commentableMock->shouldReceive('getAttribute')->with('hearts_count')->andReturn(fake()->numberBetween(1, 999));
 

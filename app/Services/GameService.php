@@ -24,7 +24,11 @@ class GameService extends AbstractService implements GameServiceInterface
      */
     public function details(string $slug): Game
     {
-        return $this->repository()->details($slug);
+        $game = $this->repository()->details($slug);
+
+        $this->createGameView($game);
+
+        return $game;
     }
 
     /**
@@ -57,5 +61,16 @@ class GameService extends AbstractService implements GameServiceInterface
     public function getNextGreatRelease(): ?Game
     {
         return $this->repository()->getNextGreatRelease();
+    }
+
+    /**
+     * Create the related game view.
+     *
+     * @param \App\Models\Game $game
+     * @return void
+     */
+    private function createGameView(Game $game): void
+    {
+        $game->increment('views');
     }
 }

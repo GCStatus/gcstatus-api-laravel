@@ -19,6 +19,7 @@ return new class () extends Migration {
             $table->text('description');
             $table->text('short_description');
             $table->integer('age');
+            $table->integer('views')->default(0);
             $table->boolean('free')->default(false);
             $table->boolean('great_release')->default(false);
             $table->text('legal')->nullable();

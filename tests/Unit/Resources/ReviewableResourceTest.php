@@ -20,7 +20,8 @@ class ReviewableResourceTest extends BaseResourceTesting
         'review' => 'string',
         'consumed' => 'bool',
         'created_at' => 'string',
-        'user' => 'object',
+        'updated_at' => 'string',
+        'by' => 'object',
     ];
 
     /**
@@ -48,6 +49,7 @@ class ReviewableResourceTest extends BaseResourceTesting
         $reviewableMock->shouldReceive('getAttribute')->with('id')->andReturn(1);
         $reviewableMock->shouldReceive('getAttribute')->with('review')->andReturn(fake()->text());
         $reviewableMock->shouldReceive('getAttribute')->with('created_at')->andReturn(fake()->date());
+        $reviewableMock->shouldReceive('getAttribute')->with('updated_at')->andReturn(fake()->date());
         $reviewableMock->shouldReceive('getAttribute')->with('consumed')->andReturn(fake()->boolean());
         $reviewableMock->shouldReceive('getAttribute')->with('rate')->andReturn(fake()->numberBetween(1, 5));
 
