@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\NormalizeMorphAdmin;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\{BelongsTo, MorphTo};
@@ -10,6 +11,8 @@ class Requirementable extends Model
 {
     /** @use HasFactory<\Database\Factories\RequirementableFactory> */
     use HasFactory;
+
+    use NormalizeMorphAdmin;
 
     /**
      * The attributes that are mass assignable.
@@ -29,6 +32,13 @@ class Requirementable extends Model
         'requirement_type_id',
         'requirementable_type',
     ];
+
+    /**
+     * The morphable attribute.
+     *
+     * @var string
+     */
+    protected $morphableAttribute = 'requirementable_type';
 
     /**
      * Get the requirementable for the Requirementable.

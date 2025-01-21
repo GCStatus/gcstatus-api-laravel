@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Critic;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +18,10 @@ class CriticableFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'url' => fake()->url(),
+            'rate' => fake()->randomFloat(1, 1, 10),
+            'posted_at' => fake()->date(),
+            'critic_id' => Critic::factory()->create(),
         ];
     }
 }

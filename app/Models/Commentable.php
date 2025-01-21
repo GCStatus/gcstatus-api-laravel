@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use App\Traits\HasHeart;
 use App\Contracts\HasHeartInterface;
+use App\Traits\{HasHeart, NormalizeMorphAdmin};
 use Illuminate\Database\Eloquent\{Model, SoftDeletes};
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\{
@@ -23,6 +23,7 @@ class Commentable extends Model implements HasHeartInterface
 
     use HasHeart;
     use SoftDeletes;
+    use NormalizeMorphAdmin;
 
     /**
      * The attributes that are mass assignable.
@@ -45,6 +46,13 @@ class Commentable extends Model implements HasHeartInterface
     protected $withCount = [
         'hearts',
     ];
+
+    /**
+     * The morphable attribute.
+     *
+     * @var string
+     */
+    protected $morphableAttribute = 'commentable_type';
 
     /**
      * Get the commentable for the Commntable.

@@ -52,6 +52,6 @@ class Torrent extends Model
      */
     public function provider(): BelongsTo
     {
-        return $this->belongsTo(TorrentProvider::class);
+        return $this->belongsTo(TorrentProvider::class, 'torrent_provider_id');
     }
 }

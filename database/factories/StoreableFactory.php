@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Store;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +18,10 @@ class StoreableFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'url' => fake()->url(),
+            'price' => fake()->numberBetween(1000, 9999999),
+            'store_id' => Store::factory()->create(),
+            'store_item_id' => (string)fake()->randomDigit(),
         ];
     }
 }

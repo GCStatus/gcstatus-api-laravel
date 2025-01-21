@@ -10,6 +10,7 @@ use Database\Seeders\{
     LevelSeeder,
     StatusSeeder,
     MediaTypeSeeder,
+    RequirementTypeSeeder,
     TransactionTypeSeeder,
 };
 
@@ -39,6 +40,7 @@ abstract class BaseIntegrationTesting extends TestCase
             StatusSeeder::class,
             TransactionTypeSeeder::class,
             MediaTypeSeeder::class,
+            RequirementTypeSeeder::class,
         ]);
 
         $this->authService = app(AuthServiceInterface::class);

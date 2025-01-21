@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\NormalizeMorphAdmin;
 use Illuminate\Database\Eloquent\{Model, SoftDeletes};
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\{BelongsTo, MorphTo};
@@ -10,7 +11,9 @@ class Reviewable extends Model
 {
     /** @use HasFactory<\Database\Factories\ReviewableFactory> */
     use HasFactory;
+
     use SoftDeletes;
+    use NormalizeMorphAdmin;
 
     /**
      * The attributes that are mass assignable.
@@ -27,6 +30,13 @@ class Reviewable extends Model
     ];
 
     /**
+     * The morphable attribute.
+     *
+     * @var string
+     */
+    protected $morphableAttribute = 'reviewable_type';
+
+    /**
      * The attributes that should be casts.
      *
      * @return array<string, string>
@@ -34,7 +44,7 @@ class Reviewable extends Model
     public function casts(): array
     {
         return [
-            'rate' => 'int',
+            'rate' => 'float',
             'consumed' => 'bool',
         ];
     }

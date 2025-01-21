@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\NormalizeMorphAdmin;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\{MorphTo, BelongsTo};
@@ -10,6 +11,8 @@ class Galleriable extends Model
 {
     /** @use HasFactory<\Database\Factories\GalleriableFactory> */
     use HasFactory;
+
+    use NormalizeMorphAdmin;
 
     /**
      * The attributes that are mass assignable.
@@ -23,6 +26,13 @@ class Galleriable extends Model
         'galleriable_id',
         'galleriable_type',
     ];
+
+    /**
+     * The morphable attribute.
+     *
+     * @var string
+     */
+    protected $morphableAttribute = 'galleriable_type';
 
     /**
      * The attributes that should be casts.

@@ -22,6 +22,18 @@ class GameService extends AbstractService implements GameServiceInterface
     /**
      * @inheritDoc
      */
+    public function details(string $slug): Game
+    {
+        $game = $this->repository()->details($slug);
+
+        $this->createGameView($game);
+
+        return $game;
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function getGamesByCondition(string $condition, int $limit): Collection
     {
         return $this->repository()->getGamesByCondition($condition, $limit);
@@ -49,5 +61,16 @@ class GameService extends AbstractService implements GameServiceInterface
     public function getNextGreatRelease(): ?Game
     {
         return $this->repository()->getNextGreatRelease();
+    }
+
+    /**
+     * Create the related game view.
+     *
+     * @param \App\Models\Game $game
+     * @return void
+     */
+    private function createGameView(Game $game): void
+    {
+        $game->increment('views');
     }
 }

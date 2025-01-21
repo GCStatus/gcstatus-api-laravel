@@ -12,8 +12,8 @@ return new class () extends Migration {
     {
         Schema::create('reviewables', function (Blueprint $table) {
             $table->id();
+            $table->float('rate');
             $table->text('review');
-            $table->integer('rate');
             $table->boolean('consumed');
             $table->morphs('reviewable');
             $table->foreignId('user_id')->constrained();

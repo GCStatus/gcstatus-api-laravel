@@ -3,6 +3,7 @@
 namespace Tests\Unit\Models;
 
 use App\Models\Reviewable;
+use App\Traits\NormalizeMorphAdmin;
 use Tests\Contracts\Models\BaseModelTesting;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -58,7 +59,7 @@ class ReviewableTest extends BaseModelTesting implements
     {
         $casts = [
             'id' => 'int',
-            'rate' => 'int',
+            'rate' => 'float',
             'consumed' => 'bool',
             'deleted_at' => 'datetime',
         ];
@@ -76,6 +77,7 @@ class ReviewableTest extends BaseModelTesting implements
         $traits = [
             HasFactory::class,
             SoftDeletes::class,
+            NormalizeMorphAdmin::class,
         ];
 
         $this->assertUsesTraits($traits);

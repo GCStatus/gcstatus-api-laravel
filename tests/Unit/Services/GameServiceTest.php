@@ -6,6 +6,7 @@ use Mockery;
 use Tests\TestCase;
 use App\Models\Game;
 use Mockery\MockInterface;
+use Illuminate\Support\Str;
 use App\Repositories\GameRepository;
 use Illuminate\Database\Eloquent\Collection;
 use App\Contracts\Services\GameServiceInterface;
@@ -56,6 +57,39 @@ class GameServiceTest extends TestCase
         $gameService = app(GameServiceInterface::class);
 
         $this->assertInstanceOf(GameRepository::class, $gameService->repository());
+    }
+
+    /**
+     * Test if can get a game details.
+     *
+     * @return void
+     */
+    public function test_if_can_get_a_game_details(): void
+    {
+        $title = fake()->word();
+        $slug = Str::slug($title);
+
+        $game = Mockery::mock(Game::class);
+        $game->shouldAllowMockingProtectedMethods();
+
+        $this->gameRepository
+            ->shouldReceive('details')
+            ->once()
+            ->with($slug)
+            ->andReturn($game);
+
+        $game
+            ->shouldReceive('increment')
+            ->once()
+            ->with('views')
+            ->andReturnTrue();
+
+        $result = $this->gameService->details($slug);
+
+        $this->assertEquals($game, $result);
+        $this->assertInstanceOf(Game::class, $result);
+
+        $this->assertEquals(2, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations met.');
     }
 
     /**

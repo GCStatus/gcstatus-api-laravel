@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Game;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +18,10 @@ class GameSupportFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'url' => fake()->url(),
+            'email' => fake()->email(),
+            'contact' => fake()->phoneNumber(),
+            'game_id' => Game::factory()->create(),
         ];
     }
 }

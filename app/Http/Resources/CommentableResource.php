@@ -24,7 +24,9 @@ class CommentableResource extends JsonResource
             'is_hearted' => $isHearted,
             'comment' => $commentable->comment,
             'hearts_count' => $commentable->hearts_count,
-            'user' => UserResource::make($this->whenLoaded('user')),
+            'created_at' => $commentable->created_at,
+            'updated_at' => $commentable->updated_at,
+            'by' => SocialUserResource::make($this->whenLoaded('user')),
             'replies' => CommentableResource::collection($this->whenLoaded('children')),
         ];
     }

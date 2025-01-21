@@ -42,6 +42,7 @@ class CriticTest extends BaseModelTesting implements
             'url',
             'name',
             'slug',
+            'logo',
             'acting',
         ];
 

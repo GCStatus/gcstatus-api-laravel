@@ -24,6 +24,7 @@ class Critic extends Model
         'url',
         'name',
         'slug',
+        'logo',
         'acting',
     ];
 

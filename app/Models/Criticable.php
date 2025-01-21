@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\NormalizeMorphAdmin;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\{MorphTo, BelongsTo};
@@ -10,6 +11,8 @@ class Criticable extends Model
 {
     /** @use HasFactory<\Database\Factories\CriticableFactory> */
     use HasFactory;
+
+    use NormalizeMorphAdmin;
 
     /**
      * The attributes that are mass assignable.
@@ -24,6 +27,13 @@ class Criticable extends Model
         'criticable_id',
         'criticable_type',
     ];
+
+    /**
+     * The morphable attribute.
+     *
+     * @var string
+     */
+    protected $morphableAttribute = 'criticable_type';
 
     /**
      * The attributes that should be casts.
