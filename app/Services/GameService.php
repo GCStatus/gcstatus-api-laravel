@@ -22,6 +22,14 @@ class GameService extends AbstractService implements GameServiceInterface
     /**
      * @inheritDoc
      */
+    public function getCalendarGames(): Collection
+    {
+        return $this->repository()->getCalendarGames();
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function details(string $slug): Game
     {
         $game = $this->repository()->details($slug);

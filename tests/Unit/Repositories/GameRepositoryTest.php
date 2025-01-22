@@ -45,6 +45,92 @@ class GameRepositoryTest extends TestCase
     }
 
     /**
+     * Test if can get games calendar.
+     *
+     * @return void
+     */
+    public function test_if_can_get_games_calendar(): void
+    {
+        $gameMock = Mockery::mock(Game::class);
+        $builder = Mockery::mock(Builder::class);
+        $collection = Mockery::mock(Collection::class);
+
+        $builder
+            ->shouldReceive('select')
+            ->once()
+            ->with(
+                'id',
+                'slug',
+                'title',
+                'cover',
+                'views',
+                'condition',
+                'release_date',
+            )->andReturnSelf();
+
+        $builder
+            ->shouldReceive('withCount')
+            ->once()
+            ->with('hearts')
+            ->andReturnSelf();
+
+
+        $builder
+            ->shouldReceive('withIsHearted')
+            ->once()
+            ->withNoArgs()
+            ->andReturnSelf();
+
+        $builder
+            ->shouldReceive('where')
+            ->once()
+            ->with(Mockery::on(function (callable $closure) {
+                $queryMock = Mockery::mock(Builder::class);
+
+                $queryMock
+                    ->shouldReceive('whereYear')
+                    ->once()
+                    ->with('release_date', now()->year)
+                    ->andReturnSelf();
+
+                $queryMock
+                    ->shouldReceive('orWhereYear')
+                    ->once()
+                    ->with('release_date', now()->year - 1)
+                    ->andReturnSelf();
+
+                $closure($queryMock);
+
+                return true;
+            }))->andReturnSelf();
+
+        $builder
+            ->shouldReceive('get')
+            ->once()
+            ->withNoArgs()
+            ->andReturn($collection);
+
+        $gameMock->shouldReceive('query')->once()->withNoArgs()->andReturn($builder);
+
+        $repoMock = Mockery::mock(GameRepository::class)
+            ->makePartial()
+            ->shouldAllowMockingProtectedMethods();
+
+        $repoMock->shouldReceive('model')
+            ->once()
+            ->withNoArgs()
+            ->andReturn($gameMock);
+
+        /** @var \App\Contracts\Repositories\GameRepositoryInterface $repoMock */
+        $result = $repoMock->getCalendarGames();
+
+        $this->assertEquals($result, $collection);
+        $this->assertInstanceOf(Collection::class, $result);
+
+        $this->assertEquals(9, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations met.');
+    }
+
+    /**
      * Test if can get a game details.
      *
      * @return void
