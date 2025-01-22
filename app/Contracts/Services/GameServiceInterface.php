@@ -8,6 +8,13 @@ use Illuminate\Database\Eloquent\Collection;
 interface GameServiceInterface extends AbstractServiceInterface
 {
     /**
+     * Get calendar games.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection<int, \App\Models\Game>
+     */
+    public function getCalendarGames(): Collection;
+
+    /**
      * Get a game details with relations.
      *
      * @param string $slug

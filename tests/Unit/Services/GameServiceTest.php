@@ -93,6 +93,29 @@ class GameServiceTest extends TestCase
     }
 
     /**
+     * Test if can get all games calendar.
+     *
+     * @return void
+     */
+    public function test_if_can_get_all_games_calendar(): void
+    {
+        $collection = Mockery::mock(Collection::class);
+
+        $this->gameRepository
+            ->shouldReceive('getCalendarGames')
+            ->once()
+            ->withNoArgs()
+            ->andReturn($collection);
+
+        $result = $this->gameService->getCalendarGames();
+
+        $this->assertEquals($result, $collection);
+        $this->assertInstanceOf(Collection::class, $result);
+
+        $this->assertEquals(1, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations met.');
+    }
+
+    /**
      * Test if can get all games by condition.
      *
      * @return void

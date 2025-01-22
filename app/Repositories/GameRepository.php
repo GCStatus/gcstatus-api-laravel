@@ -3,20 +3,43 @@
 namespace App\Repositories;
 
 use App\Models\Game;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\{Builder, Collection};
 use App\Contracts\Repositories\GameRepositoryInterface;
 use Illuminate\Database\Eloquent\Relations\{HasMany, MorphMany};
 
 class GameRepository extends AbstractRepository implements GameRepositoryInterface
 {
     /**
-     * The game model.
-     *
-     * @return \App\Models\Game
+     * @inheritDoc
      */
     public function model(): Game
     {
         return new Game();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getCalendarGames(): Collection
+    {
+        return $this->model()
+            ->query()
+            ->select(
+                'id',
+                'slug',
+                'title',
+                'cover',
+                'views',
+                'condition',
+                'release_date',
+            )->withCount('hearts')
+            ->withIsHearted()
+            ->where(function (Builder $query) {
+                $currentYear = now()->year;
+                $lastYear = $currentYear - 1;
+
+                $query->whereYear('release_date', $currentYear)->orWhereYear('release_date', $lastYear);
+            })->get();
     }
 
     /**

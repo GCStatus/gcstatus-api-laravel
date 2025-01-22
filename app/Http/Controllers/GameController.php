@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\GameResource;
 use App\Contracts\Services\GameServiceInterface;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class GameController extends Controller
 {
@@ -36,6 +37,18 @@ class GameController extends Controller
     {
         return GameResource::make(
             $this->gameService->details($slug),
+        );
+    }
+
+    /**
+     * Display the games calendar.
+     *
+     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+     */
+    public function calendar(): AnonymousResourceCollection
+    {
+        return GameResource::collection(
+            $this->gameService->getCalendarGames(),
         );
     }
 }
