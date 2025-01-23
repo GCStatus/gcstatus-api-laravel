@@ -10,13 +10,19 @@ use App\Contracts\Repositories\GameRepositoryInterface;
 class GameService extends AbstractService implements GameServiceInterface
 {
     /**
-     * The game repository.
-     *
-     * @return \App\Contracts\Repositories\GameRepositoryInterface
+     * @inheritDoc
      */
     public function repository(): GameRepositoryInterface
     {
         return app(GameRepositoryInterface::class);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function search(string $query): Collection
+    {
+        return $this->repository()->search($query);
     }
 
     /**

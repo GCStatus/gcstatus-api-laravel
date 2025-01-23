@@ -20,6 +20,19 @@ class GameRepository extends AbstractRepository implements GameRepositoryInterfa
     /**
      * @inheritDoc
      */
+    public function search(string $query): Collection
+    {
+        return $this->model()
+            ->query()
+            ->withIsHearted()
+            ->where('title', 'LIKE', "%$query%")
+            ->limit(100)
+            ->get();
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function getCalendarGames(): Collection
     {
         return $this->model()

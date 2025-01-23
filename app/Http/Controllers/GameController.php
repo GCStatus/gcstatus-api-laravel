@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\GameResource;
 use App\Contracts\Services\GameServiceInterface;
+use App\Http\Requests\Game\GameSearchRequest;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class GameController extends Controller
@@ -49,6 +50,25 @@ class GameController extends Controller
     {
         return GameResource::collection(
             $this->gameService->getCalendarGames(),
+        );
+    }
+
+    /**
+     * Display the games for search.
+     *
+     * @param \App\Http\Requests\Game\GameSearchRequest $request
+     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+     */
+    public function search(GameSearchRequest $request): AnonymousResourceCollection
+    {
+        /** @var array<string, string> $data */
+        $data = $request->validated();
+
+        /** @var string $query */
+        $query = $data['q'];
+
+        return GameResource::collection(
+            $this->gameService->search($query),
         );
     }
 }
