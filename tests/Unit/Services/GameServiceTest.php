@@ -116,6 +116,31 @@ class GameServiceTest extends TestCase
     }
 
     /**
+     * Test if can search games.
+     *
+     * @return void
+     */
+    public function test_if_can_search_games(): void
+    {
+        $q = fake()->word();
+
+        $collection = Mockery::mock(Collection::class);
+
+        $this->gameRepository
+            ->shouldReceive('search')
+            ->once()
+            ->with($q)
+            ->andReturn($collection);
+
+        $result = $this->gameService->search($q);
+
+        $this->assertEquals($result, $collection);
+        $this->assertInstanceOf(Collection::class, $result);
+
+        $this->assertEquals(1, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations met.');
+    }
+
+    /**
      * Test if can get all games by condition.
      *
      * @return void

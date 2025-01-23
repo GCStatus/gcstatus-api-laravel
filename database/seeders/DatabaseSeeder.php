@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
             MediaTypeSeeder::class,
             StoreSeeder::class,
             RequirementTypeSeeder::class,
+            PlatformSeeder::class,
         ]);
     }
 }

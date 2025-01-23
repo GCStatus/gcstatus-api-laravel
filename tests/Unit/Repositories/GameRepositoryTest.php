@@ -276,6 +276,64 @@ class GameRepositoryTest extends TestCase
     }
 
     /**
+     * Test if can search games.
+     *
+     * @return void
+     */
+    public function test_if_can_search_games(): void
+    {
+        $limit = 100;
+        $q = fake()->word();
+
+        $gameMock = Mockery::mock(Game::class);
+        $builder = Mockery::mock(Builder::class);
+        $collection = Mockery::mock(Collection::class);
+
+        $builder
+            ->shouldReceive('withIsHearted')
+            ->once()
+            ->withNoArgs()
+            ->andReturnSelf();
+
+        $builder
+            ->shouldReceive('where')
+            ->once()
+            ->with('title', 'LIKE', "%$q%")
+            ->andReturnSelf();
+
+        $builder
+            ->shouldReceive('limit')
+            ->once()
+            ->with($limit)
+            ->andReturnSelf();
+
+        $builder
+            ->shouldReceive('get')
+            ->once()
+            ->withNoArgs()
+            ->andReturn($collection);
+
+        $gameMock->shouldReceive('query')->once()->withNoArgs()->andReturn($builder);
+
+        $repoMock = Mockery::mock(GameRepository::class)
+            ->makePartial()
+            ->shouldAllowMockingProtectedMethods();
+
+        $repoMock->shouldReceive('model')
+            ->once()
+            ->withNoArgs()
+            ->andReturn($gameMock);
+
+        /** @var \App\Contracts\Repositories\GameRepositoryInterface $repoMock */
+        $result = $repoMock->search($q);
+
+        $this->assertEquals($result, $collection);
+        $this->assertInstanceOf(Collection::class, $result);
+
+        $this->assertEquals(6, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations met.');
+    }
+
+    /**
      * Test if can get upcoming games.
      *
      * @return void

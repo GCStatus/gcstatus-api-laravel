@@ -15,6 +15,14 @@ interface GameRepositoryInterface extends AbstractRepositoryInterface
     public function getCalendarGames(): Collection;
 
     /**
+     * Search for games.
+     *
+     * @param string $query
+     * @return \Illuminate\Database\Eloquent\Collection<int, \App\Models\Game>
+     */
+    public function search(string $query): Collection;
+
+    /**
      * Get a game details with relations.
      *
      * @param string $slug

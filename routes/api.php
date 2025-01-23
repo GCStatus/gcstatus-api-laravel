@@ -32,7 +32,11 @@ Route::controller(SocialiteController::class)->prefix('oauth/{provider}')->group
 });
 
 Route::middleware('api.mid.auth')->group(function () {
-    Route::get('games/calendar', [GameController::class, 'calendar'])->name('games.calendar');
+    Route::controller(GameController::class)->group(function () {
+        Route::get('games/search', 'search')->name('games.search');
+        Route::get('games/calendar', 'calendar')->name('games.calendar');
+    });
+
     Route::apiResource('games', GameController::class);
     Route::get('home', HomeController::class)->name('home');
 });

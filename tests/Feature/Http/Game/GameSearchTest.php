@@ -22,7 +22,7 @@ use Tests\Traits\{
     HasDummyHeartable,
 };
 
-class GameCalendarTest extends BaseIntegrationTesting
+class GameSearchTest extends BaseIntegrationTesting
 {
     use HasDummyTag;
     use HasDummyGame;
@@ -33,26 +33,129 @@ class GameCalendarTest extends BaseIntegrationTesting
     use HasDummyHeartable;
 
     /**
-     * The dummy games.
-     *
-     * @var \Illuminate\Database\Eloquent\Collection<int, \App\Models\Game>
-     */
-    private Collection $games;
-
-    /**
-     * Setup new test environments.
+     * Test if can't find any games if title don't match.
      *
      * @return void
      */
-    public function setUp(): void
+    public function test_if_cant_find_any_games_if_title_dont_match(): void
     {
-        parent::setUp();
+        $this->getJson(route('games.search', [
+            'q' => 'Missing',
+        ]))->assertOk()->assertJsonCount(0, 'data');
 
-        $this->games = $this->createDummyGames(4, [
-            'release_date' => Carbon::today(),
+        $this->createDummyGames(4, [
+            'title' => 'Test',
         ]);
 
-        $this->games->each(function (Game $game) {
+        $this->getJson(route('games.search', [
+            'q' => 'Missing',
+        ]))->assertOk()->assertJsonCount(0, 'data');
+    }
+    /**
+     * Test if can get correct is hearted games.
+     *
+     * @return void
+     */
+    public function test_if_can_get_correct_is_hearted_games(): void
+    {
+        $user = $this->actingAsDummyUser();
+
+        $games = $this->createDummyGames(4, [
+            'title' => 'Test',
+        ]);
+
+        $this->getJson(route('games.search', [
+            'q' => 'Test',
+        ]))->assertOk()->assertJson([
+            'data' => $games->map(function () {
+                return [
+                    'is_hearted' => false,
+                ];
+            })->toArray(),
+        ]);
+
+        $games->each(function (Game $game) {
+            $this->createDummyHeartable([
+                'heartable_id' => $game->id,
+                'heartable_type' => $game::class,
+            ]);
+        });
+
+        $this->getJson(route('games.search', [
+            'q' => 'Test',
+        ]))->assertOk()->assertJson([
+            'data' => $games->map(function () {
+                return [
+                    'is_hearted' => false,
+                ];
+            })->toArray(),
+        ]);
+
+        $games->each(function (Game $game) use ($user) {
+            $this->createDummyHeartable([
+                'user_id' => $user->id,
+                'heartable_id' => $game->id,
+                'heartable_type' => $game::class,
+            ]);
+        });
+
+        $this->getJson(route('games.search', [
+            'q' => 'Test',
+        ]))->assertOk()->assertJson([
+            'data' => $games->map(function () {
+                return [
+                    'is_hearted' => true,
+                ];
+            })->toArray(),
+        ]);
+    }
+
+    /**
+     * Test if can't get more than 100 games for search.
+     *
+     * @return void
+     */
+    public function test_if_cant_get_more_than_100_games_for_search(): void
+    {
+        $this->createDummyGames(101, [
+            'title' => 'Test',
+        ]);
+
+        $this->getJson(route('games.search', [
+            'q' => 'Test',
+        ]))->assertOk()->assertJsonCount(100, 'data');
+    }
+
+    /**
+     * Test if can get correct games count. (two games with other name. four in total. two found)
+     *
+     * @return void
+     */
+    public function test_if_can_get_correct_games_count(): void
+    {
+        $this->createDummyGames(2, [
+            'title' => 'Missing',
+        ]);
+
+        $this->createDummyGames(2, [
+            'title' => 'Test',
+        ]);
+
+        $this->getJson(route('games.search', [
+            'q' => 'Test',
+        ]))->assertOk()->assertJsonCount(2, 'data');
+    }
+
+    /**
+     * Test if can get correct json structure.
+     *
+     * @return void
+     */
+    public function test_if_can_get_correct_json_structure(): void
+    {
+        $games = $this->createDummyGames(2, [
+            'title' => 'Test',
+        ])->each(function (Game $game) {
             $game->tags()->save(
                 $this->createDummyTag(),
             );
@@ -72,98 +175,11 @@ class GameCalendarTest extends BaseIntegrationTesting
             $this->createDummyCrackTo($game);
         });
 
-        $this->removeWrongGames();
-    }
+        $this->removeWrongGames($games);
 
-    /**
-     * Test if can't find older than 2 years games on calendar.
-     *
-     * @return void
-     */
-    public function test_if_cant_find_older_than_2_years_games_on_calendar(): void
-    {
-        $this->getJson(route('games.calendar'))->assertJsonCount(4, 'data');
-
-        $this->createDummyGame([
-            'release_date' => Carbon::today()->subYears(2),
-        ]);
-
-        $this->getJson(route('games.calendar'))->assertJsonCount(4, 'data');
-    }
-
-    /**
-     * Test if can't find future games on calendar.
-     *
-     * @return void
-     */
-    public function test_if_cant_find_future_games_on_calendar(): void
-    {
-        $this->getJson(route('games.calendar'))->assertJsonCount(4, 'data');
-
-        $this->createDummyGame([
-            'release_date' => Carbon::today()->addYear(),
-        ]);
-
-        $this->getJson(route('games.calendar'))->assertJsonCount(4, 'data');
-    }
-
-    /**
-     * Test if can get correct is hearted games.
-     *
-     * @return void
-     */
-    public function test_if_can_get_correct_is_hearted_games(): void
-    {
-        $user = $this->actingAsDummyUser();
-
-        $this->getJson(route('games.calendar'))->assertJson([
-            'data' => $this->games->map(function () {
-                return [
-                    'is_hearted' => false,
-                ];
-            })->toArray(),
-        ]);
-
-        $this->games->each(function (Game $game) {
-            $this->createDummyHeartable([
-                'heartable_id' => $game->id,
-                'heartable_type' => $game::class,
-            ]);
-        });
-
-        $this->getJson(route('games.calendar'))->assertJson([
-            'data' => $this->games->map(function () {
-                return [
-                    'is_hearted' => false,
-                ];
-            })->toArray(),
-        ]);
-
-        $this->games->each(function (Game $game) use ($user) {
-            $this->createDummyHeartable([
-                'user_id' => $user->id,
-                'heartable_id' => $game->id,
-                'heartable_type' => $game::class,
-            ]);
-        });
-
-        $this->getJson(route('games.calendar'))->assertJson([
-            'data' => $this->games->map(function () {
-                return [
-                    'is_hearted' => true,
-                ];
-            })->toArray(),
-        ]);
-    }
-
-    /**
-     * Test if can get correct json structure.
-     *
-     * @return void
-     */
-    public function test_if_can_get_correct_json_structure(): void
-    {
-        $this->getJson(route('games.calendar'))->assertJsonStructure([
+        $this->getJson(route('games.search', [
+            'q' => 'Test',
+        ]))->assertJsonStructure([
             'data' => [
                 '*' => [
                     'id',
@@ -231,8 +247,34 @@ class GameCalendarTest extends BaseIntegrationTesting
      */
     public function test_if_can_get_correct_json_data(): void
     {
-        $this->getJson(route('games.calendar'))->assertJson([
-            'data' => $this->games->map(function (Game $game) {
+        $games = $this->createDummyGames(2, [
+            'title' => 'Test',
+        ])->each(function (Game $game) {
+            $game->tags()->save(
+                $this->createDummyTag(),
+            );
+
+            $game->genres()->save(
+                $this->createDummyGenre(),
+            );
+
+            $game->categories()->save(
+                $this->createDummyCategory(),
+            );
+
+            $game->platforms()->save(
+                $this->createDummyPlatform(),
+            );
+
+            $this->createDummyCrackTo($game);
+        });
+
+        $this->removeWrongGames($games);
+
+        $this->getJson(route('games.search', [
+            'q' => 'Test',
+        ]))->assertJson([
+            'data' => $games->map(function (Game $game) {
                 /** @var \App\Models\Crack $crack */
                 $crack = $game->crack;
 
@@ -319,10 +361,11 @@ class GameCalendarTest extends BaseIntegrationTesting
     /**
      * Remove the games created on crack creation.
      *
+     * @param \Illuminate\Database\Eloquent\Collection<int, \App\Models\Game> $games
      * @return void
      */
-    private function removeWrongGames(): void
+    private function removeWrongGames(Collection $games): void
     {
-        Game::whereNotIn('id', $this->games->pluck('id')->toArray())->delete();
+        Game::whereNotIn('id', $games->pluck('id')->toArray())->delete();
     }
 }
