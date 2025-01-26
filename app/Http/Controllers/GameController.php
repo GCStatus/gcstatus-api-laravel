@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\GameResource;
 use App\Contracts\Services\GameServiceInterface;
-use App\Http\Requests\Game\GameSearchRequest;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use App\Http\Requests\Game\{GameSearchRequest, GameFilterAttributeRequest};
 
 class GameController extends Controller
 {
@@ -69,6 +69,35 @@ class GameController extends Controller
 
         return GameResource::collection(
             $this->gameService->search($query),
+        );
+    }
+
+    /**
+     * Find games by given condition.
+     *
+     * @param string $condition
+     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+     */
+    public function findByCondition(string $condition): AnonymousResourceCollection
+    {
+        return GameResource::collection(
+            $this->gameService->getGamesByCondition($condition, 100),
+        );
+    }
+
+    /**
+     * Find games by attributes.
+     *
+     * @param \App\Http\Requests\Game\GameFilterAttributeRequest $request
+     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+     */
+    public function findByFilters(GameFilterAttributeRequest $request): AnonymousResourceCollection
+    {
+        /** @var array<string, string> $data */
+        $data = $request->validated();
+
+        return GameResource::collection(
+            $this->gameService->findByAttribute($data),
         );
     }
 }

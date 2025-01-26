@@ -51,7 +51,7 @@ class GameServiceTest extends TestCase
      */
     public function test_user_repository_uses_user_model(): void
     {
-        $this->app->instance(GameRepositoryInterface::class, new GameRepository());
+        $this->app->instance(GameRepositoryInterface::class, app(GameRepository::class));
 
         /** @var \App\Services\GameService $gameService */
         $gameService = app(GameServiceInterface::class);
@@ -159,6 +159,34 @@ class GameServiceTest extends TestCase
             ->andReturn($collection);
 
         $result = $this->gameService->getGamesByCondition($condition, $limit);
+
+        $this->assertEquals($result, $collection);
+        $this->assertInstanceOf(Collection::class, $result);
+
+        $this->assertEquals(1, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations met.');
+    }
+
+    /**
+     * Test if can get all games by attribute values.
+     *
+     * @return void
+     */
+    public function test_if_can_get_all_games_by_attribute_values(): void
+    {
+        $attribute = 'tags';
+        $value = fake()->word();
+
+        $collection = Mockery::mock(Collection::class);
+
+        $data = ['value' => $value, 'attribute' => $attribute];
+
+        $this->gameRepository
+            ->shouldReceive('findByAttribute')
+            ->once()
+            ->with($data)
+            ->andReturn($collection);
+
+        $result = $this->gameService->findByAttribute($data);
 
         $this->assertEquals($result, $collection);
         $this->assertInstanceOf(Collection::class, $result);

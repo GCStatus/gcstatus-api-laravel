@@ -5,16 +5,60 @@ namespace App\Repositories;
 use App\Models\Game;
 use Illuminate\Database\Eloquent\{Builder, Collection};
 use App\Contracts\Repositories\GameRepositoryInterface;
+use App\Contracts\Factories\FilterStrategyFactoryInterface;
 use Illuminate\Database\Eloquent\Relations\{HasMany, MorphMany};
 
 class GameRepository extends AbstractRepository implements GameRepositoryInterface
 {
+    /**
+     * The filter strategy factory.
+     *
+     * @var \App\Contracts\Factories\FilterStrategyFactoryInterface
+     */
+    private FilterStrategyFactoryInterface $factory;
+
+    /**
+     * Create a new class instance.
+     *
+     * @param \App\Contracts\Factories\FilterStrategyFactoryInterface $factory
+     * @return void
+     */
+    public function __construct(FilterStrategyFactoryInterface $factory)
+    {
+        $this->factory = $factory;
+    }
+
     /**
      * @inheritDoc
      */
     public function model(): Game
     {
         return new Game();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function findByAttribute(array $data): Collection
+    {
+        /** @var string $attribute */
+        $attribute = $data['attribute'];
+
+        /** @var string $value */
+        $value = $data['value'];
+
+        $query = $this->model()
+            ->query()
+            ->withIsHearted();
+
+        $filter = $this->factory->resolve($attribute);
+
+        $query = $filter->apply($query, $value);
+
+        /** @var \Illuminate\Database\Eloquent\Collection<int, \App\Models\Game> $result */
+        $result = $query->limit(100)->orderByDesc('release_date')->get();
+
+        return $result;
     }
 
     /**

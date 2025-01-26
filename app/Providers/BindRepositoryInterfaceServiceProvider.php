@@ -2,6 +2,10 @@
 
 namespace App\Providers;
 
+use App\Repositories\GameRepository;
+use App\Contracts\Repositories\GameRepositoryInterface;
+use App\Contracts\Factories\FilterStrategyFactoryInterface;
+
 class BindRepositoryInterfaceServiceProvider extends BaseInterfaceBindServiceProvider
 {
     /**
@@ -12,6 +16,10 @@ class BindRepositoryInterfaceServiceProvider extends BaseInterfaceBindServicePro
     public function register(): void
     {
         $this->bindRepositoryInterfacesToImplementations();
+
+        $this->app->singleton(GameRepositoryInterface::class, fn () => new GameRepository(
+            app(FilterStrategyFactoryInterface::class),
+        ));
     }
 
     /**

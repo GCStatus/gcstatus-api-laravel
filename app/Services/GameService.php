@@ -20,6 +20,14 @@ class GameService extends AbstractService implements GameServiceInterface
     /**
      * @inheritDoc
      */
+    public function findByAttribute(array $data): Collection
+    {
+        return $this->repository()->findByAttribute($data);
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function search(string $query): Collection
     {
         return $this->repository()->search($query);

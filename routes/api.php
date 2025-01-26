@@ -35,6 +35,8 @@ Route::middleware('api.mid.auth')->group(function () {
     Route::controller(GameController::class)->group(function () {
         Route::get('games/search', 'search')->name('games.search');
         Route::get('games/calendar', 'calendar')->name('games.calendar');
+        Route::get('games/filters', 'findByFilters')->name('games.filters.find');
+        Route::get('games/condition/{condition}', 'findByCondition')->name('games.condition.find');
     });
 
     Route::apiResource('games', GameController::class);

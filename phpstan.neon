@@ -11,3 +11,6 @@ parameters:
 
     ignoreErrors:
         - '#Call to an undefined method Mockery\\ExpectationInterface.*#'
+
+        - '#Method .+ has parameter \$query with generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types: TModel#'
+        - '#Method .+ return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types: TModel#'

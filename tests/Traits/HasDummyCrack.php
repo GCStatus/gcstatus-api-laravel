@@ -26,8 +26,8 @@ trait HasDummyCrack
      */
     public function createDummyCrackTo(Game $game, array $data = []): Crack
     {
-        return $this->createDummyCrack([
+        return $this->createDummyCrack(array_merge([
             'game_id' => $game->id,
-        ], ...$data);
+        ], $data));
     }
 }

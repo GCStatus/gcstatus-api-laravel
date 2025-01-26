@@ -7,8 +7,10 @@ use Tests\TestCase;
 use App\Models\Game;
 use App\Repositories\GameRepository;
 use Illuminate\Support\{Str, Carbon};
+use App\Contracts\Strategies\FilterStrategyInterface;
 use Illuminate\Database\Eloquent\{Builder, Collection};
 use App\Contracts\Repositories\GameRepositoryInterface;
+use App\Contracts\Factories\FilterStrategyFactoryInterface;
 
 class GameRepositoryTest extends TestCase
 {
@@ -273,6 +275,60 @@ class GameRepositoryTest extends TestCase
         $this->assertInstanceOf(Collection::class, $result);
 
         $this->assertEquals(6, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations met.');
+    }
+
+    /**
+     * Test if can get games by attribute.
+     *
+     * @return void
+     */
+    public function test_if_can_get_games_by_attribute(): void
+    {
+        $limit = 100;
+        $attribute = 'tags';
+        $value = fake()->word();
+
+        $gameMock = Mockery::mock(Game::class);
+        $builder = Mockery::mock(Builder::class);
+        $collection = Mockery::mock(Collection::class);
+        $mockStrategy = Mockery::mock(FilterStrategyInterface::class);
+        $mockFactory = Mockery::mock(FilterStrategyFactoryInterface::class);
+
+        $mockFactory->shouldReceive('resolve')
+            ->once()
+            ->with($attribute)
+            ->andReturn($mockStrategy);
+
+        $mockStrategy->shouldReceive('apply')
+            ->once()
+            ->with(Mockery::any(), $value)
+            ->andReturn($builder);
+
+        $builder->shouldReceive('withIsHearted')->once()->andReturnSelf();
+        $builder->shouldReceive('limit')->once()->with($limit)->andReturnSelf();
+        $builder->shouldReceive('orderByDesc')->once()->with('release_date')->andReturnSelf();
+        $builder->shouldReceive('get')->once()->andReturn($collection);
+
+        $gameMock->shouldReceive('query')->once()->withNoArgs()->andReturn($builder);
+
+        $repoMock = Mockery::mock(GameRepository::class, [$mockFactory])
+            ->makePartial()
+            ->shouldAllowMockingProtectedMethods();
+
+        $repoMock->shouldReceive('model')
+            ->once()
+            ->withNoArgs()
+            ->andReturn($gameMock);
+
+        $data = ['attribute' => $attribute, 'value' => $value];
+
+        /** @var \App\Contracts\Repositories\GameRepositoryInterface $repoMock */
+        $result = $repoMock->findByAttribute($data);
+
+        $this->assertEquals($result, $collection);
+        $this->assertInstanceOf(Collection::class, $result);
+
+        $this->assertEquals(8, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations met.');
     }
 
     /**
