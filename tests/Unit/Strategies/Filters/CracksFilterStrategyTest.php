@@ -13,7 +13,7 @@ class CracksFilterStrategyTest extends TestCase
     /**
      * Data provider for testing different filter values.
      *
-     * @return array
+     * @return array<int, mixed>
      */
     public static function filterValuesProvider(): array
     {
