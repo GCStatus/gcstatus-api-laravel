@@ -5,20 +5,34 @@ namespace Tests\Unit\Strategies\Filters;
 use Mockery;
 use PHPUnit\Framework\TestCase;
 use Illuminate\Database\Eloquent\Builder;
+use PHPUnit\Framework\Attributes\DataProvider;
 use App\Strategies\Filters\CracksFilterStrategy;
 
 class CracksFilterStrategyTest extends TestCase
 {
     /**
-     * Test if apply can adds the where has query to builder instance.
+     * Data provider for testing different filter values.
      *
+     * @return array
+     */
+    public static function filterValuesProvider(): array
+    {
+        return [
+            ['cracked'],
+            ['uncracked'],
+            ['cracked-oneday'],
+        ];
+    }
+
+    /**
+     * Test if apply adds the correct where conditions based on the filter value.
+     *
+     * @param string $value
      * @return void
      */
-    public function test_apply_adds_correct_where_conditions(): void
+    #[DataProvider('filterValuesProvider')]
+    public function test_apply_adds_correct_where_conditions(string $value): void
     {
-        /** @var string $value */
-        $value = fake()->randomElement(['cracked', 'cracked-oneday', 'uncracked']);
-
         $builderMock = Mockery::mock(Builder::class);
 
         if ($value === 'uncracked') {
@@ -33,25 +47,19 @@ class CracksFilterStrategyTest extends TestCase
                 $nestedBuilderMock->shouldReceive('orWhereHas')
                     ->once()
                     ->with('crack', Mockery::on(function (callable $subClosure) {
-                        $nestedBuilderMock = Mockery::mock(Builder::class);
-
-                        $nestedBuilderMock->shouldReceive('whereDoesntHave')
+                        $crackBuilderMock = Mockery::mock(Builder::class);
+                        $crackBuilderMock->shouldReceive('whereDoesntHave')
                             ->once()
                             ->with('status', Mockery::on(function (callable $innerClosure) {
-                                $innerMostBuilderMock = Mockery::mock(Builder::class);
-
-                                $innerMostBuilderMock->shouldReceive('whereIn')
+                                $statusBuilderMock = Mockery::mock(Builder::class);
+                                $statusBuilderMock->shouldReceive('whereIn')
                                     ->once()
                                     ->with('name', ['cracked', 'cracked-oneday'])
                                     ->andReturnSelf();
-
-                                $innerClosure($innerMostBuilderMock);
-
+                                $innerClosure($statusBuilderMock);
                                 return true;
                             }))->andReturnSelf();
-
-                        $subClosure($nestedBuilderMock);
-
+                        $subClosure($crackBuilderMock);
                         return true;
                     }))->andReturnSelf();
 
@@ -66,37 +74,30 @@ class CracksFilterStrategyTest extends TestCase
                 $nestedBuilderMock->shouldReceive('whereHas')
                     ->once()
                     ->with('crack', Mockery::on(function (callable $closure) use ($value) {
-                        $nestedBuilderMock = Mockery::mock(Builder::class);
-
-                        $nestedBuilderMock->shouldReceive('whereHas')
+                        $crackBuilderMock = Mockery::mock(Builder::class);
+                        $crackBuilderMock->shouldReceive('whereHas')
                             ->once()
                             ->with('status', Mockery::on(function (callable $innerClosure) use ($value) {
-                                $innerMostBuilderMock = Mockery::mock(Builder::class);
-
+                                $statusBuilderMock = Mockery::mock(Builder::class);
                                 if ($value === 'cracked') {
-                                    $innerMostBuilderMock->shouldReceive('whereIn')
+                                    $statusBuilderMock->shouldReceive('whereIn')
                                         ->once()
                                         ->with('name', ['cracked', 'cracked-oneday'])
                                         ->andReturnSelf();
                                 } else {
-                                    $innerMostBuilderMock->shouldReceive('where')
+                                    $statusBuilderMock->shouldReceive('where')
                                         ->once()
                                         ->with('name', $value)
                                         ->andReturnSelf();
                                 }
-
-                                $innerClosure($innerMostBuilderMock);
-
+                                $innerClosure($statusBuilderMock);
                                 return true;
                             }))->andReturnSelf();
-
-                        $closure($nestedBuilderMock);
-
+                        $closure($crackBuilderMock);
                         return true;
                     }))->andReturnSelf();
 
                 $queryClosure($nestedBuilderMock);
-
                 return true;
             }))->andReturnSelf();
         }
@@ -117,7 +118,6 @@ class CracksFilterStrategyTest extends TestCase
     public function tearDown(): void
     {
         Mockery::close();
-
         parent::tearDown();
     }
 }
