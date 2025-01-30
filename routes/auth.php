@@ -6,6 +6,7 @@ use App\Http\Controllers\{
     LevelController,
     TitleController,
     MissionController,
+    HeartableController,
     Auth\LogoutController,
     TransactionController,
     NotificationController,
@@ -69,4 +70,6 @@ Route::middleware(['registration.should.complete'])->group(function () {
         Route::post('friends/request/{id}/accept', 'accept')->name('friends.request.accept');
         Route::post('friends/request/{id}/decline', 'decline')->name('friends.request.decline');
     });
+
+    Route::post('hearts', HeartableController::class)->name('hearts.toggle');
 });

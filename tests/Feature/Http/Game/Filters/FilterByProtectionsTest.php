@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Http\Game;
+namespace Tests\Feature\Http\Game\Filters;
 
 use App\Models\Game;
 use Illuminate\Database\Eloquent\Collection;
