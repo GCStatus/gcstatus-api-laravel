@@ -7,6 +7,7 @@ use App\Contracts\Repositories\HeartableRepositoryInterface;
 use App\Contracts\Services\{
     AuthServiceInterface,
     HeartableServiceInterface,
+    HeartNotificationServiceInterface,
 };
 
 class HeartableService extends AbstractService implements HeartableServiceInterface
@@ -19,6 +20,13 @@ class HeartableService extends AbstractService implements HeartableServiceInterf
     private AuthServiceInterface $authService;
 
     /**
+     * THe heart notification service.
+     *
+     * @var \App\Contracts\Services\HeartNotificationServiceInterface
+     */
+    private HeartNotificationServiceInterface $heartNoficationService;
+
+    /**
      * Create a new service instance.
      *
      * @return void
@@ -26,6 +34,7 @@ class HeartableService extends AbstractService implements HeartableServiceInterf
     public function __construct()
     {
         $this->authService = app(AuthServiceInterface::class);
+        $this->heartNoficationService = app(HeartNotificationServiceInterface::class);
     }
 
     /**
@@ -43,10 +52,14 @@ class HeartableService extends AbstractService implements HeartableServiceInterf
     {
         $userId = $this->authService->getAuthId();
 
-        /** @var \App\Models\Heartable */
-        return $this->repository()->create($data + [
+        /** @var \App\Models\Heartable $heartable */
+        $heartable = $this->repository()->create($data + [
             'user_id' => $userId,
         ]);
+
+        $this->heartNoficationService->notifyNewHeart($heartable);
+
+        return $heartable;
     }
 
     /**

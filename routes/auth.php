@@ -7,6 +7,7 @@ use App\Http\Controllers\{
     TitleController,
     MissionController,
     HeartableController,
+    CommentableController,
     Auth\LogoutController,
     TransactionController,
     NotificationController,
@@ -45,7 +46,7 @@ Route::middleware(['registration.should.complete'])->group(function () {
     Route::apiResource('notifications', NotificationController::class)->only('index', 'destroy');
     Route::apiResource('missions', MissionController::class)->only('index');
 
-    Route::post('missions/{mission}', [MissionController::class, 'complete'])->name('missions.complete');
+    Route::post('missions/{mission}/complete', [MissionController::class, 'complete'])->name('missions.complete');
 
     Route::controller(NotificationController::class)->group(function () {
         Route::put('notifications/all/read', 'markAllAsRead')->name('notifications.mark-all-as-read');
@@ -72,4 +73,6 @@ Route::middleware(['registration.should.complete'])->group(function () {
     });
 
     Route::post('hearts', HeartableController::class)->name('hearts.toggle');
+
+    Route::apiResource('comments', CommentableController::class)->only('store', 'destroy');
 });
