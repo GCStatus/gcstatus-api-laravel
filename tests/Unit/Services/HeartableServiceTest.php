@@ -11,6 +11,7 @@ use App\Contracts\Repositories\HeartableRepositoryInterface;
 use App\Contracts\Services\{
     AuthServiceInterface,
     HeartableServiceInterface,
+    HeartNotificationServiceInterface,
 };
 
 class HeartableServiceTest extends TestCase
@@ -30,6 +31,13 @@ class HeartableServiceTest extends TestCase
     private MockInterface $authService;
 
     /**
+     * The heart notification service.
+     *
+     * @var \Mockery\MockInterface
+     */
+    private MockInterface $heartNotificationService;
+
+    /**
      * The heartable service.
      *
      * @var \App\Contracts\Services\HeartableServiceInterface
@@ -47,9 +55,11 @@ class HeartableServiceTest extends TestCase
 
         $this->authService = Mockery::mock(AuthServiceInterface::class);
         $this->heartableRepository = Mockery::mock(HeartableRepositoryInterface::class);
+        $this->heartNotificationService = Mockery::mock(HeartNotificationServiceInterface::class);
 
         $this->app->instance(AuthServiceInterface::class, $this->authService);
         $this->app->instance(HeartableRepositoryInterface::class, $this->heartableRepository);
+        $this->app->instance(HeartNotificationServiceInterface::class, $this->heartNotificationService);
 
         $this->heartableService = app(HeartableServiceInterface::class);
     }
@@ -96,12 +106,18 @@ class HeartableServiceTest extends TestCase
             ->with($data)
             ->andReturn($heartable);
 
+        $this->heartNotificationService
+            ->shouldReceive('notifyNewHeart')
+            ->once()
+            ->with($heartable)
+            ->andReturnNull();
+
         $result = $this->heartableService->create($data);
 
         $this->assertSame($result, $heartable);
         $this->assertInstanceOf(Heartable::class, $result);
 
-        $this->assertEquals(2, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations met.');
+        $this->assertEquals(3, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations met.');
     }
 
     /**
@@ -140,9 +156,15 @@ class HeartableServiceTest extends TestCase
                 'user_id' => $userId,
             ])->andReturn($heartable);
 
+        $this->heartNotificationService
+            ->shouldReceive('notifyNewHeart')
+            ->once()
+            ->with($heartable)
+            ->andReturnNull();
+
         $this->heartableService->toggle($data);
 
-        $this->assertEquals(3, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations met.');
+        $this->assertEquals(4, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations met.');
     }
 
     /**
