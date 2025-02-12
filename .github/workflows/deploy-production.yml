@@ -50,24 +50,30 @@ jobs:
             echo "Pulling container: $DOCKER_HUB_USERNAME/$DOCKER_CONTAINER:$DOCKER_TAG"
             docker pull $DOCKER_HUB_USERNAME/$DOCKER_CONTAINER:$DOCKER_TAG
 
-            echo "Starting new container..."
-            docker run -d --name $DOCKER_CONTAINER -p $DOCKER_PORT:$DOCKER_PORT \
+            echo "Copying .env before running container..."
+            docker create --name $DOCKER_CONTAINER -p $DOCKER_PORT:80 \
               $DOCKER_HUB_USERNAME/$DOCKER_CONTAINER:$DOCKER_TAG
 
-            echo "Copying env to container..."
             docker cp $ENV_FILE $DOCKER_CONTAINER:/var/www/.env
+            docker start $DOCKER_CONTAINER
 
-            echo "Waiting for Laravel container to start..."
-            sleep 30
+            echo "Setting .env permissions..."
+            docker exec $DOCKER_CONTAINER chmod 600 /var/www/.env
+            docker exec $DOCKER_CONTAINER chown www-data:www-data /var/www/.env
 
-            echo "Waiting for container to be healthy..."
-            until [ "$(docker inspect --format='{{.State.Health.Status}}' $DOCKER_CONTAINER)" == "healthy" ]; do
-              echo "Still waiting for container health check to pass..."
+            echo "Waiting for Laravel logs to confirm it's running..."
+            until docker logs $DOCKER_CONTAINER 2>&1 | grep -q "Starting Laravel Octane"; do
+              echo "Laravel is still booting up..."
               sleep 10
             done
-            echo "Container is healthy!"
 
-            echo "Deployment completed successfully!"
+            echo "Checking container health via route..."
+            until curl --silent --fail http://localhost; do
+              echo "Laravel is not responding yet..."
+              sleep 10
+            done
+
+            echo "Container is healthy!"
 
       - name: Cleanup old Docker containers and images
         uses: appleboy/ssh-action@v1.0.3

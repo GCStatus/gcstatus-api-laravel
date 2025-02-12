@@ -57,7 +57,7 @@ COPY . .
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 # Configure supervisord
-COPY ./docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY ./docker/supervisord.prod.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Copy the custom php.ini file
 COPY ./docker/php.ini /usr/local/etc/php/php.ini
@@ -81,7 +81,7 @@ HEALTHCHECK --interval=10s --timeout=10s --start-period=60s --retries=10 \
     CMD curl --silent --fail http://localhost || exit 1
 
 # Set executable permission to entrypoint
-RUN chmod +x ./docker/entrypoint.sh
+RUN chmod +x ./docker/entrypoint.prod.sh
 
 # Define the entrypoint to run
-ENTRYPOINT ["./docker/entrypoint.sh"]
+ENTRYPOINT ["./docker/entrypoint.prod.sh"]
