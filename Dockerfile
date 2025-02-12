@@ -77,7 +77,7 @@ EXPOSE 8080
 EXPOSE 3306
 
 # Set healthcheck
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+HEALTHCHECK --interval=10s --timeout=10s --start-period=60s --retries=10 \
     CMD curl --silent --fail http://localhost:8080/ || exit 1
 
 # Set executable permission to entrypoint

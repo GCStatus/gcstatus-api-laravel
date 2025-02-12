@@ -57,6 +57,9 @@ jobs:
             echo "Copying env to container..."
             docker cp $ENV_FILE $DOCKER_CONTAINER:/var/www/.env
 
+            echo "Waiting for Laravel container to start..."
+            sleep 30
+
             echo "Waiting for container to be healthy..."
             until [ "$(docker inspect --format='{{.State.Health.Status}}' $DOCKER_CONTAINER)" == "healthy" ]; do
               echo "Still waiting for container health check to pass..."
