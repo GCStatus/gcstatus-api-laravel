@@ -62,14 +62,23 @@ jobs:
             docker exec $DOCKER_CONTAINER chown www-data:www-data /var/www/.env
 
             echo "Waiting for Laravel logs to confirm it's running..."
-            until docker logs $DOCKER_CONTAINER 2>&1 | grep -q "Starting Laravel Octane"; do
+            counter=0
+            while ! docker logs $DOCKER_CONTAINER 2>&1 | grep -q "Application ready"; do
               echo "Laravel is still booting up..."
+              docker logs --tail 50 $DOCKER_CONTAINER || true
+              counter=$((counter+1))
+              if [ $counter -gt 3 ]; then
+                echo "ERROR: Laravel did not start in time."
+                docker logs $DOCKER_CONTAINER
+                exit 1
+              fi
               sleep 10
             done
 
-            echo "Checking container health via route..."
+            echo "Checking container health..."
             until curl --silent --fail http://localhost; do
               echo "Laravel is not responding yet..."
+              docker logs $DOCKER_CONTAINER --tail 50 || true
               sleep 10
             done
 
