@@ -51,7 +51,7 @@ jobs:
             docker pull $DOCKER_HUB_USERNAME/$DOCKER_CONTAINER:$DOCKER_TAG
 
             echo "Copying .env before running container..."
-            docker create --name $DOCKER_CONTAINER -p 80:$DOCKER_PORT \
+            docker create --name $DOCKER_CONTAINER -p $DOCKER_PORT:$DOCKER_PORT \
               $DOCKER_HUB_USERNAME/$DOCKER_CONTAINER:$DOCKER_TAG
 
             docker cp $ENV_FILE $DOCKER_CONTAINER:/var/www/.env
@@ -61,24 +61,9 @@ jobs:
             docker exec $DOCKER_CONTAINER chmod 600 /var/www/.env
             docker exec $DOCKER_CONTAINER chown www-data:www-data /var/www/.env
 
-            echo "Waiting for logs to confirm it's running..."
-            counter=0
-            while ! docker logs $DOCKER_CONTAINER 2>&1 | grep -q "Server running"; do
-              echo "Laravel is still booting up..."
-              docker logs --tail 50 $DOCKER_CONTAINER || true
-              counter=$((counter+1))
-              if [ $counter -gt 3 ]; then
-                echo "ERROR: Laravel did not start in time."
-                docker logs $DOCKER_CONTAINER
-                exit 1
-              fi
-              sleep 10
-            done
-
-            echo "Checking container health..."
-            until curl --silent --fail http://localhost:8000; do
-              echo "Laravel is not responding yet..."
-              docker logs $DOCKER_CONTAINER --tail 50 || true
+            echo "Waiting for container to be healthy..."
+            until [ "$(docker inspect --format='{{.State.Health.Status}}' $DOCKER_CONTAINER)" == "healthy" ]; do
+              echo "Still waiting for container health check to pass..."
               sleep 10
             done
 

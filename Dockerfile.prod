@@ -69,12 +69,7 @@ RUN mkdir -p /var/log/supervisor
 RUN rm -rf /var/www/html && ln -s public html
 
 # Expose ports for FrankenPHP
-EXPOSE 80
-EXPOSE 443
-EXPOSE 443/udp
-EXPOSE 2019
-EXPOSE 8080
-EXPOSE 3306
+EXPOSE 80 443 443/udp 2019 8080 8000 3306
 
 # Set healthcheck
 HEALTHCHECK --interval=10s --timeout=10s --start-period=60s --retries=10 \
