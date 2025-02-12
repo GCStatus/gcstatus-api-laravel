@@ -51,7 +51,7 @@ jobs:
             docker pull $DOCKER_HUB_USERNAME/$DOCKER_CONTAINER:$DOCKER_TAG
 
             echo "Copying .env before running container..."
-            docker create --name $DOCKER_CONTAINER -p $DOCKER_PORT:80 \
+            docker create --name $DOCKER_CONTAINER -p 80:$DOCKER_PORT \
               $DOCKER_HUB_USERNAME/$DOCKER_CONTAINER:$DOCKER_TAG
 
             docker cp $ENV_FILE $DOCKER_CONTAINER:/var/www/.env
