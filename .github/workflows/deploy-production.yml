@@ -60,7 +60,7 @@ jobs:
             echo "Waiting for container to be healthy..."
             until [ "$(docker inspect --format='{{.State.Health.Status}}' $DOCKER_CONTAINER)" == "healthy" ]; do
               echo "Still waiting for container health check to pass..."
-              sleep 5
+              sleep 10
             done
             echo "Container is healthy!"
 
