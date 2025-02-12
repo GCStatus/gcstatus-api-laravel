@@ -63,7 +63,7 @@ jobs:
 
             echo "Waiting for Laravel logs to confirm it's running..."
             counter=0
-            while ! docker logs $DOCKER_CONTAINER 2>&1 | grep -q "Application ready"; do
+            while ! docker logs $DOCKER_CONTAINER 2>&1 | grep -q "Server running"; do
               echo "Laravel is still booting up..."
               docker logs --tail 50 $DOCKER_CONTAINER || true
               counter=$((counter+1))
@@ -76,7 +76,7 @@ jobs:
             done
 
             echo "Checking container health..."
-            until curl --silent --fail http://localhost; do
+            until curl --silent --fail http://localhost:8000; do
               echo "Laravel is not responding yet..."
               docker logs $DOCKER_CONTAINER --tail 50 || true
               sleep 10
