@@ -78,7 +78,7 @@ EXPOSE 3306
 
 # Set healthcheck
 HEALTHCHECK --interval=10s --timeout=10s --start-period=60s --retries=10 \
-    CMD curl --silent --fail http://localhost:8080/ || exit 1
+    CMD curl --silent --fail http://localhost:8000/ || exit 1
 
 # Set executable permission to entrypoint
 RUN chmod +x ./docker/entrypoint.sh
