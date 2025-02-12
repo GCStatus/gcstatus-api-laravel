@@ -61,7 +61,7 @@ jobs:
             docker exec $DOCKER_CONTAINER chmod 600 /var/www/.env
             docker exec $DOCKER_CONTAINER chown www-data:www-data /var/www/.env
 
-            echo "Waiting for Laravel logs to confirm it's running..."
+            echo "Waiting for logs to confirm it's running..."
             counter=0
             while ! docker logs $DOCKER_CONTAINER 2>&1 | grep -q "Server running"; do
               echo "Laravel is still booting up..."
