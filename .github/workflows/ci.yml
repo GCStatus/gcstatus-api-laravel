@@ -12,6 +12,9 @@ on:
 env:
   DB_DATABASE: database/database.sqlite
   DB_CONNECTION: sqlite
+  DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+  DOCKER_HUB_PAT: ${{ secrets.DOCKER_HUB_PAT }}
+  DOCKER_CONTAINER: ${{ secrets.DOCKER_CONTAINER }}
 
 jobs:
   security-check:
