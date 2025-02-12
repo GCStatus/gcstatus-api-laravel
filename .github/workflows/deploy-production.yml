@@ -1,0 +1,87 @@
+name: Deploy to production environment
+on:
+  workflow_call:
+    inputs:
+      container-tag:
+        required: true
+        type: string
+
+  workflow_dispatch:
+    inputs:
+      container-tag:
+        description: "Container Tag"
+        required: true
+        type: string
+
+env:
+  DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+  DOCKER_HUB_PAT: ${{ secrets.DOCKER_HUB_PAT }}
+  DOCKER_CONTAINER: ${{ secrets.DOCKER_CONTAINER }}
+  DOCKER_PORT: ${{ secrets.DOCKER_PORT }}
+  EC2_HOST: ${{ secrets.EC2_HOST }}
+  EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
+  EC2_USER: ${{ secrets.EC2_USER }}
+  EC2_PORT: ${{ secrets.EC2_PORT }}
+  DOCKER_TAG: ${{ inputs.container-tag }}
+  ENV_FILE: ${{ secrets.ENV_FILE }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Deploy to EC2 via SSH
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ env.EC2_HOST }}
+          username: ${{ env.EC2_USER }}
+          key: ${{ env.EC2_SSH_KEY }}
+          port: ${{ env.EC2_PORT }}
+          envs: DOCKER_CONTAINER, DOCKER_PORT, DOCKER_HUB_USERNAME, DOCKER_HUB_PAT, DOCKER_TAG, ENV_FILE
+          script: |
+            echo "Stopping and removing old container, if exists..."
+            docker stop $DOCKER_CONTAINER || true
+            docker rm $DOCKER_CONTAINER || true
+
+            echo $DOCKER_HUB_PAT | docker login -u $DOCKER_HUB_USERNAME --password-stdin
+
+            echo "Pulling container: $DOCKER_HUB_USERNAME/$DOCKER_CONTAINER:$DOCKER_TAG"
+            docker pull $DOCKER_HUB_USERNAME/$DOCKER_CONTAINER:$DOCKER_TAG
+
+            echo "Starting new container..."
+            docker run -d --name $DOCKER_CONTAINER -p $DOCKER_PORT:$DOCKER_PORT \
+              $DOCKER_HUB_USERNAME/$DOCKER_CONTAINER:$DOCKER_TAG
+
+            echo "Copying env to container..."
+            docker cp $ENV_FILE $DOCKER_CONTAINER:/var/www/.env
+
+            echo "Waiting for container to be healthy..."
+            until [ "$(docker inspect --format='{{.State.Health.Status}}' $DOCKER_CONTAINER)" == "healthy" ]; do
+              echo "Still waiting for container health check to pass..."
+              sleep 5
+            done
+            echo "Container is healthy!"
+
+            echo "Deployment completed successfully!"
+
+      - name: Cleanup old Docker containers and images
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ env.EC2_HOST }}
+          username: ${{ env.EC2_USER }}
+          key: ${{ env.EC2_SSH_KEY }}
+          port: ${{ env.EC2_PORT }}
+          script: |
+            echo "Stopping and removing all containers except the currently running container..."
+            docker ps -aq --filter "name=$DOCKER_CONTAINER" --filter "status=exited" | xargs -r docker rm -f
+
+            echo "Removing unused images to free up space..."
+            docker image prune -af || true
+
+            echo "Pruning unused networks and volumes to reclaim space..."
+            docker network prune -f || true
+            docker volume prune -f || true
+
+            echo "Cleanup complete."

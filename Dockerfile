@@ -59,6 +59,9 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 # Configure supervisord
 COPY ./docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
+# Copy the custom php.ini file
+COPY ./docker/php.ini /usr/local/etc/php/php.ini
+
 # Create supervisord log folder
 RUN mkdir -p /var/log/supervisor
 
@@ -72,6 +75,13 @@ EXPOSE 443/udp
 EXPOSE 2019
 EXPOSE 8080
 EXPOSE 3306
+
+# Set healthcheck
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD curl --silent --fail http://localhost:8080/ || exit 1
+
+# Set executable permission to entrypoint
+RUN chmod +x ./docker/entrypoint.sh
 
 # Define the entrypoint to run
 ENTRYPOINT ["./docker/entrypoint.sh"]
