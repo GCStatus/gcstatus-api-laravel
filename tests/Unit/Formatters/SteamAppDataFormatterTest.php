@@ -88,6 +88,23 @@ class SteamAppDataFormatterTest extends TestCase
             ],
         ], SteamAppDataFormatter::formatRequirements($requirements));
 
+        // Valid fallback obs
+        $requirements = [
+            'pc_requirements' => [
+                'minimum' => '<strong>Minimum:</strong><br><ul class="bb_ul"><li>Fallback note<br></li></ul>',
+            ],
+        ];
+
+        $this->assertEquals([
+            [
+                'os' => 'windows',
+                'potential' => 'minimum',
+                'attributes' => [
+                    'obs' => 'Fallback note',
+                ]
+            ],
+        ], SteamAppDataFormatter::formatRequirements($requirements));
+
         // Invalid
         $requirements = [
             'pc_requirements' => [],
