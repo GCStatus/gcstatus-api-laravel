@@ -20,6 +20,7 @@
         "laravel/tinker": "^2.9",
         "league/flysystem-aws-s3-v3": "^3.29",
         "paulo-hortelan/requests-graph-pulse": "^1.2",
+        "predis/predis": "^2.3",
         "tymon/jwt-auth": "^2.1"
     },
     "require-dev": {
