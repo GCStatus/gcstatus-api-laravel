@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
             StoreSeeder::class,
             RequirementTypeSeeder::class,
             PlatformSeeder::class,
+            RoleSeeder::class,
         ]);
     }
 }

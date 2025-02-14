@@ -94,6 +94,66 @@ class AbstractServiceTest extends TestCase
     }
 
     /**
+     * Test the implementation of first or create method from abstract repository.
+     *
+     * @return void
+     */
+    public function test_first_or_create_saves_and_returns_model(): void
+    {
+        $data = [
+            'name' => $name = fake()->name(),
+            'password' => $password = fake()->word(),
+            'email' => $email = fake()->unique()->safeEmail(),
+            'nickname' => $nickname = fake()->unique()->userName(),
+            'level_id' => $levelId = Level::firstOrFail()->value('id'),
+            'birthdate' => $birthdate = Carbon::today()->subYears(14)->toDateString(),
+        ];
+
+        $result = $this->service->firstOrCreate($data);
+
+        $this->assertInstanceOf(User::class, $result);
+
+        $this->assertDatabaseHas('users', [
+            'name' => $name,
+            'email' => $email,
+            'level_id' => $levelId,
+            'nickname' => $nickname,
+            'birthdate' => $birthdate,
+        ]);
+
+        $this->assertTrue(Hash::check($password, (string)$result->password));
+    }
+
+    /**
+     * Test the implementation of first or create can find user if exists method from abstract repository.
+     *
+     * @return void
+     */
+    public function test_first_or_create_can_find_and_returns_model(): void
+    {
+        $user = $this->createDummyUser();
+
+        $data = [
+            'name' => $user->name,
+            'email' => $user->email,
+            'nickname' => $user->nickname,
+            'birthdate' => $user->birthdate,
+        ];
+
+        $result = $this->service->firstOrCreate($data);
+
+        $this->assertInstanceOf(User::class, $result);
+
+        $this->assertDatabaseHas('users', [
+            'name' => $user->name,
+            'email' => $user->email,
+            'level_id' => $user->level_id,
+            'nickname' => $user->nickname,
+            'birthdate' => $user->birthdate,
+        ]);
+    }
+
+    /**
      * Test if can find and returns correct model.
      *
      * @return void

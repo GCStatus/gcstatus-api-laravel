@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Traits\NormalizeMorphAdmin;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\{MorphTo, BelongsTo};
@@ -11,7 +10,6 @@ class Viewable extends Model
 {
     /** @use HasFactory<\Database\Factories\ViewableFactory> */
     use HasFactory;
-    use NormalizeMorphAdmin;
 
     /**
      * The attributes that are mass assignable.
@@ -23,13 +21,6 @@ class Viewable extends Model
         'viewable_id',
         'viewable_type',
     ];
-
-    /**
-     * The morphable attribute.
-     *
-     * @var string
-     */
-    protected $morphableAttribute = 'viewable_type';
 
     /**
      * Get the viewable for the Viewable.

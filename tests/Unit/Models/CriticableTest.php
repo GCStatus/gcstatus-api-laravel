@@ -3,7 +3,6 @@
 namespace Tests\Unit\Models;
 
 use App\Models\Criticable;
-use App\Traits\NormalizeMorphAdmin;
 use Tests\Contracts\Models\BaseModelTesting;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\{
@@ -61,7 +60,6 @@ class CriticableTest extends BaseModelTesting implements
     {
         $traits = [
             HasFactory::class,
-            NormalizeMorphAdmin::class,
         ];
 
         $this->assertUsesTraits($traits);

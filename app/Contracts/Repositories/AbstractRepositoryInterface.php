@@ -22,6 +22,15 @@ interface AbstractRepositoryInterface
     public function create(array $data): Model;
 
     /**
+     * Get first model record or create based on given attributes.
+     *
+     * @param array<string, mixed> $attributes
+     * @param array<string, mixed> $values
+     * @return \Illuminate\Database\Eloquent\Model
+     */
+    public function firstOrCreate(array $attributes, array $values = []): Model;
+
+    /**
      * Should have method find.
      *
      * @param mixed $id

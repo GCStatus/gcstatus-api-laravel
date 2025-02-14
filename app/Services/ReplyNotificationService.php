@@ -34,7 +34,7 @@ class ReplyNotificationService implements ReplyNotificationServiceInterface
         $commentable = $comment->commentable;
 
         return match ($comment->commentable_type) {
-            normalizeMorphAdmin(Game::class) => "/games/$commentable->slug",
+            Game::class => "/games/$commentable->slug",
             default => '#',
         };
     }

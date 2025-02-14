@@ -5,15 +5,18 @@ namespace Tests\Unit\Models;
 use App\Models\User;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Notifications\Notifiable;
+use App\Traits\{HasRoles, HasPermissions};
 use Tests\Contracts\Models\BaseModelTesting;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Contracts\HasRolesAndPermissionsInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\{
     HasOne,
     HasMany,
     MorphMany,
     BelongsTo,
+    MorphToMany,
     BelongsToMany,
 };
 use Tests\Contracts\Models\{
@@ -87,9 +90,11 @@ class UserTest extends BaseModelTesting implements
     public function test_traits_attributes(): void
     {
         $traits = [
+            HasRoles::class,
             HasFactory::class,
             Notifiable::class,
             SoftDeletes::class,
+            HasPermissions::class,
         ];
 
         $this->assertUsesTraits($traits);
@@ -103,8 +108,9 @@ class UserTest extends BaseModelTesting implements
     public function test_interfaces_attributes(): void
     {
         $interfaces = [
-            MustVerifyEmail::class,
             JWTSubject::class,
+            MustVerifyEmail::class,
+            HasRolesAndPermissionsInterface::class,
         ];
 
         $this->assertUsesInterfaces($interfaces);
@@ -122,6 +128,7 @@ class UserTest extends BaseModelTesting implements
             'wallet' => HasOne::class,
             'profile' => HasOne::class,
             'level' => BelongsTo::class,
+            'roles' => MorphToMany::class,
             'friendships' => HasMany::class,
             'titles' => BelongsToMany::class,
             'transactions' => HasMany::class,
@@ -129,6 +136,7 @@ class UserTest extends BaseModelTesting implements
             'friends' => BelongsToMany::class,
             'missions' => BelongsToMany::class,
             'notifications' => MorphMany::class,
+            'permissions' => MorphToMany::class,
             'receivedRequests' => HasMany::class,
             'readNotifications' => MorphMany::class,
             'unreadNotifications' => MorphMany::class,

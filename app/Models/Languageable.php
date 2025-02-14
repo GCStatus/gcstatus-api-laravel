@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Traits\NormalizeMorphAdmin;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\{MorphTo, BelongsTo};
@@ -11,8 +10,6 @@ class Languageable extends Model
 {
     /** @use HasFactory<\Database\Factories\LanguageableFactory> */
     use HasFactory;
-
-    use NormalizeMorphAdmin;
 
     /**
      * The attributes that are mass assignable.
@@ -27,13 +24,6 @@ class Languageable extends Model
         'languageable_id',
         'languageable_type',
     ];
-
-    /**
-     * The morphable attribute.
-     *
-     * @var string
-     */
-    protected $morphableAttribute = 'languageable_type';
 
     /**
      * The attributes that should be casts.

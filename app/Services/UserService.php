@@ -52,7 +52,7 @@ class UserService extends AbstractService implements UserServiceInterface
     /**
      * @inheritDoc
      */
-    public function firstOrCreate(array $searchable, array $creatable): User
+    public function firstOrCreate(array $searchable, array $creatable = []): User
     {
         return $this->repository()->firstOrCreate($searchable, $creatable);
     }

@@ -140,14 +140,11 @@ class CommentableStoreTest extends BaseIntegrationTesting
     {
         $this->postJson(route('comments.store'), $data = $this->getValidPayload())->assertCreated();
 
-        /** @var class-string $commentableType */
-        $commentableType = $data['commentable_type'];
-
         $this->assertDatabaseHas('commentables', [
             'user_id' => $this->user->id,
             'comment' => $data['comment'],
             'commentable_id' => $data['commentable_id'],
-            'commentable_type' => normalizeMorphAdmin($commentableType),
+            'commentable_type' => $data['commentable_type'],
         ]);
     }
 
@@ -165,15 +162,12 @@ class CommentableStoreTest extends BaseIntegrationTesting
             ])->id,
         ])->assertCreated();
 
-        /** @var class-string $commentableType */
-        $commentableType = $data['commentable_type'];
-
         $this->assertDatabaseHas('commentables', [
             'parent_id' => $parentId,
             'user_id' => $this->user->id,
             'comment' => $data['comment'],
             'commentable_id' => $data['commentable_id'],
-            'commentable_type' => normalizeMorphAdmin($commentableType),
+            'commentable_type' => $data['commentable_type'],
         ]);
     }
 

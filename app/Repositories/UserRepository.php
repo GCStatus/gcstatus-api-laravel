@@ -20,7 +20,7 @@ class UserRepository extends AbstractRepository implements UserRepositoryInterfa
     /**
      * @inheritDoc
      */
-    public function firstOrCreate(array $searchable, array $creatable): User
+    public function firstOrCreate(array $searchable, array $creatable = []): User
     {
         return $this->model()->firstOrCreate($searchable, $creatable);
     }

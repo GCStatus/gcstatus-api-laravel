@@ -36,6 +36,18 @@ abstract class AbstractRepository implements AbstractRepositoryInterface
     }
 
     /**
+     * Get first model record or create based on given attributes.
+     *
+     * @param array<string, mixed> $attributes
+     * @param array<string, mixed> $values
+     * @return \Illuminate\Database\Eloquent\Model
+     */
+    public function firstOrCreate(array $attributes, array $values = []): Model
+    {
+        return $this->model()->firstOrCreate($attributes, $values);
+    }
+
+    /**
      * Find a model record.
      *
      * @param mixed $id

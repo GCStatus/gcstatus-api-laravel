@@ -37,6 +37,18 @@ abstract class AbstractService implements AbstractServiceInterface
     }
 
     /**
+     * Get first model record or create based on given attributes.
+     *
+     * @param array<string, mixed> $attributes
+     * @param array<string, mixed> $values
+     * @return \Illuminate\Database\Eloquent\Model
+     */
+    public function firstOrCreate(array $attributes, array $values = []): Model
+    {
+        return $this->repository()->firstOrCreate($attributes, $values);
+    }
+
+    /**
      * Find a repository record.
      *
      * @param mixed $id

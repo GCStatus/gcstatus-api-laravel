@@ -30,7 +30,7 @@ class GameFactory extends Factory
             'legal' => fake()->text(),
             'website' => fake()->url(),
             'release_date' => fake()->date(),
-            'condition' => fake()->randomElement(['hot', 'popular', 'sale', 'commom']),
+            'condition' => fake()->randomElement(['hot', 'popular', 'sale', 'common']),
         ];
     }
 }
