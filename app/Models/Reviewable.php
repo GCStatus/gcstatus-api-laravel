@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Traits\NormalizeMorphAdmin;
 use Illuminate\Database\Eloquent\{Model, SoftDeletes};
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\{BelongsTo, MorphTo};
@@ -13,7 +12,6 @@ class Reviewable extends Model
     use HasFactory;
 
     use SoftDeletes;
-    use NormalizeMorphAdmin;
 
     /**
      * The attributes that are mass assignable.
@@ -28,13 +26,6 @@ class Reviewable extends Model
         'reviewable_id',
         'reviewable_type',
     ];
-
-    /**
-     * The morphable attribute.
-     *
-     * @var string
-     */
-    protected $morphableAttribute = 'reviewable_type';
 
     /**
      * The attributes that should be casts.

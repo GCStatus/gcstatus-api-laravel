@@ -57,10 +57,10 @@ class HeartNotificationServiceTest extends TestCase
         $commentable->shouldReceive('getAttribute')->with('user_id')->andReturn(1);
         $commentable->shouldReceive('getAttribute')->with('user')->andReturn($user);
         $commentable->shouldReceive('getAttribute')->with('commentable')->andReturn($game);
-        $commentable->shouldReceive('getAttribute')->with('commentable_type')->andReturn(normalizeMorphAdmin(Game::class));
+        $commentable->shouldReceive('getAttribute')->with('commentable_type')->andReturn(Game::class);
 
         $heartable = Mockery::mock(Heartable::class);
-        $heartable->shouldReceive('getAttribute')->with('heartable_type')->andReturn(normalizeMorphAdmin(Commentable::class));
+        $heartable->shouldReceive('getAttribute')->with('heartable_type')->andReturn(Commentable::class);
         $heartable->shouldReceive('getAttribute')->with('heartable')->andReturn($commentable);
         $heartable->shouldReceive('getAttribute')->with('user')->andReturn($hearter);
 
@@ -97,10 +97,10 @@ class HeartNotificationServiceTest extends TestCase
         $commentable = Mockery::mock(Commentable::class);
         $commentable->shouldReceive('getAttribute')->with('user')->andReturn($user);
         $commentable->shouldReceive('getAttribute')->with('user_id')->andReturn($user->id);
-        $commentable->shouldReceive('getAttribute')->with('commentable_type')->andReturn(normalizeMorphAdmin(Game::class));
+        $commentable->shouldReceive('getAttribute')->with('commentable_type')->andReturn(Game::class);
 
         $heartable = Mockery::mock(Heartable::class);
-        $heartable->shouldReceive('getAttribute')->with('heartable_type')->andReturn(normalizeMorphAdmin(Commentable::class));
+        $heartable->shouldReceive('getAttribute')->with('heartable_type')->andReturn(Commentable::class);
         $heartable->shouldReceive('getAttribute')->with('heartable')->andReturn($commentable);
         $heartable->shouldReceive('getAttribute')->with('user')->andReturn($user);
 

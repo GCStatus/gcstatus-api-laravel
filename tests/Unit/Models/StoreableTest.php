@@ -3,7 +3,6 @@
 namespace Tests\Unit\Models;
 
 use App\Models\Storeable;
-use App\Traits\NormalizeMorphAdmin;
 use Tests\Contracts\Models\BaseModelTesting;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\{BelongsTo, MorphTo};
@@ -73,7 +72,6 @@ class StoreableTest extends BaseModelTesting implements
     {
         $traits = [
             HasFactory::class,
-            NormalizeMorphAdmin::class,
         ];
 
         $this->assertUsesTraits($traits);

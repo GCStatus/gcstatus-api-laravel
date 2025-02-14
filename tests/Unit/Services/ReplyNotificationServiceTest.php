@@ -48,7 +48,7 @@ class ReplyNotificationServiceTest extends TestCase
         $game->shouldReceive('getAttribute')->with('slug')->andReturn('fake-slug');
 
         $comment->shouldReceive('getAttribute')->with('commentable')->andReturn($game);
-        $comment->shouldReceive('getAttribute')->with('commentable_type')->andReturn(normalizeMorphAdmin(Game::class));
+        $comment->shouldReceive('getAttribute')->with('commentable_type')->andReturn(Game::class);
 
         $receiver->shouldReceive('notify')
             ->once()

@@ -34,7 +34,7 @@ class HeartNotificationService implements HeartNotificationServiceInterface
     private function getNotifiable(Heartable $heartable): User
     {
         switch ($heartable->heartable_type) {
-            case normalizeMorphAdmin(Commentable::class):
+            case Commentable::class:
                 /** @var \App\Models\Commentable $commentable */
                 $commentable = $heartable->heartable;
 
@@ -56,7 +56,7 @@ class HeartNotificationService implements HeartNotificationServiceInterface
     private function getNotification(Heartable $heartable, User $notifiable): array
     {
         switch ($heartable->heartable_type) {
-            case normalizeMorphAdmin(Commentable::class):
+            case Commentable::class:
                 /** @var \App\Models\Commentable $commentable */
                 $commentable = $heartable->heartable;
 
@@ -86,7 +86,7 @@ class HeartNotificationService implements HeartNotificationServiceInterface
         $commentable = $comment->commentable;
 
         return match ($comment->commentable_type) {
-            normalizeMorphAdmin(Game::class) => "/games/{$commentable->slug}",
+            Game::class => "/games/{$commentable->slug}",
             default => '#',
         };
     }
@@ -100,7 +100,7 @@ class HeartNotificationService implements HeartNotificationServiceInterface
     private function assertCanNotify(Heartable $heartable): bool
     {
         switch ($heartable->heartable_type) {
-            case normalizeMorphAdmin(Commentable::class):
+            case Commentable::class:
                 /** @var \App\Models\Commentable $commentable */
                 $commentable = $heartable->heartable;
 

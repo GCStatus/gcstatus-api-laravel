@@ -68,7 +68,7 @@ class ToggleHeartableTest extends BaseIntegrationTesting
         $this->assertDatabaseHas('heartables', [
             'user_id' => $this->user->id,
             'heartable_id' => $data['heartable_id'],
-            'heartable_type' => 'App\\Models\\GCStatus\\' . class_basename($data['heartable_type']),
+            'heartable_type' => $data['heartable_type'],
         ]);
     }
 
@@ -96,7 +96,7 @@ class ToggleHeartableTest extends BaseIntegrationTesting
         $this->assertDatabaseHas('heartables', [
             'user_id' => $this->user->id,
             'heartable_id' => $data['heartable_id'],
-            'heartable_type' => 'App\\Models\\GCStatus\\' . class_basename($data['heartable_type']),
+            'heartable_type' => $data['heartable_type'],
         ]);
     }
 
@@ -109,22 +109,20 @@ class ToggleHeartableTest extends BaseIntegrationTesting
     {
         $game = $this->createDummyGame();
 
-        $heartableType = 'App\\Models\\GCStatus\\' . class_basename($game::class);
-
         $this->createDummyHeartable([
             'heartable_id' => $game->id,
             'user_id' => $this->user->id,
-            'heartable_type' => $heartableType,
+            'heartable_type' => $game::class,
         ]);
 
         $data = [
             'heartable_id' => $game->id,
-            'heartable_type' => $heartableType,
+            'heartable_type' => $game::class,
         ];
 
         $this->assertDatabaseHas('heartables', [
             'user_id' => $this->user->id,
-            'heartable_type' => $heartableType,
+            'heartable_type' => $game::class,
             'heartable_id' => $data['heartable_id'],
         ]);
 
@@ -132,7 +130,7 @@ class ToggleHeartableTest extends BaseIntegrationTesting
 
         $this->assertDatabaseMissing('heartables', [
             'user_id' => $this->user->id,
-            'heartable_type' => $heartableType,
+            'heartable_type' => $game::class,
             'heartable_id' => $data['heartable_id'],
         ]);
     }

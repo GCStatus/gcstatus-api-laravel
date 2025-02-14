@@ -13,7 +13,7 @@ interface UserServiceInterface extends AbstractServiceInterface
      * @param array<string, mixed> $creatable
      * @return \App\Models\User
      */
-    public function firstOrCreate(array $searchable, array $creatable): User;
+    public function firstOrCreate(array $searchable, array $creatable = []): User;
     /**
      * Update the user password.
      *

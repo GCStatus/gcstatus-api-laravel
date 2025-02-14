@@ -4,8 +4,17 @@ namespace App\Providers;
 
 use InvalidArgumentException;
 use Illuminate\Contracts\Foundation\Application;
-use App\Services\Validation\{EmailValidator, NicknameValidator};
-use App\Contracts\Services\Validation\{IdentifierValidatorInterface};
+use App\Services\Validation\{
+    EmailValidator,
+    NicknameValidator,
+    SteamAppValidator,
+    SteamResponseValidator,
+};
+use App\Contracts\Services\Validation\{
+    SteamAppValidatorInterface,
+    IdentifierValidatorInterface,
+    SteamResponseValidatorInterface,
+};
 
 class BindCustomInterfacesToImplementations extends BaseInterfaceBindServiceProvider
 {
@@ -19,6 +28,8 @@ class BindCustomInterfacesToImplementations extends BaseInterfaceBindServiceProv
         $this->bindClientInterfacesToImplementations();
         $this->bindResponseInterfacesToImplementations();
 
+        $this->app->bind(SteamAppValidatorInterface::class, SteamAppValidator::class);
+        $this->app->bind(SteamResponseValidatorInterface::class, SteamResponseValidator::class);
         $this->app->bind(IdentifierValidatorInterface::class, function (Application $app, array $params) {
             $identifierType = $params['type'] ?? null;
 

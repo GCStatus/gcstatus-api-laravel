@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Traits\NormalizeMorphAdmin;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\{MorphTo, BelongsTo};
@@ -11,7 +10,6 @@ class Storeable extends Model
 {
     /** @use HasFactory<\Database\Factories\StoreableFactory> */
     use HasFactory;
-    use NormalizeMorphAdmin;
 
     /**
      * The attributes that are mass assignable.
@@ -26,13 +24,6 @@ class Storeable extends Model
         'store_item_id',
         'storeable_type',
     ];
-
-    /**
-     * The morphable attribute.
-     *
-     * @var string
-     */
-    protected $morphableAttribute = 'storeable_type';
 
     /**
      * The attributes that should be casts.

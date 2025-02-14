@@ -10,13 +10,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Tests\Contracts\Models\{
     ShouldTestCasts,
     ShouldTestTraits,
+    ShouldTestConstants,
     ShouldTestFillables,
 };
 
 class StoreTest extends BaseModelTesting implements
     ShouldTestCasts,
     ShouldTestTraits,
-    ShouldTestFillables
+    ShouldTestFillables,
+    ShouldTestConstants
 {
     /**
      * The testable model string class.
@@ -74,5 +76,21 @@ class StoreTest extends BaseModelTesting implements
         ];
 
         $this->assertUsesTraits($traits);
+    }
+
+    /**
+     * The contract constant attributes that should be tested.
+     *
+     * @return void
+     */
+    public function test_constant_attributes(): void
+    {
+        $expectedConstants = [
+            'STEAM_STORE_ID' => 1,
+            'CREATED_AT' => 'created_at',
+            'UPDATED_AT' => 'updated_at',
+        ];
+
+        $this->assertHasConstants($expectedConstants);
     }
 }

@@ -2,11 +2,11 @@
 
 namespace Tests\Unit\Models;
 
+use App\Traits\HasHeart;
 use App\Models\Commentable;
 use App\Contracts\HasHeartInterface;
 use Tests\Contracts\Models\BaseModelTesting;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Traits\{HasHeart, NormalizeMorphAdmin};
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\{
     HasMany,
@@ -68,7 +68,6 @@ class CommentableTest extends BaseModelTesting implements
             HasHeart::class,
             HasFactory::class,
             SoftDeletes::class,
-            NormalizeMorphAdmin::class,
         ];
 
         $this->assertUsesTraits($traits);

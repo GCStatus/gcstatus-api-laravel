@@ -41,4 +41,8 @@ return [
         'redirect' => env('GOOGLE_CLIENT_CALLBACK', 'http://localhost:8000/oauth/google/callback'),
     ],
 
+    'steam' => [
+        'base_url' => 'https://store.steampowered.com/api/appdetails',
+    ],
+
 ];

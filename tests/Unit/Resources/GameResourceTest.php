@@ -111,7 +111,7 @@ class GameResourceTest extends BaseResourceTesting
         $gameMock->shouldReceive('getAttribute')->with('views')->andReturn(fake()->numberBetween(1, 999));
         $gameMock->shouldReceive('getAttribute')->with('age')->andReturn((string)fake()->numberBetween(1, 18));
         $gameMock->shouldReceive('getAttribute')->with('hearts_count')->andReturn(fake()->numberBetween(1, 999));
-        $gameMock->shouldReceive('getAttribute')->with('condition')->andReturn(fake()->randomElement(['hot', 'popular', 'sale', 'commom']));
+        $gameMock->shouldReceive('getAttribute')->with('condition')->andReturn(fake()->randomElement(['hot', 'popular', 'sale', 'common']));
 
         $gameMock->shouldReceive('getAttribute')->with('crack')->andReturn($crackMock);
         $gameMock->shouldReceive('getAttribute')->with('support')->andReturn($supportMock);

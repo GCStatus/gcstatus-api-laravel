@@ -5,7 +5,9 @@ namespace App\Models;
 use App\Observers\UserObserver;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Notifications\Notifiable;
+use App\Traits\{HasRoles, HasPermissions};
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Contracts\HasRolesAndPermissionsInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
@@ -18,18 +20,23 @@ use Illuminate\Database\Eloquent\Relations\{
     HasOne,
     HasMany,
     BelongsTo,
+    MorphToMany,
     BelongsToMany,
 };
 
 #[ObservedBy([UserObserver::class])]
 class User extends Authenticatable implements
     MustVerifyEmail,
-    JWTSubject
+    JWTSubject,
+    HasRolesAndPermissionsInterface
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory;
+
+    use HasRoles;
     use Notifiable;
     use SoftDeletes;
+    use HasPermissions;
 
     /**
      * The attributes that are mass assignable.
@@ -224,6 +231,26 @@ class User extends Authenticatable implements
     public function friends(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'friendships', 'user_id', 'friend_id');
+    }
+
+    /**
+     * Get all of the permissions for the User
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\MorphToMany<Permission, $this>
+     */
+    public function permissions(): MorphToMany
+    {
+        return $this->morphToMany(Permission::class, 'permissionable');
+    }
+
+    /**
+     * Get all of the roles for the User
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\MorphToMany<Role, $this>
+     */
+    public function roles(): MorphToMany
+    {
+        return $this->morphToMany(Role::class, 'roleable');
     }
 
     /**

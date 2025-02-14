@@ -32,4 +32,11 @@ class Store extends Model
      * @var string
      */
     protected $sluggable = 'name';
+
+    /**
+     * The steam store id.
+     *
+     * @var int
+     */
+    public const STEAM_STORE_ID = 1;
 }
