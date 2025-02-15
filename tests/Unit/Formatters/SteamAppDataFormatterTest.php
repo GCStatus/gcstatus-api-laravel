@@ -253,6 +253,15 @@ class SteamAppDataFormatterTest extends TestCase
 
         $this->assertEquals('sale', SteamAppDataFormatter::formatCondition($data));
 
+        // Unreleased
+        $data = [
+            'release_date' => [
+                'coming_soon' => true,
+            ],
+        ];
+
+        $this->assertEquals('unreleased', SteamAppDataFormatter::formatCondition($data));
+
         // Hot
         $data = [
             'release_date' => [

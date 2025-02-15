@@ -25,7 +25,7 @@ return new class () extends Migration {
             $table->text('legal')->nullable();
             $table->string('website')->nullable();
             $table->date('release_date');
-            $table->enum('condition', ['hot', 'sale', 'popular', 'common'])->default('common');
+            $table->enum('condition', ['hot', 'sale', 'popular', 'common', 'unreleased'])->default('common');
             $table->softDeletes();
             $table->timestamps();
         });

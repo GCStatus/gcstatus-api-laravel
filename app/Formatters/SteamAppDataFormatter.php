@@ -194,22 +194,24 @@ class SteamAppDataFormatter
         $release_date = $details['release_date'] ?? [];
 
         /** @var bool $coming_soon */
-        $coming_soon = self::getArrayValue($release_date, 'coming_soon', true);
+        $coming_soon = self::getArrayValue($release_date, 'coming_soon', false);
 
-        if (!$coming_soon) {
-            /** @var array<string, mixed> $recommendations */
-            $recommendations = $details['recommendations'] ?? [];
+        if ($coming_soon) {
+            return 'unreleased';
+        }
 
-            /** @var int $total */
-            $total = self::getArrayValue($recommendations, 'total', 0);
+        /** @var array<string, mixed> $recommendations */
+        $recommendations = $details['recommendations'] ?? [];
 
-            if ($total > 500000) {
-                return 'hot';
-            }
+        /** @var int $total */
+        $total = self::getArrayValue($recommendations, 'total', 0);
 
-            if ($total > 100000) {
-                return 'popular';
-            }
+        if ($total > 500000) {
+            return 'hot';
+        }
+
+        if ($total > 100000) {
+            return 'popular';
         }
 
         return 'common';
