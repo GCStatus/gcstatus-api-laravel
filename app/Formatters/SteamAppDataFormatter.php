@@ -16,13 +16,20 @@ class SteamAppDataFormatter
     public static function formatReleaseDate(array $releaseDate): string
     {
         /** @var string $dateString */
-        $dateString = self::getArrayValue($releaseDate, 'date');
+        $dateString = self::getArrayValue($releaseDate, 'date', '');
+
+        /** @var bool $coming_soon */
+        $coming_soon = self::getArrayValue($releaseDate, 'coming_soon', false);
+
+        if ($coming_soon) {
+            return Carbon::today()->addYear()->toDateString();
+        }
 
         if (!empty($releaseDate) && isset($releaseDate['date'])) {
             return (string)Carbon::createFromFormat('d M, Y', $dateString)?->toDateString();
         }
 
-        return '';
+        return Carbon::today()->toDateString();
     }
 
     /**

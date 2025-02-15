@@ -4,6 +4,7 @@ namespace Tests\Unit\Formatters;
 
 use Tests\TestCase;
 use App\Models\MediaType;
+use Illuminate\Support\Carbon;
 use App\Formatters\SteamAppDataFormatter;
 
 class SteamAppDataFormatterTest extends TestCase
@@ -16,14 +17,19 @@ class SteamAppDataFormatterTest extends TestCase
     public function test_if_can_format_the_release_date_correctly(): void
     {
         // Valid
-        $releaseDate = ['date' => '20 Nov, 2000'];
+        $releaseDate = ['coming_soon' => false, 'date' => '20 Nov, 2000'];
 
         $this->assertEquals('2000-11-20', SteamAppDataFormatter::formatReleaseDate($releaseDate));
+
+        // Coming soon
+        $releaseDate = ['coming_soon' => true, 'date' => '20 Nov, 2000'];
+
+        $this->assertEquals(Carbon::today()->addYear()->toDateString(), SteamAppDataFormatter::formatReleaseDate($releaseDate));
 
         // Invalid
         $releaseDate = [];
 
-        $this->assertEquals('', SteamAppDataFormatter::formatReleaseDate($releaseDate));
+        $this->assertEquals(Carbon::today()->toDateString(), SteamAppDataFormatter::formatReleaseDate($releaseDate));
     }
 
     /**
