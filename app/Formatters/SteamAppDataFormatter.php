@@ -2,6 +2,7 @@
 
 namespace App\Formatters;
 
+use Exception;
 use Illuminate\Support\Carbon;
 use App\Models\{MediaType, RequirementType};
 
@@ -25,8 +26,16 @@ class SteamAppDataFormatter
             return Carbon::today()->addYear()->toDateString();
         }
 
+        $formats = ['d M, Y', 'M d, Y'];
+
         if (!empty($releaseDate) && isset($releaseDate['date'])) {
-            return (string)Carbon::createFromFormat('d M, Y', $dateString)?->toDateString();
+            foreach ($formats as $format) {
+                try {
+                    return (string)Carbon::createFromFormat($format, $dateString)?->toDateString();
+                } catch (Exception $e) {
+                    continue;
+                }
+            }
         }
 
         return Carbon::today()->toDateString();

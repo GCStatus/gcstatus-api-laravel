@@ -16,19 +16,24 @@ class SteamAppDataFormatterTest extends TestCase
      */
     public function test_if_can_format_the_release_date_correctly(): void
     {
-        // Valid
+        // 1. Valid: Format "d M, Y" - should work.
         $releaseDate = ['coming_soon' => false, 'date' => '20 Nov, 2000'];
-
         $this->assertEquals('2000-11-20', SteamAppDataFormatter::formatReleaseDate($releaseDate));
 
-        // Coming soon
-        $releaseDate = ['coming_soon' => true, 'date' => '20 Nov, 2000'];
+        // 2. Valid: Format "M d, Y" - should work.
+        $releaseDate = ['coming_soon' => false, 'date' => 'Nov 20, 2000'];
+        $this->assertEquals('2000-11-20', SteamAppDataFormatter::formatReleaseDate($releaseDate));
 
+        // 3. Coming soon: when coming_soon is true, fallback is used.
+        $releaseDate = ['coming_soon' => true, 'date' => '20 Nov, 2000'];
         $this->assertEquals(Carbon::today()->addYear()->toDateString(), SteamAppDataFormatter::formatReleaseDate($releaseDate));
 
-        // Invalid
+        // 4. Empty array: returns today's date.
         $releaseDate = [];
+        $this->assertEquals(Carbon::today()->toDateString(), SteamAppDataFormatter::formatReleaseDate($releaseDate));
 
+        // 5. Invalid date string: not matching any format, should return today's date.
+        $releaseDate = ['coming_soon' => false, 'date' => 'invalid date'];
         $this->assertEquals(Carbon::today()->toDateString(), SteamAppDataFormatter::formatReleaseDate($releaseDate));
     }
 
