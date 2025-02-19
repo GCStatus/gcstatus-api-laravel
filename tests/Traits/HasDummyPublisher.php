@@ -3,6 +3,7 @@
 namespace Tests\Traits;
 
 use App\Models\Publisher;
+use Illuminate\Database\Eloquent\Collection;
 
 trait HasDummyPublisher
 {
@@ -15,5 +16,17 @@ trait HasDummyPublisher
     public function createDummyPublisher(array $data = []): Publisher
     {
         return Publisher::factory()->create($data);
+    }
+
+    /**
+     * Create dummy publishers.
+     *
+     * @param int $times
+     * @param array<string, mixed> $data
+     * @return \Illuminate\Database\Eloquent\Collection<int, \App\Models\Publisher>
+     */
+    public function createDummyPublishers(int $times, array $data = []): Collection
+    {
+        return Publisher::factory($times)->create($data);
     }
 }

@@ -7,6 +7,8 @@ use App\Http\Controllers\Admin\{
     GenreController,
     CategoryController,
     PlatformController,
+    DeveloperController,
+    PublisherController,
     Steam\SteamController,
 };
 
@@ -31,3 +33,5 @@ Route::apiResource('tags', TagController::class)->except('show');
 Route::apiResource('genres', GenreController::class)->except('show');
 Route::apiResource('platforms', PlatformController::class)->except('show');
 Route::apiResource('categories', CategoryController::class)->except('show');
+Route::apiResource('publishers', PublisherController::class)->except('show');
+Route::apiResource('developers', DeveloperController::class)->except('show');
