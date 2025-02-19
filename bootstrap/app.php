@@ -9,6 +9,7 @@ use App\Http\Middleware\{
     JwtCookieAuth,
     ForceJsonAccept,
     MidJwtCookieAuth,
+    BlockableProtection,
     ShouldCompleteRegistration,
 };
 
@@ -20,8 +21,10 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__ . '/../routes/console.php',
         channels: __DIR__ . '/../routes/channels.php',
         then: function () {
-            Route::middleware('api.auth')->group(base_path('routes/auth.php'));
-            Route::middleware('api.auth')->prefix('admin')->group(base_path('routes/admin.php'));
+            Route::middleware(['api.auth', 'blockable.protect'])->group(function () {
+                Route::prefix('')->group(base_path('routes/auth.php'));
+                Route::prefix('admin')->group(base_path('routes/admin.php'));
+            });
         },
     )->withMiddleware(function (Middleware $middleware) {
         $middleware->append([
@@ -31,6 +34,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'scopes' => AdminScope::class,
             'api.auth' => JwtCookieAuth::class,
             'api.mid.auth' => MidJwtCookieAuth::class,
+            'blockable.protect' => BlockableProtection::class,
             'registration.should.complete' => ShouldCompleteRegistration::class,
         ])->trustProxies(at: '*');
     })->withExceptions(function (Exceptions $exceptions) {

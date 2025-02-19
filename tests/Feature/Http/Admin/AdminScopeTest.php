@@ -28,9 +28,9 @@ class AdminScopeTest extends BaseIntegrationTesting
     /**
      * The required permissions for this action.
      *
-     * @var array<(int|string), mixed>
+     * @var list<string>
      */
-    private array $permissions = [
+    protected array $permissions = [
         'view:games',
         'create:games',
         'create:steam-apps',
@@ -111,13 +111,7 @@ class AdminScopeTest extends BaseIntegrationTesting
 
         $user = $this->actingAsDummyUser();
 
-        foreach ($this->permissions as $permission) {
-            $permission = $this->createDummyPermission([
-                'scope' => $permission,
-            ]);
-
-            $user->permissions()->save($permission);
-        }
+        $this->bootUserPermissions($user);
 
         $postData = ['app_id' => '123'];
 
@@ -139,13 +133,7 @@ class AdminScopeTest extends BaseIntegrationTesting
 
         $user->roles()->save($role);
 
-        foreach ($this->permissions as $permission) {
-            $permission = $this->createDummyPermission([
-                'scope' => $permission,
-            ]);
-
-            $role->permissions()->save($permission);
-        }
+        $this->bootRolePermissions($role);
 
         $postData = ['app_id' => '123'];
 
@@ -167,12 +155,20 @@ class AdminScopeTest extends BaseIntegrationTesting
 
         $user->roles()->save($role);
 
-        foreach ($this->permissions as $permission) {
+        foreach (collect($this->permissions)->slice(0, count($this->permissions) - 1) as $permission) {
             $permission = $this->createDummyPermission([
                 'scope' => $permission,
             ]);
 
             $role->permissions()->save($permission);
+        }
+
+        foreach (collect($this->permissions)->slice(count($this->permissions) - 1, count($this->permissions)) as $permission) {
+            $permission = $this->createDummyPermission([
+                'scope' => $permission,
+            ]);
+
+            $user->permissions()->save($permission);
         }
 
         $postData = ['app_id' => '123'];
