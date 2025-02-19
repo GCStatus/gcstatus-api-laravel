@@ -2,6 +2,11 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\{
+    MeController,
+    TagController,
+    GenreController,
+    CategoryController,
+    PlatformController,
     Steam\SteamController,
 };
 
@@ -17,6 +22,12 @@ use App\Http\Controllers\Admin\{
 |
 */
 
+Route::get('me', MeController::class)->name('admin.me');
 Route::post('steam/apps/create', SteamController::class)->middleware(
     'scopes:view:games,create:games,create:steam-apps',
 )->name('steam.apps.create');
+
+Route::apiResource('tags', TagController::class)->except('show');
+Route::apiResource('genres', GenreController::class)->except('show');
+Route::apiResource('platforms', PlatformController::class)->except('show');
+Route::apiResource('categories', CategoryController::class)->except('show');

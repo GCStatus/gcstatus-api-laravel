@@ -63,7 +63,6 @@ class LogoutTest extends BaseIntegrationTesting
 
         $this->assertTrue(collect($logoutResponse->headers->getCookies())->contains(function (Cookie $cookie) use ($key) {
             return $cookie->getName() === $key && $cookie->getExpiresTime() <= time();
-            ;
         }));
 
         $this->getJson(route('auth.me'))

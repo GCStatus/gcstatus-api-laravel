@@ -4,10 +4,24 @@
 
 ### MVP (Minimum Viable Product)
 
-- [ ] Deployment
-  - [ ] Set up custom domain and SSL certificate with certbot
-  - [ ] Set up nginx server
+- [ ] Create CRUD for basic attributes on admin environment
+  - [x] For categories
+  - [x] For tags
+  - [x] For genres
+  - [x] For platforms
+  - [ ] For publishers
+  - [ ] For developers
+  - [ ] For stores
+  - [ ] For requirement types
+  - [ ] For critics
+  - [ ] For languages
+  - [ ] For protections
+  - [ ] For crackers
+  - [ ] For torrent providers
+  - [ ] For media type
+  - [ ] For transaction type
 - [ ] Review the entire error throwing of platform to user-friendly
+  - [ ] Review all exceptions thrown
 - [ ] Email verification
   - [ ] Block user access if email is not verified
   - [ ] If user change email, set verified_at to null and block access again
@@ -15,86 +29,29 @@
 - [ ] Create jobs to run some sevices async
   - [ ] Email send
   - [ ] Create secondary records, such as transactions or notifications
-- [ ] Review all exceptions thrown
 - [ ] Missions and titles
   - [ ] Review the action keys for missions and titles
   - [ ] Planning all missions and titles type
   - [ ] Planning all daily/weekly/monthly missions
 - [ ] Create viewable structure
-  - [ ] Add game views count
+  - [x] Add game views count
   - [ ] Add post views count
 - [ ] Create heartable structure
-  - [ ] Add game hearts count
+  - [x] Add game hearts count
+  - [x] Add comment hearts count
   - [ ] Add post hearts count
-  - [ ] Add comment hearts count
-- [ ] Create method to receive comments, with parent id if reply
 - [ ] AWS
-  - [ ] Integrate EC2
-  - [ ] Integrate RDS
+  - [x] Integrate EC2
+  - [x] Integrate RDS
   - [ ] Integrate SES
   - [ ] Integrate SQS
-  - [ ] Integrate ElastiCache with Redis OSS
   - [ ] SQS
   - [ ] Change notifications and transactions generation to SQS
   - [ ] Create async processes
-- [ ] Create categories table
-- [ ] Create tags table
-- [ ] Create genres table
-- [ ] Create platforms table
-- [ ] Create languages table
-- [ ] Adding outline for games
-  - [ ] Associating games with platforms
-  - [ ] Associating games with categories
-  - [ ] Associating games with tags
-  - [ ] Associating games with genres
-  - [ ] Associating games with languages
-- [ ] Create association for games or DLCs
-  - [ ] Create torrent websites (such as firgitl, skidrow etc)
-  - [ ] Create the kind of protections (such as Denuvo, Steam, GOG etc)
-  - [ ] Create game developers (such as Game Science)
-  - [ ] Create game publishers (such as Game Science)
-  - [ ] Create requirement types
-    - [ ] A requirement type should have a potential column, that should be enum, with minimum, maximum or recommended
-    - [ ] A requirement type should have a type column, that should be enum, with windows, mac or linux
-  - [ ] Create requirements and associate with requirement types
-- [ ] Create game outline system
-  - [ ] Add game DLCs
-  - [ ] Add game critics
-  - [ ] Add game torrents
-  - [ ] Add game crack
-  - [ ] Add game reviews
-  - [ ] Add game galleries
-  - [ ] Add game publishers
-  - [ ] Add game developers
-  - [ ] Add game requirements
-  - [ ] Add game comments (for torrents section)
-  - [ ] Add game support
-  - [ ] Add game hearts
-  - [ ] Add game views
-  - [ ] Add game stores
-- [ ] User heart on games
-- [ ] User heart on comments or replies
 - [ ] Create a method to receive all main data from API for HOME
-  - [ ] Method should return home banners
-  - [ ] Method should return 9 popular games
-  - [ ] Method should return the next most awaited release (and should stay for one week as released)
-  - [ ] Method should return 9 hot games
-  - [ ] Method should return 9 most liked games
-  - [ ] Method should return 9 upcoming games
-- [ ] Create the search method for games
-- [ ] Create search by classifications
-  - [ ] Search by developers
-  - [ ] Search by publishers
-  - [ ] Search by crackers
-  - [ ] Search by cracks
-  - [ ] Search by tags
-  - [ ] Search by categories
-  - [ ] Search by platforms
-  - [ ] Search by genres
-  - [ ] Search by protections
+- [x] Create the search method for games
 - [ ] Create cron jobs to reset mission with frequency - daily at midnight;
 - [ ] Create database transactions;
-- [ ] Create remaining notifications (notify about earning experience, earning coins, leveling up etc)
 - [ ] Social
   - [ ] See another user profiles
   - [ ] Send friend request
@@ -142,7 +99,7 @@
 - [ ] Integration with external APIs
   - [ ] Pull in live data from gaming APIs like Twitch or Steam
   - [ ] Display trending streams or game stats
-- [ ] Add some games on the website
+- [ ] Add some playable games on the website
 - [ ] Quiz & polls: about the most exciting game release on future or something else
 - [ ] Integrate with social medias
 - [ ] Coin system

@@ -89,5 +89,58 @@
   - [x] Disable all other enabled title if given title is different
   - [x] Disable all titles if given title is already enabled
   - [x] Removes user cache on title toggle
+- [x] Deployment
+  - [x] Set up custom domain and SSL certificate with certbot
+  - [x] Set up nginx server
+- [x] Create method to receive comments, with parent id if reply
+- [x] Create categories table
+- [x] Create tags table
+- [x] Create genres table
+- [x] Create platforms table
+- [x] Create languages table
+- [x] Adding outline for games
+  - [x] Associating games with platforms
+  - [x] Associating games with categories
+  - [x] Associating games with tags
+  - [x] Associating games with genres
+  - [x] Associating games with languages
+  - [x] Associating games with requirements
+  - [x] Associating games with hearts
+  - [x] Adding views column count
+  - [x] Associating games with stores
+  - [x] Associating games with comments
+  - [x] Associating games with developers
+  - [x] Associating games with publishers
+  - [x] Associating games with reviews
+  - [x] Associating games with critics
+  - [x] Associating games with crack
+    - [x] Associate crack with protection
+    - [x] Associate crack with cracker - actor
+  - [x] Associating games with support
+  - [x] Associating games with torrents
+  - [x] Associating games with galleries
+  - [x] Associating games with dlcs
+- [x] Adding outline for DLCs
+  - [x] Associating DLCs with platforms
+  - [x] Associating DLCs with categories
+  - [x] Associating DLCs with tags
+  - [x] Associating DLCs with genres
+  - [x] Associating DLCs with galleries
+  - [x] Associating DLCs with stores
+  - [x] Associating DLCs with developers
+  - [x] Associating DLCs with publishers
+- [x] User heart on games
+- [x] User heart on comments or replies
+- [x] Create a method to receive all main data from API for HOME
+  - [x] Method should return home banners
+  - [x] Method should return 9 popular games
+  - [x] Method should return the next most awaited release (and should stay for one week as released)
+  - [x] Method should return 9 hot games
+  - [x] Method should return 9 most liked games
+  - [x] Method should return 9 upcoming games
+- [x] Create search by classifications
+  - [x] Search by game attributes
+- [x] Create remaining notifications (notify about earning experience, earning coins, leveling up etc)
+
 
 ### Post MVP
