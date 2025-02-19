@@ -1,10 +1,9 @@
 <?php
 
-use Laravel\Pulse\Pulse;
-use Laravel\Pulse\Recorders;
+use Laravel\Pulse\{Pulse, Recorders};
+use App\Http\Middleware\JwtCookieAuth;
 use Laravel\Pulse\Http\Middleware\Authorize;
-use Laravel\Reverb\Pulse\Recorders\ReverbMessages;
-use Laravel\Reverb\Pulse\Recorders\ReverbConnections;
+use Laravel\Reverb\Pulse\Recorders\{ReverbMessages, ReverbConnections};
 
 return [
 
@@ -121,6 +120,7 @@ return [
     'middleware' => [
         'web',
         Authorize::class,
+        JwtCookieAuth::class,
     ],
 
     /*

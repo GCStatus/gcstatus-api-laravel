@@ -2,9 +2,10 @@
 
 namespace App\Providers;
 
-use App\Models\User;
+use App\Models\{User, Role};
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
+use App\Contracts\Services\AuthServiceInterface;
 
 class PulseServiceProvider extends ServiceProvider
 {
@@ -26,7 +27,9 @@ class PulseServiceProvider extends ServiceProvider
         });
 
         Gate::define('viewPulse', function (?User $user) {
-            return true;
+            $user = app(AuthServiceInterface::class)->getAuthUser();
+
+            return $user->hasRole(Role::TECHNOLOGY_ROLE_ID);
         });
     }
 }
