@@ -1,18 +1,18 @@
 <?php
 
-namespace Tests\Feature\Http\Admin\Developer;
+namespace Tests\Feature\Http\Admin\Store;
 
-use App\Models\{Developer, User};
+use App\Models\{Store, User};
 use Illuminate\Database\Eloquent\Collection;
 use Tests\Feature\Http\BaseIntegrationTesting;
 use Tests\Traits\{
-    HasDummyDeveloper,
+    HasDummyStore,
     HasDummyPermission,
 };
 
-class DeveloperIndexTest extends BaseIntegrationTesting
+class StoreIndexTest extends BaseIntegrationTesting
 {
-    use HasDummyDeveloper;
+    use HasDummyStore;
     use HasDummyPermission;
 
     /**
@@ -23,11 +23,11 @@ class DeveloperIndexTest extends BaseIntegrationTesting
     private User $user;
 
     /**
-     * The dummy developers.
+     * The dummy stores.
      *
-     * @var \Illuminate\Database\Eloquent\Collection<int, \App\Models\Developer>
+     * @var \Illuminate\Database\Eloquent\Collection<int, \App\Models\Store>
      */
-    private Collection $developers;
+    private Collection $stores;
 
     /**
      * The required permissions for this action.
@@ -35,7 +35,7 @@ class DeveloperIndexTest extends BaseIntegrationTesting
      * @var list< string>
      */
     protected array $permissions = [
-        'view:developers',
+        'view:stores',
     ];
 
     /**
@@ -51,7 +51,7 @@ class DeveloperIndexTest extends BaseIntegrationTesting
 
         $this->bootUserPermissions($this->user);
 
-        $this->developers = $this->createDummyDevelopers(4);
+        $this->stores = $this->createDummyStores(4);
     }
 
     /**
@@ -63,7 +63,7 @@ class DeveloperIndexTest extends BaseIntegrationTesting
     {
         $this->authService->clearAuthenticationCookies();
 
-        $this->getJson(route('developers.index'))
+        $this->getJson(route('stores.index'))
             ->assertUnauthorized()
             ->assertSee('We could not authenticate your user. Please, try to login again.');
     }
@@ -77,17 +77,17 @@ class DeveloperIndexTest extends BaseIntegrationTesting
     {
         $this->user->permissions()->detach();
 
-        $this->getJson(route('developers.index'))->assertNotFound();
+        $this->getJson(route('stores.index'))->assertNotFound();
     }
 
     /**
-     * Test if can see developers if has permissions.
+     * Test if can see stores if has permissions.
      *
      * @return void
      */
-    public function test_if_can_see_developers_if_has_permissions(): void
+    public function test_if_can_see_stores_if_has_permissions(): void
     {
-        $this->getJson(route('developers.index'))->assertOk();
+        $this->getJson(route('stores.index'))->assertOk();
     }
 
     /**
@@ -97,7 +97,7 @@ class DeveloperIndexTest extends BaseIntegrationTesting
      */
     public function test_if_can_get_correct_json_attributes_count(): void
     {
-        $this->getJson(route('developers.index'))->assertOk()->assertJsonCount(4, 'data');
+        $this->getJson(route('stores.index'))->assertOk()->assertJsonCount(4, 'data');
     }
 
     /**
@@ -107,11 +107,14 @@ class DeveloperIndexTest extends BaseIntegrationTesting
      */
     public function test_if_can_get_correct_json_structure(): void
     {
-        $this->getJson(route('developers.index'))->assertOk()->assertJsonStructure([
+        $this->getJson(route('stores.index'))->assertOk()->assertJsonStructure([
             'data' => [
                 '*' => [
                     'id',
+                    'url',
                     'name',
+                    'slug',
+                    'logo',
                     'created_at',
                     'updated_at',
                 ],
@@ -126,13 +129,16 @@ class DeveloperIndexTest extends BaseIntegrationTesting
      */
     public function test_if_can_get_correct_json_data(): void
     {
-        $this->getJson(route('developers.index'))->assertOk()->assertJson([
-            'data' => $this->developers->map(function (Developer $developer) {
+        $this->getJson(route('stores.index'))->assertOk()->assertJson([
+            'data' => $this->stores->map(function (Store $Store) {
                 return [
-                    'id' => $developer->id,
-                    'name' => $developer->name,
-                    'created_at' => $developer->created_at?->toISOString(),
-                    'updated_at' => $developer->updated_at?->toISOString(),
+                    'id' => $Store->id,
+                    'url' => $Store->url,
+                    'name' => $Store->name,
+                    'slug' => $Store->slug,
+                    'logo' => $Store->logo,
+                    'created_at' => $Store->created_at?->toISOString(),
+                    'updated_at' => $Store->updated_at?->toISOString(),
                 ];
             })->toArray(),
         ]);
