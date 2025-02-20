@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\{
     DeveloperController,
     PublisherController,
     Steam\SteamController,
+    StoreController,
 };
 
 /*
@@ -31,6 +32,7 @@ Route::post('steam/apps/create', SteamController::class)->middleware(
 
 Route::apiResource('tags', TagController::class)->except('show');
 Route::apiResource('genres', GenreController::class)->except('show');
+Route::apiResource('stores', StoreController::class)->except('show');
 Route::apiResource('platforms', PlatformController::class)->except('show');
 Route::apiResource('categories', CategoryController::class)->except('show');
 Route::apiResource('publishers', PublisherController::class)->except('show');

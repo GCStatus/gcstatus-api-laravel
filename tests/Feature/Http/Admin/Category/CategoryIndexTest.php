@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Http\Admin\Tag;
+namespace Tests\Feature\Http\Admin\Category;
 
 use App\Models\{Category, User};
 use Illuminate\Database\Eloquent\Collection;

@@ -1,23 +1,23 @@
 <?php
 
-namespace Tests\Feature\Http\Admin\Category;
+namespace Tests\Feature\Http\Admin\Store;
 
 use Mockery;
 use Exception;
 use App\Models\User;
 use Tests\Feature\Http\BaseIntegrationTesting;
 use Tests\Traits\{
-    HasDummyCategory,
+    HasDummyStore,
     HasDummyPermission,
 };
 use App\Contracts\Services\{
     LogServiceInterface,
-    CategoryServiceInterface,
+    StoreServiceInterface,
 };
 
-class CategoryStoreTest extends BaseIntegrationTesting
+class StoreStoreTest extends BaseIntegrationTesting
 {
-    use HasDummyCategory;
+    use HasDummyStore;
     use HasDummyPermission;
 
     /**
@@ -33,8 +33,8 @@ class CategoryStoreTest extends BaseIntegrationTesting
      * @var list< string>
      */
     protected array $permissions = [
-        'view:categories',
-        'create:categories',
+        'view:stores',
+        'create:stores',
     ];
 
     /**
@@ -60,6 +60,8 @@ class CategoryStoreTest extends BaseIntegrationTesting
     {
         return [
             'name' => fake()->word(),
+            'url' => 'https://google.com',
+            'logo' => 'https://placehold.co/600x400/EEE/31343C',
         ];
     }
 
@@ -72,7 +74,7 @@ class CategoryStoreTest extends BaseIntegrationTesting
     {
         $this->authService->clearAuthenticationCookies();
 
-        $this->postJson(route('categories.store'), $this->getValidPayload())
+        $this->postJson(route('stores.store'), $this->getValidPayload())
             ->assertUnauthorized()
             ->assertSee('We could not authenticate your user. Please, try to login again.');
     }
@@ -86,17 +88,17 @@ class CategoryStoreTest extends BaseIntegrationTesting
     {
         $this->user->permissions()->detach();
 
-        $this->postJson(route('categories.store'), $this->getValidPayload())->assertNotFound();
+        $this->postJson(route('stores.store'), $this->getValidPayload())->assertNotFound();
     }
 
     /**
-     * Test if can't create a category without payload.
+     * Test if can't create a Store without payload.
      *
      * @return void
      */
-    public function test_if_cant_create_a_category_without_payload(): void
+    public function test_if_cant_create_a_Store_without_payload(): void
     {
-        $this->postJson(route('categories.store'))->assertUnprocessable();
+        $this->postJson(route('stores.store'))->assertUnprocessable();
     }
 
     /**
@@ -106,9 +108,9 @@ class CategoryStoreTest extends BaseIntegrationTesting
      */
     public function test_if_can_throw_correct_invalid_json_keys(): void
     {
-        $this->postJson(route('categories.store'))
+        $this->postJson(route('stores.store'))
             ->assertUnprocessable()
-            ->assertInvalid(['name']);
+            ->assertInvalid(['name', 'url', 'logo']);
     }
 
     /**
@@ -118,44 +120,44 @@ class CategoryStoreTest extends BaseIntegrationTesting
      */
     public function test_if_can_throw_correct_invalid_json_messages(): void
     {
-        $this->postJson(route('categories.store'))
+        $this->postJson(route('stores.store'))
             ->assertUnprocessable()
             ->assertInvalid(['name'])
-            ->assertSee('The name field is required.');
+            ->assertSee('The url field is required. (and 2 more errors)');
     }
 
     /**
-     * Test if can't create a duplicated category.
+     * Test if can't create a duplicated store.
      *
      * @return void
      */
-    public function test_if_cant_create_a_duplicated_category(): void
+    public function test_if_cant_create_a_duplicated_store(): void
     {
-        $category = $this->createDummyCategory();
+        $store = $this->createDummyStore();
 
         $data = [
-            'name' => $category->name,
+            'name' => $store->name,
         ];
 
-        $this->postJson(route('categories.store'), $data)
+        $this->postJson(route('stores.store'), $data)
             ->assertUnprocessable()
             ->assertInvalid(['name'])
             ->assertSee('The name has already been taken.');
     }
 
     /**
-     * Test if can log context on category creation failure.
+     * Test if can log context on store creation failure.
      *
      * @return void
      */
-    public function test_if_can_log_context_on_category_creation_failure(): void
+    public function test_if_can_log_context_on_store_creation_failure(): void
     {
         $logServiceMock = Mockery::mock(LogServiceInterface::class);
         $logServiceMock->shouldReceive('withContext')
             ->once()
             ->with(
                 Mockery::on(function (string $title) {
-                    return $title === 'Failed to create a new category.';
+                    return $title === 'Failed to create a new store.';
                 }),
                 Mockery::on(function (array $context) {
                     return isset($context['code'], $context['message'], $context['trace']);
@@ -165,39 +167,41 @@ class CategoryStoreTest extends BaseIntegrationTesting
         $this->app->instance(LogServiceInterface::class, $logServiceMock);
 
         $exception = new Exception('Test exception', 500);
-        $categorieserviceMock = Mockery::mock(CategoryServiceInterface::class);
-        $categorieserviceMock->shouldReceive('create')
+        $storeServiceMock = Mockery::mock(StoreServiceInterface::class);
+        $storeServiceMock->shouldReceive('create')
             ->once()
             ->andThrow($exception);
 
-        $this->app->instance(CategoryServiceInterface::class, $categorieserviceMock);
+        $this->app->instance(StoreServiceInterface::class, $storeServiceMock);
 
-        $this->postJson(route('categories.store'), $this->getValidPayload())
+        $this->postJson(route('stores.store'), $this->getValidPayload())
             ->assertServerError()
             ->assertSee('Test exception');
     }
 
     /**
-     * Test if can create a category with valid payload.
+     * Test if can create a store with valid payload.
      *
      * @return void
      */
-    public function test_if_can_create_a_category_with_valid_payload(): void
+    public function test_if_can_create_a_store_with_valid_payload(): void
     {
-        $this->postJson(route('categories.store'), $this->getValidPayload())->assertCreated();
+        $this->postJson(route('stores.store'), $this->getValidPayload())->assertCreated();
     }
 
     /**
-     * Test if can save the category on database correctly.
+     * Test if can save the store on database correctly.
      *
      * @return void
      */
-    public function test_if_can_save_the_category_on_database_correctly(): void
+    public function test_if_can_save_the_store_on_database_correctly(): void
     {
-        $this->postJson(route('categories.store'), $data = $this->getValidPayload())->assertCreated();
+        $this->postJson(route('stores.store'), $data = $this->getValidPayload())->assertCreated();
 
-        $this->assertDatabaseHas('categories', [
+        $this->assertDatabaseHas('stores', [
+            'url' => $data['url'],
             'name' => $data['name'],
+            'logo' => $data['logo'],
         ]);
     }
 
@@ -208,11 +212,13 @@ class CategoryStoreTest extends BaseIntegrationTesting
      */
     public function test_if_can_get_correct_json_structure_response(): void
     {
-        $this->postJson(route('categories.store'), $this->getValidPayload())->assertCreated()->assertJsonStructure([
+        $this->postJson(route('stores.store'), $this->getValidPayload())->assertCreated()->assertJsonStructure([
             'data' => [
                 'id',
+                'url',
                 'name',
                 'slug',
+                'logo',
                 'created_at',
                 'updated_at',
             ],
@@ -226,9 +232,11 @@ class CategoryStoreTest extends BaseIntegrationTesting
      */
     public function test_if_can_get_correct_json_structure_data(): void
     {
-        $this->postJson(route('categories.store'), $data = $this->getValidPayload())->assertCreated()->assertJson([
+        $this->postJson(route('stores.store'), $data = $this->getValidPayload())->assertCreated()->assertJson([
             'data' => [
+                'url' => $data['url'],
                 'name' => $data['name'],
+                'logo' => $data['logo'],
             ],
         ]);
     }

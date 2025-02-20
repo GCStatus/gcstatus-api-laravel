@@ -1,17 +1,17 @@
 <?php
 
-namespace Tests\Feature\Http\Admin\Platform;
+namespace Tests\Feature\Http\Admin\Store;
 
-use App\Models\{Platform, User};
+use App\Models\{Store, User};
 use Tests\Feature\Http\BaseIntegrationTesting;
 use Tests\Traits\{
-    HasDummyPlatform,
+    HasDummyStore,
     HasDummyPermission,
 };
 
-class PlatformDestroyTest extends BaseIntegrationTesting
+class StoreDestroyTest extends BaseIntegrationTesting
 {
-    use HasDummyPlatform;
+    use HasDummyStore;
     use HasDummyPermission;
 
     /**
@@ -22,11 +22,11 @@ class PlatformDestroyTest extends BaseIntegrationTesting
     private User $user;
 
     /**
-     * The dummy platform.
+     * The dummy store.
      *
-     * @var \App\Models\Platform
+     * @var \App\Models\Store
      */
-    private Platform $platform;
+    private Store $store;
 
     /**
      * The required permissions for this action.
@@ -34,8 +34,8 @@ class PlatformDestroyTest extends BaseIntegrationTesting
      * @var list< string>
      */
     protected array $permissions = [
-        'view:platforms',
-        'delete:platforms',
+        'view:stores',
+        'delete:stores',
     ];
 
     /**
@@ -47,7 +47,7 @@ class PlatformDestroyTest extends BaseIntegrationTesting
     {
         parent::setUp();
 
-        $this->platform = $this->createDummyPlatform();
+        $this->store = $this->createDummyStore();
 
         $this->user = $this->actingAsDummyUser();
 
@@ -63,7 +63,7 @@ class PlatformDestroyTest extends BaseIntegrationTesting
     {
         $this->authService->clearAuthenticationCookies();
 
-        $this->deleteJson(route('platforms.destroy', $this->platform))
+        $this->deleteJson(route('stores.destroy', $this->store))
             ->assertUnauthorized()
             ->assertSee('We could not authenticate your user. Please, try to login again.');
     }
@@ -77,20 +77,20 @@ class PlatformDestroyTest extends BaseIntegrationTesting
     {
         $this->user->permissions()->detach();
 
-        $this->deleteJson(route('platforms.destroy', $this->platform))->assertNotFound();
+        $this->deleteJson(route('stores.destroy', $this->store))->assertNotFound();
     }
 
     /**
-     * Test if can soft delete a platform.
+     * Test if can soft delete a store.
      *
      * @return void
      */
-    public function test_if_can_soft_delete_a_platform(): void
+    public function test_if_can_soft_delete_a_store(): void
     {
-        $this->assertNotSoftDeleted($this->platform);
+        $this->assertNotSoftDeleted($this->store);
 
-        $this->deleteJson(route('platforms.destroy', $this->platform))->assertOk();
+        $this->deleteJson(route('stores.destroy', $this->store))->assertOk();
 
-        $this->assertSoftDeleted($this->platform);
+        $this->assertSoftDeleted($this->store);
     }
 }
