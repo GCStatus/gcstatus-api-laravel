@@ -35,4 +35,37 @@ class Status extends Model
      * @var int
      */
     public const UNAVAILABLE_STATUS_ID = 2;
+
+    /**
+     * The cracked status id.
+     *
+     * @var int
+     */
+    public const CRACKED_STATUS_ID = 3;
+
+    /**
+     * The uncracked status id.
+     *
+     * @var int
+     */
+    public const UNCRACKED_STATUS_ID = 4;
+
+    /**
+     * The cracked on release date status id.
+     *
+     * @var int
+     */
+    public const CRACKED_ONEDAY_STATUS_ID = 5;
+
+    /**
+     * Translate the statuses to id.
+     *
+     * @var array<string, int>
+     */
+    public const TRANSLATE_TO_ID = [
+        'cracked' => self::CRACKED_STATUS_ID,
+        'uncracked' => self::UNCRACKED_STATUS_ID,
+        'cracked-oneday' => self::CRACKED_ONEDAY_STATUS_ID,
+        null => self::UNCRACKED_STATUS_ID,
+    ];
 }

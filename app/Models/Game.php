@@ -54,6 +54,7 @@ class Game extends Model implements HasHeartInterface
      */
     protected $withCount = [
         'hearts',
+        'comments',
     ];
 
     /**

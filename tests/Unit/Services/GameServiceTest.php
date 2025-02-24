@@ -11,6 +11,9 @@ use App\Repositories\GameRepository;
 use Illuminate\Database\Eloquent\Collection;
 use App\Contracts\Services\GameServiceInterface;
 use App\Contracts\Repositories\GameRepositoryInterface;
+use App\Models\Status;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 class GameServiceTest extends TestCase
 {
@@ -90,6 +93,158 @@ class GameServiceTest extends TestCase
         $this->assertInstanceOf(Game::class, $result);
 
         $this->assertEquals(2, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations met.');
+    }
+
+    /**
+     * Test if can get a game details for admin.
+     *
+     * @return void
+     */
+    public function test_if_can_get_a_game_details_for_admin(): void
+    {
+        $id = 1;
+
+        $game = Mockery::mock(Game::class);
+        $game->shouldAllowMockingProtectedMethods();
+
+        $this->gameRepository
+            ->shouldReceive('detailsForAdmin')
+            ->once()
+            ->with($id)
+            ->andReturn($game);
+
+        $game->shouldNotReceive('increment')->with('views');
+
+        $result = $this->gameService->detailsForAdmin($id);
+
+        $this->assertEquals($game, $result);
+        $this->assertInstanceOf(Game::class, $result);
+
+        $this->assertEquals(2, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations met.');
+    }
+
+    /**
+     * Test if can create a new dlc.
+     *
+     * @return void
+     */
+    public function test_if_can_create_a_new_dlc(): void
+    {
+        $game = Mockery::mock(Game::class);
+        $game->shouldReceive('getAttribute')->with('id')->andReturn(1);
+
+        /** @var \App\Models\Game $game */
+        $data = [
+            'legal' => fake()->text(),
+            'title' => fake()->title(),
+            'free' => fake()->boolean(),
+            'release_date' => fake()->date(),
+            'website' => 'https://google.com',
+            'great_release' => fake()->boolean(),
+            'about' => clean(fake()->realText()),
+            'short_description' => fake()->text(),
+            'description' => clean(fake()->realText()),
+            'age' => fake()->numberBetween(0, 18),
+            'cover' => 'https://placehold.co/600x400/EEE/31343C',
+            'condition' => fake()->randomElement(['common', 'hot', 'popular', 'unreleased', 'sale']),
+        ];
+
+        $this->gameRepository
+            ->shouldReceive('create')
+            ->once()
+            ->with($data)
+            ->andReturn($game);
+
+        $result = $this->gameService->create($data);
+
+        $this->assertSame($game, $result);
+        $this->assertInstanceOf(Game::class, $result);
+
+        $this->assertEquals(1, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations met.');
+    }
+
+    /**
+     * Test if can update a dlc.
+     *
+     * @return void
+     */
+    public function test_if_can_update_a_dlc(): void
+    {
+        $id = 1;
+
+        $data = [
+            'legal' => fake()->text(),
+            'title' => fake()->title(),
+            'free' => fake()->boolean(),
+            'about' => fake()->realText(),
+            'release_date' => fake()->date(),
+            'website' => 'https://google.com',
+            'description' => fake()->realText(),
+            'great_release' => fake()->boolean(),
+            'short_description' => fake()->text(),
+            'age' => fake()->numberBetween(0, 18),
+            'cover' => 'https://placehold.co/600x400/EEE/31343C',
+            'condition' => fake()->randomElement(['common', 'hot', 'popular', 'unreleased', 'sale']),
+            'tags' => [1, 2],
+            'genres' => [3, 4],
+            'platforms' => [5, 6],
+            'categories' => [7, 8],
+            'publishers' => [9, 10],
+            'developers' => [11, 12],
+            'crack' => [
+                'cracked_at' => '2023-01-01',
+                'cracker_id' => 10,
+                'protection_id' => 20,
+                'status' => 'cracked',
+            ],
+        ];
+
+        $expectedData = $data;
+        $expectedData['about'] = clean($expectedData['about']);
+        $expectedData['description'] = clean($expectedData['description']);
+
+        $game = Mockery::mock(Game::class);
+        $game->shouldReceive('getAttribute')->with('id')->andReturn($id);
+
+        $relations = ['tags', 'genres', 'platforms', 'categories', 'publishers', 'developers'];
+
+        foreach ($relations as $relation) {
+            $relationMock = Mockery::mock(MorphToMany::class);
+
+            $relationMock->shouldReceive('sync')
+                ->once()
+                ->with($data[$relation]);
+
+            $game->shouldReceive($relation)
+                ->once()
+                ->andReturn($relationMock);
+        }
+
+        $crackMock = Mockery::mock(HasOne::class);
+        $crackMock->shouldReceive('updateOrCreate')
+            ->once()
+            ->with([], [
+                'cracked_at' => '2023-01-01',
+                'cracker_id' => 10,
+                'protection_id' => 20,
+                'status_id' => Status::TRANSLATE_TO_ID['cracked'],
+            ]);
+        $game->shouldReceive('crack')
+            ->once()
+            ->andReturn($crackMock);
+
+        $this->gameRepository
+            ->shouldReceive('update')
+            ->once()
+            ->with($expectedData, $id)
+            ->andReturn($game);
+
+        $result = $this->gameService->update($data, $id);
+
+        $this->assertSame($game, $result);
+        $this->assertInstanceOf(Game::class, $result);
+
+        $this->assertEquals(15, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations met.');
     }
 
     /**

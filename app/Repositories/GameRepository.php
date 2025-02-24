@@ -140,6 +140,34 @@ class GameRepository extends AbstractRepository implements GameRepositoryInterfa
     /**
      * @inheritDoc
      */
+    public function detailsForAdmin(mixed $id): Game
+    {
+        /** @var \App\Models\Game $game */
+        $game = $this->model()
+            ->query()
+            ->with([
+                'support',
+                'developers',
+                'publishers',
+                'reviews.user',
+                'stores.store',
+                'comments.user',
+                'critics.critic',
+                'dlcs.platforms',
+                'dlcs.stores.store',
+                'torrents.provider',
+                'languages.language',
+                'galleries.mediaType',
+                'comments.children.user',
+                'requirements.requirementType',
+            ])->findOrFail($id);
+
+        return $game;
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function getGamesByCondition(string $condition, int $limit = 100): Collection
     {
         return $this->model()

@@ -19,6 +19,7 @@
         "laravel/socialite": "^5.16",
         "laravel/tinker": "^2.9",
         "league/flysystem-aws-s3-v3": "^3.29",
+        "mews/purifier": "^3.4",
         "paulo-hortelan/requests-graph-pulse": "^1.2",
         "predis/predis": "^2.3",
         "tymon/jwt-auth": "^2.1"

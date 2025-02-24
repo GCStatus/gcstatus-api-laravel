@@ -85,8 +85,17 @@ class StatusTest extends BaseModelTesting implements
         $expectedConstants = [
             'AVAILABLE_STATUS_ID' => 1,
             'UNAVAILABLE_STATUS_ID' => 2,
+            'CRACKED_STATUS_ID' => 3,
+            'UNCRACKED_STATUS_ID' => 4,
+            'CRACKED_ONEDAY_STATUS_ID' => 5,
             'CREATED_AT' => 'created_at',
             'UPDATED_AT' => 'updated_at',
+            'TRANSLATE_TO_ID' => [
+                'cracked' => 3,
+                'uncracked' => 4,
+                'cracked-oneday' => 5,
+                null => 4,
+            ],
         ];
 
         $this->assertHasConstants($expectedConstants);

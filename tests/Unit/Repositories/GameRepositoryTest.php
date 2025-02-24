@@ -220,6 +220,76 @@ class GameRepositoryTest extends TestCase
     }
 
     /**
+     * Test if can get a game details for admin.
+     *
+     * @return void
+     */
+    public function test_if_can_get_a_game_details_for_admin(): void
+    {
+        $id = 1;
+
+        $game = Mockery::mock(Game::class);
+        $builder = Mockery::mock(Builder::class);
+
+        $game->shouldReceive('getAttribute')->with('id')->andReturn($id);
+
+        $builder
+            ->shouldReceive('with')
+            ->once()
+            ->with(Mockery::on(function (array $relationships) {
+                $expectedRelationships = [
+                    'support',
+                    'developers',
+                    'publishers',
+                    'reviews.user',
+                    'stores.store',
+                    'comments.user',
+                    'critics.critic',
+                    'dlcs.platforms',
+                    'dlcs.stores.store',
+                    'torrents.provider',
+                    'languages.language',
+                    'galleries.mediaType',
+                    'comments.children.user',
+                    'requirements.requirementType',
+                ];
+
+                foreach ($expectedRelationships as $relationship) {
+                    if (!in_array($relationship, $relationships, true)) {
+                        return false;
+                    }
+                }
+
+                return true;
+            }))->andReturnSelf();
+
+        $builder
+            ->shouldReceive('findOrFail')
+            ->once()
+            ->with($id)
+            ->andReturn($game);
+
+        $game->shouldReceive('query')->once()->withNoArgs()->andReturn($builder);
+
+        $repoMock = Mockery::mock(GameRepository::class)
+            ->makePartial()
+            ->shouldAllowMockingProtectedMethods();
+
+        $repoMock->shouldReceive('model')
+            ->once()
+            ->withNoArgs()
+            ->andReturn($game);
+
+        /** @var \App\Contracts\Repositories\GameRepositoryInterface $repoMock */
+        $result = $repoMock->detailsForAdmin($id);
+
+        $this->assertEquals($game, $result);
+        $this->assertInstanceOf(Game::class, $result);
+
+        $this->assertEquals(4, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations met.');
+    }
+
+    /**
      * Test if can get games by condition.
      *
      * @return void
