@@ -242,9 +242,9 @@ class CreateSteamAppByIdTest extends BaseIntegrationTesting
             'age' => $this->fakeResponse['required_age'],
             'legal' => $this->fakeResponse['legal_notice'],
             'cover' => $this->fakeResponse['background_raw'],
-            'about' => $this->fakeResponse['about_the_game'],
-            'description' => $this->fakeResponse['detailed_description'],
+            'about' => clean($this->fakeResponse['about_the_game']),
             'short_description' => $this->fakeResponse['short_description'],
+            'description' => clean($this->fakeResponse['detailed_description']),
             'release_date' => Carbon::createFromFormat('d M, Y', $release_date['date'])?->startOfDay()?->toDateTimeString(),
         ]);
 

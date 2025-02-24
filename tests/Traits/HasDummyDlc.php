@@ -3,6 +3,7 @@
 namespace Tests\Traits;
 
 use App\Models\{Dlc, Game};
+use Illuminate\Database\Eloquent\Collection;
 
 trait HasDummyDlc
 {
@@ -15,6 +16,18 @@ trait HasDummyDlc
     public function createDummyDlc(array $data = []): Dlc
     {
         return Dlc::factory()->create($data);
+    }
+
+    /**
+     * Create dummy dlcs.
+     *
+     * @param int $times
+     * @param array<string, mixed> $data
+     * @return \Illuminate\Database\Eloquent\Collection<int, \App\Models\Dlc>
+     */
+    public function createDummyDlcs(int $times, array $data = []): Collection
+    {
+        return Dlc::factory($times)->create($data);
     }
 
     /**

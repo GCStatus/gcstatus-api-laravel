@@ -20,5 +20,7 @@ abstract class TestCase extends BaseTestCase
         $fakeFilesystemDisk = config('filesystems.default', 'aws');
 
         Storage::fake($fakeFilesystemDisk);
+
+        $this->freezeTime();
     }
 }

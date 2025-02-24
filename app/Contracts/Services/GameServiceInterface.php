@@ -39,6 +39,14 @@ interface GameServiceInterface extends AbstractServiceInterface
     public function details(string $slug): Game;
 
     /**
+     * Get a game details with relations for admin.
+     *
+     * @param mixed $id
+     * @return \App\Models\Game
+     */
+    public function detailsForAdmin(mixed $id): Game;
+
+    /**
      * Get games by condition.
      *
      * @param string $condition
