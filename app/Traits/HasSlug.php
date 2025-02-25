@@ -21,7 +21,7 @@ trait HasSlug
      */
     protected static function bootHasSlug(): void
     {
-        static::creating(function (Model $model) {
+        static::saving(function (Model $model) {
             /** @var static $model */
             $model->generateSlug();
         });

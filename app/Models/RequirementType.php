@@ -2,15 +2,16 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use App\Support\Database\CacheQueryBuilder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\{Model, SoftDeletes};
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class RequirementType extends Model
 {
     /** @use HasFactory<\Database\Factories\RequirementTypeFactory> */
     use HasFactory;
+    use SoftDeletes;
     use CacheQueryBuilder;
 
     /**

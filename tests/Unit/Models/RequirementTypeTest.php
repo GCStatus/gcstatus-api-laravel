@@ -5,6 +5,7 @@ namespace Tests\Unit\Models;
 use App\Models\RequirementType;
 use App\Support\Database\CacheQueryBuilder;
 use Tests\Contracts\Models\BaseModelTesting;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Tests\Contracts\Models\{
@@ -56,6 +57,7 @@ class RequirementTypeTest extends BaseModelTesting implements
     {
         $casts = [
             'id' => 'int',
+            'deleted_at' => 'datetime',
         ];
 
         $this->assertHasCasts($casts);
@@ -70,6 +72,7 @@ class RequirementTypeTest extends BaseModelTesting implements
     {
         $traits = [
             HasFactory::class,
+            SoftDeletes::class,
             CacheQueryBuilder::class,
         ];
 

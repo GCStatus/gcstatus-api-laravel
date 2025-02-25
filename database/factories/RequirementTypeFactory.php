@@ -17,7 +17,8 @@ class RequirementTypeFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'os' => fake()->randomElement(['windows', 'linux', 'mac']),
+            'potential' => fake()->randomElement(['minimum', 'recommended', 'maximum']),
         ];
     }
 }

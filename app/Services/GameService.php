@@ -51,6 +51,10 @@ class GameService extends AbstractService implements GameServiceInterface
             $this->updateCrackInfo($game, $crack); // @phpstan-ignore-line
         }
 
+        if ($support = issetGetter($data, 'support')) {
+            $this->updateSupportInfo($game, $support); // @phpstan-ignore-line
+        }
+
         return $game;
     }
 
@@ -187,5 +191,23 @@ class GameService extends AbstractService implements GameServiceInterface
         });
 
         $game->crack()->updateOrCreate([], $filteredData);
+    }
+
+    /**
+     * Update support info of the game.
+     *
+     * @param \App\Models\Game $game
+     * @param array<string, mixed> $support
+     * @return void
+     */
+    private function updateSupportInfo(Game $game, array $support): void
+    {
+        $data = [
+            'url' => $support['url'],
+            'email' => $support['email'],
+            'contact' => $support['contact'],
+        ];
+
+        $game->support()->updateOrCreate([], $data);
     }
 }

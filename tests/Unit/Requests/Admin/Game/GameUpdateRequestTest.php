@@ -1142,6 +1142,86 @@ class GameUpdateRequestTest extends BaseRequestTesting
     }
 
     /**
+     * Test if can validate the support field.
+     *
+     * @return void
+     */
+    public function test_if_can_validate_the_support_field(): void
+    {
+        $this->assertFalse($this->validate([
+            'title' => fake()->word(),
+            'free' => fake()->boolean(),
+            'legal' => fake()->text(),
+            'about' => fake()->realText(),
+            'cover' => 'https://placehold.co/600x400/EEE/31343C',
+            'release_date' => fake()->date(),
+            'description' => fake()->realText(),
+            'short_description' => fake()->realText(),
+            'support' => [
+                'url' => 1,
+                'email' => 1,
+                'contact' => 1,
+            ],
+        ]));
+
+        $this->assertFalse($this->validate([
+            'title' => fake()->word(),
+            'free' => fake()->boolean(),
+            'legal' => fake()->text(),
+            'about' => fake()->realText(),
+            'cover' => 'https://placehold.co/600x400/EEE/31343C',
+            'release_date' => fake()->date(),
+            'description' => fake()->realText(),
+            'short_description' => fake()->realText(),
+            'support' => [
+                'email' => 'https://invalid.co',
+            ],
+        ]));
+
+        $this->assertFalse($this->validate([
+            'title' => fake()->word(),
+            'free' => fake()->boolean(),
+            'legal' => fake()->text(),
+            'about' => fake()->realText(),
+            'cover' => 'https://placehold.co/600x400/EEE/31343C',
+            'release_date' => fake()->date(),
+            'description' => fake()->realText(),
+            'short_description' => fake()->realText(),
+            'support' => [
+                'email' => 'invalidemail',
+            ],
+        ]));
+
+        $this->assertTrue($this->validate([
+            'title' => fake()->word(),
+            'free' => fake()->boolean(),
+            'legal' => fake()->text(),
+            'about' => fake()->realText(),
+            'cover' => 'https://placehold.co/600x400/EEE/31343C',
+            'release_date' => fake()->date(),
+            'description' => fake()->realText(),
+            'short_description' => fake()->realText(),
+            'support' => [],
+        ]));
+
+        $this->assertTrue($this->validate([
+            'title' => fake()->word(),
+            'free' => fake()->boolean(),
+            'legal' => fake()->text(),
+            'about' => fake()->realText(),
+            'cover' => 'https://placehold.co/600x400/EEE/31343C',
+            'release_date' => fake()->date(),
+            'description' => fake()->realText(),
+            'short_description' => fake()->realText(),
+            'support' => [
+                'email' => 'valid@gmail.com',
+                'url' => 'https://google.com',
+                'contact' => fake()->phoneNumber(),
+            ],
+        ]));
+    }
+
+    /**
      * Test invalid validation cases.
      *
      * @param array<string, mixed> $data
@@ -1329,6 +1409,28 @@ class GameUpdateRequestTest extends BaseRequestTesting
                 ],
                 'expectedErrors' => [
                     'crack.cracked_at' => 'The crack.cracked at field must be a date before or equal to today.',
+                ],
+            ],
+            // Case 9: Invalid email
+            [
+                'data' => [
+                    'support' => [
+                        'email' => 'invalidmail',
+                    ],
+                ],
+                'expectedErrors' => [
+                    'support.email' => 'The support.email field must be a valid email address.',
+                ],
+            ],
+            // Case 10: Invalid support url
+            [
+                'data' => [
+                    'support' => [
+                        'url' => 'https://invalid.co',
+                    ],
+                ],
+                'expectedErrors' => [
+                    'support.url' => 'The support.url field must be a valid URL.',
                 ],
             ],
         ];
