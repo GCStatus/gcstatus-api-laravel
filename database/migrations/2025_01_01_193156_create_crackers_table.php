@@ -15,6 +15,7 @@ return new class () extends Migration {
             $table->string('name');
             $table->boolean('acting')->default(true);
             $table->string('slug')->unique()->index();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

@@ -197,6 +197,11 @@ class GameServiceTest extends TestCase
                 'protection_id' => 20,
                 'status' => 'cracked',
             ],
+            'support' => [
+                'contact' => '+23123123123',
+                'email' => 'valid@gmail.com',
+                'url' => 'https://google.com',
+            ],
         ];
 
         $expectedData = $data;
@@ -233,6 +238,18 @@ class GameServiceTest extends TestCase
             ->once()
             ->andReturn($crackMock);
 
+        $supportMock = Mockery::mock(HasOne::class);
+        $supportMock->shouldReceive('updateOrCreate')
+            ->once()
+            ->with([], [
+                'contact' => '+23123123123',
+                'email' => 'valid@gmail.com',
+                'url' => 'https://google.com',
+            ]);
+        $game->shouldReceive('support')
+            ->once()
+            ->andReturn($supportMock);
+
         $this->gameRepository
             ->shouldReceive('update')
             ->once()
@@ -244,7 +261,7 @@ class GameServiceTest extends TestCase
         $this->assertSame($game, $result);
         $this->assertInstanceOf(Game::class, $result);
 
-        $this->assertEquals(15, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations met.');
+        $this->assertEquals(17, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations met.');
     }
 
     /**

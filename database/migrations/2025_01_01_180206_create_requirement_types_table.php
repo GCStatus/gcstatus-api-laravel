@@ -14,6 +14,7 @@ return new class () extends Migration {
             $table->id();
             $table->enum('os', ['windows', 'linux', 'mac']);
             $table->enum('potential', ['minimum', 'recommended', 'maximum']);
+            $table->softDeletes();
             $table->timestamps();
         });
     }

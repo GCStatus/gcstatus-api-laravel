@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Traits\HasSlug;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\{Model, SoftDeletes};
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Cracker extends Model
@@ -12,6 +12,7 @@ class Cracker extends Model
     use HasFactory;
 
     use HasSlug;
+    use SoftDeletes;
 
     /**
      * The attributes that are mass assignable.

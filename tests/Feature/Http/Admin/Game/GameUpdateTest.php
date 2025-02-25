@@ -4,18 +4,22 @@ namespace Tests\Feature\Http\Admin\Game;
 
 use Mockery;
 use Exception;
-use App\Models\{Game, User};
 use Illuminate\Support\Carbon;
+use App\Models\{Game, Status, User};
 use Tests\Feature\Http\BaseIntegrationTesting;
 use Tests\Traits\{
-    HasDummyGame,
     HasDummyTag,
+    HasDummyGame,
     HasDummyGenre,
+    HasDummyCrack,
+    HasDummyCracker,
     HasDummyPlatform,
     HasDummyCategory,
     HasDummyPublisher,
     HasDummyDeveloper,
     HasDummyPermission,
+    HasDummyProtection,
+    HasDummyGameSupport,
 };
 use App\Contracts\Services\{
     LogServiceInterface,
@@ -24,14 +28,18 @@ use App\Contracts\Services\{
 
 class GameUpdateTest extends BaseIntegrationTesting
 {
-    use HasDummyGame;
     use HasDummyTag;
+    use HasDummyGame;
     use HasDummyGenre;
+    use HasDummyCrack;
+    use HasDummyCracker;
     use HasDummyCategory;
     use HasDummyPlatform;
     use HasDummyPublisher;
     use HasDummyDeveloper;
     use HasDummyPermission;
+    use HasDummyProtection;
+    use HasDummyGameSupport;
 
     /**
      * The dummy user.
@@ -507,6 +515,202 @@ class GameUpdateTest extends BaseIntegrationTesting
         $this->putJson(route('admin.games.update', $this->game), $data)->assertOk();
 
         $this->assertDatabaseEmpty('developerables');
+    }
+
+    /**
+     * Test if can throw validation errors for crack.
+     *
+     * @return void
+     */
+    public function test_if_can_throw_validation_errors_for_crack(): void
+    {
+        $this->createDummyCrackTo($this->game);
+
+        // Case 1: Invalid cracked at
+        $data = [
+            'crack' => [
+                'cracked_at' => Carbon::tomorrow()->toDateString(),
+            ],
+        ];
+
+        $this->putJson(route('admin.games.update', $this->game), $data)
+            ->assertUnprocessable()
+            ->assertInvalid(['crack.cracked_at'])
+            ->assertSee('The crack.cracked at field must be a date before or equal to today.');
+
+        // Case 2: Invalid status
+        $data = [
+            'crack' => [
+                'status' => 'invalid',
+            ],
+        ];
+
+        $this->putJson(route('admin.games.update', $this->game), $data)
+            ->assertUnprocessable()
+            ->assertInvalid(['crack.status'])
+            ->assertSee('The selected crack.status is invalid.');
+
+        // Case 3: Invalid cracker id
+        $data = [
+            'crack' => [
+                'cracker_id' => 99,
+            ],
+        ];
+
+        $this->putJson(route('admin.games.update', $this->game), $data)
+            ->assertUnprocessable()
+            ->assertInvalid(['crack.cracker_id'])
+            ->assertSee('The selected crack.cracker id is invalid.');
+
+        // Case 4: Invalid protection id
+        $data = [
+            'crack' => [
+                'protection_id' => 99,
+            ],
+        ];
+
+        $this->putJson(route('admin.games.update', $this->game), $data)
+            ->assertUnprocessable()
+            ->assertInvalid(['crack.protection_id'])
+            ->assertSee('The selected crack.protection id is invalid.');
+    }
+
+    /**
+     * Test if can correctly create crack for game if doesn't exist on database.
+     *
+     * @return void
+     */
+    public function test_if_can_correctly_create_crack_for_game_if_doesnt_exist_on_database(): void
+    {
+        $data = [
+            'crack' => [
+                'cracker_id' => $this->createDummyCracker()->id,
+                'cracked_at' => Carbon::yesterday()->toDateString(),
+                'protection_id' => $this->createDummyProtection()->id,
+                'status' => fake()->randomElement(['cracked', 'uncracked', 'cracked-oneday']),
+            ],
+        ];
+
+        $this->putJson(route('admin.games.update', $this->game), $data)->assertOk();
+
+        $this->assertDatabaseHas('cracks', [
+            'cracker_id' => $data['crack']['cracker_id'],
+            'protection_id' => $data['crack']['protection_id'],
+            'status_id' => Status::TRANSLATE_TO_ID[$data['crack']['status']],
+            'cracked_at' => Carbon::parse($data['crack']['cracked_at'])->toDateTimeString(),
+        ]);
+    }
+
+    /**
+     * Test if can correctly update crack for game if already exist on database.
+     *
+     * @return void
+     */
+    public function test_if_can_correctly_update_crack_for_game_if_already_exist_on_database(): void
+    {
+        $this->createDummyCrackTo($this->game);
+
+        $data = [
+            'crack' => [
+                'cracker_id' => $this->createDummyCracker()->id,
+                'cracked_at' => Carbon::yesterday()->toDateString(),
+                'protection_id' => $this->createDummyProtection()->id,
+                'status' => fake()->randomElement(['cracked', 'uncracked', 'cracked-oneday']),
+            ],
+        ];
+
+        $this->putJson(route('admin.games.update', $this->game), $data)->assertOk();
+
+        $this->assertDatabaseHas('cracks', [
+            'cracker_id' => $data['crack']['cracker_id'],
+            'protection_id' => $data['crack']['protection_id'],
+            'status_id' => Status::TRANSLATE_TO_ID[$data['crack']['status']],
+            'cracked_at' => Carbon::parse($data['crack']['cracked_at'])->toDateTimeString(),
+        ]);
+    }
+
+    /**
+     * Test if can throw validation errors for support.
+     *
+     * @return void
+     */
+    public function test_if_can_throw_validation_errors_for_support(): void
+    {
+        $this->createDummyGameSupportTo($this->game);
+
+        // Case 1: Invalid url
+        $data = [
+            'support' => [
+                'url' => 'https://invalid.co',
+            ],
+        ];
+
+        $this->putJson(route('admin.games.update', $this->game), $data)
+            ->assertUnprocessable()
+            ->assertInvalid(['support.url'])
+            ->assertSee('The support.url field must be a valid URL.');
+
+        // Case 2: Invalid email
+        $data = [
+            'support' => [
+                'email' => 'invalidmail',
+            ],
+        ];
+
+        $this->putJson(route('admin.games.update', $this->game), $data)
+            ->assertUnprocessable()
+            ->assertInvalid(['support.email'])
+            ->assertSee('The support.email field must be a valid email address.');
+    }
+
+    /**
+     * Test if can correctly create support for game if doesn't exist on database.
+     *
+     * @return void
+     */
+    public function test_if_can_correctly_create_support_for_game_if_doesnt_exist_on_database(): void
+    {
+        $data = [
+            'support' => [
+                'email' => 'valid@gmail.com',
+                'url' => 'https://google.com',
+                'contact' => fake()->phoneNumber(),
+            ],
+        ];
+
+        $this->putJson(route('admin.games.update', $this->game), $data)->assertOk();
+
+        $this->assertDatabaseHas('game_supports', [
+            'url' => $data['support']['url'],
+            'email' => $data['support']['email'],
+            'contact' => $data['support']['contact'],
+        ]);
+    }
+
+    /**
+     * Test if can correctly update support for game if already exist on database.
+     *
+     * @return void
+     */
+    public function test_if_can_correctly_support_crack_for_game_if_already_exist_on_database(): void
+    {
+        $this->createDummyGameSupportTo($this->game);
+
+        $data = [
+            'support' => [
+                'email' => 'valid@gmail.com',
+                'url' => 'https://google.com',
+                'contact' => fake()->phoneNumber(),
+            ],
+        ];
+
+        $this->putJson(route('admin.games.update', $this->game), $data)->assertOk();
+
+        $this->assertDatabaseHas('game_supports', [
+            'url' => $data['support']['url'],
+            'email' => $data['support']['email'],
+            'contact' => $data['support']['contact'],
+        ]);
     }
 
     /**

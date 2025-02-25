@@ -5,6 +5,7 @@ namespace Tests\Unit\Models;
 use App\Models\Cracker;
 use App\Traits\HasSlug;
 use Tests\Contracts\Models\BaseModelTesting;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Tests\Contracts\Models\{
     ShouldTestCasts,
@@ -53,6 +54,7 @@ class CrackerTest extends BaseModelTesting implements
         $casts = [
             'id' => 'int',
             'acting' => 'bool',
+            'deleted_at' => 'datetime',
         ];
 
         $this->assertHasCasts($casts);
@@ -68,6 +70,7 @@ class CrackerTest extends BaseModelTesting implements
         $traits = [
             HasSlug::class,
             HasFactory::class,
+            SoftDeletes::class,
         ];
 
         $this->assertUsesTraits($traits);
