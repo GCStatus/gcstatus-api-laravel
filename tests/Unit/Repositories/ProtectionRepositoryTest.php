@@ -6,7 +6,7 @@ use Tests\TestCase;
 use App\Models\Protection;
 use App\Contracts\Repositories\ProtectionRepositoryInterface;
 
-class protectionRepositoryTest extends TestCase
+class ProtectionRepositoryTest extends TestCase
 {
     /**
      * The protection repository.
