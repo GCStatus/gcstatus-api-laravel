@@ -17,10 +17,9 @@ class GalleriableResource extends JsonResource
         /** @var \App\Models\Galleriable $galleriable */
         $galleriable = $this->resource;
 
-        # TODO: Implement the path when s3 is configured
         return [
             'id' => $galleriable->id,
-            'path' => $galleriable->path,
+            'path' => $galleriable->s3 ? storage()->getPath($galleriable->path) : $galleriable->path,
             'type' => MediaTypeResource::make($this->whenLoaded('mediaType')),
         ];
     }
