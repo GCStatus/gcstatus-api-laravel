@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Models;
 
-use App\Models\Galleriable;
+use App\Models\{Dlc, Game, Galleriable};
 use Tests\Contracts\Models\BaseModelTesting;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\{
@@ -14,13 +14,15 @@ use Tests\Contracts\Models\{
     ShouldTestTraits,
     ShouldTestFillables,
     ShouldTestRelations,
+    ShouldTestConstants,
 };
 
 class GalleriableTest extends BaseModelTesting implements
     ShouldTestCasts,
     ShouldTestTraits,
     ShouldTestFillables,
-    ShouldTestRelations
+    ShouldTestRelations,
+    ShouldTestConstants
 {
     /**
      * The testable model string class.
@@ -92,5 +94,24 @@ class GalleriableTest extends BaseModelTesting implements
         ];
 
         $this->assertHasRelations($relations);
+    }
+
+    /**
+     * The contract constant attributes that should be tested.
+     *
+     * @return void
+     */
+    public function test_constant_attributes(): void
+    {
+        $expectedConstants = [
+            'ALLOWED_GALLERIABLES_TYPE' => [
+                Dlc::class,
+                Game::class,
+            ],
+            'CREATED_AT' => 'created_at',
+            'UPDATED_AT' => 'updated_at',
+        ];
+
+        $this->assertHasConstants($expectedConstants);
     }
 }

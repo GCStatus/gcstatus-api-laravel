@@ -6,6 +6,7 @@ use Mockery;
 use App\Models\{MediaType, Galleriable};
 use App\Http\Resources\GalleriableResource;
 use Tests\Contracts\Resources\BaseResourceTesting;
+use App\Contracts\Services\StorageServiceInterface;
 
 class GalleriableResourceTest extends BaseResourceTesting
 {
@@ -37,13 +38,21 @@ class GalleriableResourceTest extends BaseResourceTesting
      */
     public function modelInstance(): Galleriable
     {
+        $path = fake()->imageUrl();
+
+        $storage = Mockery::mock(StorageServiceInterface::class);
+        $storage->shouldReceive('getPath')->once()->with($path)->andReturn($path . '/s3');
+
+        $this->app->instance(StorageServiceInterface::class, $storage);
+
         $mediaTypeMock = Mockery::mock(MediaType::class)->makePartial();
 
         $galleriableMock = Mockery::mock(Galleriable::class)->makePartial();
         $galleriableMock->shouldAllowMockingMethod('getAttribute');
 
         $galleriableMock->shouldReceive('getAttribute')->with('id')->andReturn(1);
-        $galleriableMock->shouldReceive('getAttribute')->with('path')->andReturn(fake()->word());
+        $galleriableMock->shouldReceive('getAttribute')->with('s3')->andReturnTrue();
+        $galleriableMock->shouldReceive('getAttribute')->with('path')->andReturn($path);
 
         $galleriableMock->shouldReceive('getAttribute')->with('mediaType')->andReturn($mediaTypeMock);
 

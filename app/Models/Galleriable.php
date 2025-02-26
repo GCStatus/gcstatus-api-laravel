@@ -37,6 +37,16 @@ class Galleriable extends Model
     }
 
     /**
+     * Get the allowed galleriables type.
+     *
+     * @var list<class-string>
+     */
+    public const ALLOWED_GALLERIABLES_TYPE = [
+        Dlc::class,
+        Game::class,
+    ];
+
+    /**
      * Get the galleriable for the Galleriable.
      *
      * @return \Illuminate\Database\Eloquent\Relations\MorphTo<Model, $this>
