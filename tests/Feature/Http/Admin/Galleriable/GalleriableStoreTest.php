@@ -2,9 +2,13 @@
 
 namespace Tests\Feature\Http\Admin\Galleriable;
 
+use App\Contracts\Services\GalleriableServiceInterface;
+use App\Contracts\Services\LogServiceInterface;
 use Illuminate\Http\UploadedFile;
 use App\Models\{Galleriable, User, Game, MediaType};
+use Exception;
 use Illuminate\Support\Facades\Storage;
+use Mockery;
 use Tests\Traits\{HasDummyDlc, HasDummyGame};
 use Tests\Feature\Http\BaseIntegrationTesting;
 
@@ -364,5 +368,39 @@ class GalleriableStoreTest extends BaseIntegrationTesting
                 'updated_at',
             ],
         ]);
+    }
+
+    /**
+     * Test if can log context on galleriable creation failure.
+     *
+     * @return void
+     */
+    public function test_if_can_log_context_on_galleriable_creation_failure(): void
+    {
+        $logServiceMock = Mockery::mock(LogServiceInterface::class);
+        $logServiceMock->shouldReceive('withContext')
+            ->once()
+            ->with(
+                Mockery::on(function (string $title) {
+                    return $title === 'Failed to create a new galleriable.';
+                }),
+                Mockery::on(function (array $context) {
+                    return isset($context['code'], $context['message'], $context['trace']);
+                }),
+            );
+
+        $this->app->instance(LogServiceInterface::class, $logServiceMock);
+
+        $exception = new Exception('Test exception', 500);
+        $galleriableServiceMock = Mockery::mock(GalleriableServiceInterface::class);
+        $galleriableServiceMock->shouldReceive('create')
+            ->once()
+            ->andThrow($exception);
+
+        $this->app->instance(GalleriableServiceInterface::class, $galleriableServiceMock);
+
+        $this->postJson(route('galleriables.store'), $this->getValidUrlPayload())
+            ->assertServerError()
+            ->assertSee('Test exception');
     }
 }
