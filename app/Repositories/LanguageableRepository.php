@@ -16,4 +16,17 @@ class LanguageableRepository extends AbstractRepository implements LanguageableR
     {
         return new Languageable();
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function existsForPayload(array $data): bool
+    {
+        return $this->model()
+            ->query()
+            ->where('language_id', $data['language_id'])
+            ->where('languageable_id', $data['languageable_id'])
+            ->where('languageable_type', $data['languageable_type'])
+            ->exists();
+    }
 }

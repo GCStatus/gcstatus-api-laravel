@@ -2,13 +2,14 @@
 
 namespace Tests\Unit\Models;
 
-use App\Models\Languageable;
+use App\Models\{Game, Languageable};
 use Tests\Contracts\Models\BaseModelTesting;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\{BelongsTo, MorphTo};
 use Tests\Contracts\Models\{
     ShouldTestCasts,
     ShouldTestTraits,
+    ShouldTestConstants,
     ShouldTestFillables,
     ShouldTestRelations,
 };
@@ -17,7 +18,8 @@ class LanguageableTest extends BaseModelTesting implements
     ShouldTestCasts,
     ShouldTestTraits,
     ShouldTestFillables,
-    ShouldTestRelations
+    ShouldTestRelations,
+    ShouldTestConstants
 {
     /**
      * The testable model string class.
@@ -77,6 +79,24 @@ class LanguageableTest extends BaseModelTesting implements
         ];
 
         $this->assertHasCasts($casts);
+    }
+
+    /**
+     * The contract constant attributes that should be tested.
+     *
+     * @return void
+     */
+    public function test_constant_attributes(): void
+    {
+        $expectedConstants = [
+            'ALLOWED_LANGUAGEABLE_TYPES' => [
+                Game::class,
+            ],
+            'CREATED_AT' => 'created_at',
+            'UPDATED_AT' => 'updated_at',
+        ];
+
+        $this->assertHasConstants($expectedConstants);
     }
 
     /**

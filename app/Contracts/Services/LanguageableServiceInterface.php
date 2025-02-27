@@ -15,4 +15,12 @@ interface LanguageableServiceInterface extends AbstractServiceInterface
      * @return void
      */
     public function createGameLanguageables(Game $game, SteamAppDTO $formattedApp): void;
+
+    /**
+     * Check if exists for payload.
+     *
+     * @param array<string, mixed> $data
+     * @return bool
+     */
+    public function existsForPayload(array $data): bool;
 }

@@ -26,6 +26,15 @@ class Languageable extends Model
     ];
 
     /**
+     * Get the allowed languageable types.
+     *
+     * @var list<class-string>
+     */
+    public const ALLOWED_LANGUAGEABLE_TYPES = [
+        Game::class,
+    ];
+
+    /**
      * The attributes that should be casts.
      *
      * @return array<string, string>
