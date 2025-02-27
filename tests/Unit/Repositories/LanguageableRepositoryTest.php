@@ -2,8 +2,11 @@
 
 namespace Tests\Unit\Repositories;
 
+use Mockery;
 use Tests\TestCase;
-use App\Models\Languageable;
+use App\Models\{Game, Languageable};
+use Illuminate\Database\Eloquent\Builder;
+use App\Repositories\LanguageableRepository;
 use App\Contracts\Repositories\LanguageableRepositoryInterface;
 
 class LanguageableRepositoryTest extends TestCase
@@ -38,5 +41,77 @@ class LanguageableRepositoryTest extends TestCase
         $languageableRepository = $this->languageableRepository;
 
         $this->assertInstanceOf(Languageable::class, $languageableRepository->model());
+    }
+
+    /**
+     * Test if can check if languageable exists by payload.
+     *
+     * @return void
+     */
+    public function test_if_can_check_if_languageable_exists_by_payload(): void
+    {
+        $data = [
+            'language_id' => 1,
+            'languageable_id' => 1,
+            'languageable_type' => Game::class,
+        ];
+
+        $builder = Mockery::mock(Builder::class);
+        $languageable = Mockery::mock(Languageable::class);
+
+        $builder
+            ->shouldReceive('where')
+            ->once()
+            ->with('language_id', $data['language_id'])
+            ->andReturnSelf();
+
+        $builder
+            ->shouldReceive('where')
+            ->once()
+            ->with('languageable_id', $data['languageable_id'])
+            ->andReturnSelf();
+
+        $builder
+            ->shouldReceive('where')
+            ->once()
+            ->with('languageable_type', $data['languageable_type'])
+            ->andReturnSelf();
+
+        $builder
+            ->shouldReceive('exists')
+            ->once()
+            ->withNoArgs()
+            ->andReturnTrue();
+
+        $languageable
+            ->shouldReceive('query')
+            ->once()
+            ->withNoArgs()
+            ->andReturn($builder);
+
+        $repoMock = Mockery::mock(LanguageableRepository::class)
+            ->makePartial()
+            ->shouldAllowMockingProtectedMethods();
+
+        $repoMock->shouldReceive('model')
+            ->once()
+            ->andReturn($languageable);
+
+        /** @var \App\Contracts\Repositories\LanguageableRepositoryInterface $repoMock */
+        $repoMock->existsForPayload($data);
+
+        $this->assertEquals(6, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations met.');
+    }
+
+    /**
+     * Tear down application tests.
+     *
+     * @return void
+     */
+    public function tearDown(): void
+    {
+        Mockery::close();
+
+        parent::tearDown();
     }
 }

@@ -2,9 +2,10 @@
 
 namespace App\Services;
 
-use App\Models\Game;
 use App\DTO\SteamAppDTO;
+use App\Models\{Game, Languageable};
 use App\Contracts\Repositories\LanguageableRepositoryInterface;
+use App\Exceptions\Admin\Languageable\LanguageableAlreadyExistsException;
 use App\Contracts\Services\{
     LanguageServiceInterface,
     LanguageableServiceInterface,
@@ -30,9 +31,7 @@ class LanguageableService extends AbstractService implements LanguageableService
     }
 
     /**
-     * The game repository.
-     *
-     * @return \App\Contracts\Repositories\LanguageableRepositoryInterface
+     * @inheritDoc
      */
     public function repository(): LanguageableRepositoryInterface
     {
@@ -40,11 +39,40 @@ class LanguageableService extends AbstractService implements LanguageableService
     }
 
     /**
-     * Create the game languageables.
+     * @inheritDoc
+     */
+    public function create(array $data): Languageable
+    {
+        $this->assertCanCreate($data);
+
+        /** @var \App\Models\Languageable */
+        return $this->repository()->create($data);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function existsForPayload(array $data): bool
+    {
+        return $this->repository()->existsForPayload($data);
+    }
+
+    /**
+     * Assert can create languageable.
      *
-     * @param \App\Models\Game $game
-     * @param \App\DTO\SteamAppDTO $formattedApp
+     * @param array<string, mixed> $data
+     * @throws \App\Exceptions\Admin\Languageable\LanguageableAlreadyExistsException
      * @return void
+     */
+    private function assertCanCreate(array $data): void
+    {
+        if ($this->existsForPayload($data)) {
+            throw new LanguageableAlreadyExistsException();
+        }
+    }
+
+    /**
+     * @inheritDoc
      */
     public function createGameLanguageables(Game $game, SteamAppDTO $formattedApp): void
     {
@@ -55,7 +83,7 @@ class LanguageableService extends AbstractService implements LanguageableService
                 'name' => $language['language'],
             ]);
 
-            $this->create([
+            $this->repository()->create([
                 'dubs' => $language['audio'],
                 'languageable_id' => $game->id,
                 'languageable_type' => $game::class,

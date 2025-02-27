@@ -6,9 +6,10 @@ use Mockery;
 use Tests\TestCase;
 use App\DTO\SteamAppDTO;
 use Mockery\MockInterface;
-use App\Models\{Game, Language, Languageable};
 use App\Repositories\LanguageableRepository;
+use App\Models\{Game, Language, Languageable};
 use App\Contracts\Repositories\LanguageableRepositoryInterface;
+use App\Exceptions\Admin\Languageable\LanguageableAlreadyExistsException;
 use App\Contracts\Services\{
     LanguageServiceInterface,
     LanguageableServiceInterface,
@@ -22,6 +23,13 @@ class LanguageableServiceTest extends TestCase
      * @var \Mockery\MockInterface
      */
     private MockInterface $languageService;
+
+    /**
+     * The languageable repository.
+     *
+     * @var \Mockery\MockInterface
+     */
+    private MockInterface $languageableRepository;
 
     /**
      * The languageable service.
@@ -40,8 +48,10 @@ class LanguageableServiceTest extends TestCase
         parent::setUp();
 
         $this->languageService = Mockery::mock(LanguageServiceInterface::class);
+        $this->languageableRepository = Mockery::mock(LanguageableRepositoryInterface::class);
 
         $this->app->instance(LanguageServiceInterface::class, $this->languageService);
+        $this->app->instance(LanguageableRepositoryInterface::class, $this->languageableRepository);
 
         $this->languageableService = app(LanguageableServiceInterface::class);
     }
@@ -88,12 +98,10 @@ class LanguageableServiceTest extends TestCase
             ->with(['name' => $language['language']])
             ->andReturn($modelLanguage);
 
-        $repository = Mockery::mock(LanguageableRepositoryInterface::class);
-        $this->app->instance(LanguageableRepositoryInterface::class, $repository);
-
         /** @var \App\Models\Language $modelLanguage */
         /** @var \App\Models\Game $model */
-        $repository->shouldReceive('create')
+        $this->languageableRepository
+            ->shouldReceive('create')
             ->once()
             ->with([
                 'dubs' => $language['audio'],
@@ -108,6 +116,94 @@ class LanguageableServiceTest extends TestCase
         $this->assertEquals(2, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations met.');
     }
 
+    /**
+     * Test if can check if languageable exists for payload.
+     *
+     * @return void
+     */
+    public function test_if_can_check_if_languageable_exists_for_payload(): void
+    {
+        $data = [
+            'language_id' => 1,
+            'languageable_id' => 1,
+            'languageable_type' => Game::class,
+        ];
+
+        $this->languageableRepository
+            ->shouldReceive('existsForPayload')
+            ->once()
+            ->with($data)
+            ->andReturnFalse();
+
+        $result = $this->languageableService->existsForPayload($data);
+
+        $this->assertFalse($result);
+
+        $this->assertEquals(1, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations met.');
+    }
+
+    /**
+     * Test if can throw an exception if languageable already exists.
+     *
+     * @return void
+     */
+    public function test_if_can_throw_an_exception_if_languageable_already_exists(): void
+    {
+        $data = [
+            'language_id' => 1,
+            'languageable_id' => 1,
+            'languageable_type' => Game::class,
+        ];
+
+        $this->languageableRepository
+            ->shouldReceive('existsForPayload')
+            ->once()
+            ->with($data)
+            ->andReturnTrue();
+
+        $this->expectException(LanguageableAlreadyExistsException::class);
+        $this->expectExceptionMessage('The given language already exists for this languageable!');
+
+        $this->languageableService->create($data);
+    }
+
+    /**
+     * Test if can create a new languageable if don't exist yet.
+     *
+     * @return void
+     */
+    public function test_if_can_create_a_new_languageable_if_dont_exist_yet(): void
+    {
+        $languageable = Mockery::mock(Languageable::class);
+
+        $data = [
+            'language_id' => 1,
+            'languageable_id' => 1,
+            'menu' => fake()->boolean(),
+            'dubs' => fake()->boolean(),
+            'subtitles' => fake()->boolean(),
+            'languageable_type' => Game::class,
+        ];
+
+        $this->languageableRepository
+            ->shouldReceive('existsForPayload')
+            ->once()
+            ->with($data)
+            ->andReturnFalse();
+
+        $this->languageableRepository
+            ->shouldReceive('create')
+            ->once()
+            ->with($data)
+            ->andReturn($languageable);
+
+        $result = $this->languageableService->create($data);
+
+        $this->assertEquals($result, $languageable);
+        $this->assertInstanceOf(Languageable::class, $result);
+
+        $this->assertEquals(2, Mockery::getContainer()->mockery_getExpectationCount(), 'Mock expectations met.');
+    }
 
     /**
      * Tear down application tests.

@@ -19,6 +19,7 @@ use App\Http\Controllers\Admin\{
     ProtectionController,
     GalleriableController,
     Steam\SteamController,
+    LanguageableController,
     RequirementTypeController,
     TorrentProviderController,
     TransactionTypeController,
@@ -59,3 +60,4 @@ Route::apiResource('transaction-types', TransactionTypeController::class)->excep
 Route::apiResource('requirement-types', RequirementTypeController::class)->except('show');
 Route::apiResource('torrent-providers', TorrentProviderController::class)->except('show');
 Route::apiResource('galleriables', GalleriableController::class)->only('store', 'destroy');
+Route::apiResource('languageables', LanguageableController::class)->except('index', 'show');
